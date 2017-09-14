@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  {% load static %}
+  <link rel="stylesheet"  href="{% static '../static/css/mycss.css' %}" />
+  <link rel="stylesheet"  href="{% static '../static/css/bootstrap.css' %}" />
+  <script src="{% static '../static/js/jquery-3.2.1.js' %}"></script>
+  <script src="{% static '../static/js/bootstrap.js' %}"></script>
+  <script src="{% static '../static/js/websend.js' %}"></script>
+</head>
+
+<body style="font-family: 'Microsoft YaHei', sans-serif">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12" id="urlbox">
+        <div class="row" style="text-align: center">
+          <h1 class="col-md-6 col-md-offset-3">自动化接口测试</h1>
+        </div>
+        <div class="row">
+          <div class="col-md-2">
+            <select class="form-control" style="width: auto" id="interfaceselect" title="methodchoose"
+              onmousedown="if(this.options.length>4){this.size=4}" onblur="this.size=0" onchange="this.size=0">
+            </select>
+          </div>
+          <div class="col-md-1">
+            <select class="form-control" style="width: auto" id="ifmethodselect" title="methodchoose">
+              <option value="1" onclick="selectClick()">Post</option>
+              <option value="2" onclick="selectClick()">Get</option>
+            </select></div>
+          <div class="col-md-7"><input class="col-md-12 form-control" id="urlinfo" title="urlinfo" placeholder="接口地址,以http://开头"></div>
+          <div class="col-md-1"><button class="btn btn-info" onclick="sendurl()">请求数据</button></div>
+          <div class="col-md-1"><button class="btn btn-info" id="fortest">测试</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div id="parabox" class="col-md-12 table-responsive">
+        <table id="keytable" border="1" style="margin: 0 auto" class="table table-bordered">
+          <tr>
+          <th class="col-md-4">参数名称</th>
+          <th class="col-md-8">参数值</th>
+          </tr>
+        </table>
+        <table id="addtable" border="1" style="margin: 0 auto" class="table table-bordered">
+          <tr>
+            <td><button class="btn btn-success" onclick="addtr()">添加参数</button></td>
+          </tr>
+        </table>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"><h3>响应结果</h3></div>
+      <div class="col-md-12">
+        <textarea class="col-md-12" id="resultinfo" title="结果信息" rows="30"></textarea>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

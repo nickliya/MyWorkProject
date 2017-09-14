@@ -1,0 +1,22 @@
+body
+{
+    background-image:url(123.jpg);
+    background-repeat:no-repeat;
+    /*background-position:center;*/
+    background-size:cover;
+    background-color:blanchedalmond;}
+.akareiro
+{
+    color: #fc788c;}
+.box1
+{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content:space-around;
+}
+.box2
+{
+    display: flex;
+    align-items:center;
+    justify-content:center;
+}

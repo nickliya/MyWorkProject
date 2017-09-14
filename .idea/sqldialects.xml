@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="dbSrc:///2ec2218b/725004ef-f08e-42bb-873a-5477f3740490" dialect="PostgreSQL" />
+    <file url="dbSrc:///2ec2218b/7773837c-642c-4bab-98ed-af494585f1ab" dialect="TSQL" />
+    <file url="dbSrc:///2ec2218b/cae15803-6cf7-42d8-968e-11caa3d77b9b" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/UI/Tk_UI/NewTcp.py" dialect="TSQL" />
+    <file url="file://D:/workspace/CarSharAPITest/test-api/SharedVehicle/api.py" dialect="PostgreSQL" />
+    <file url="file://D:/workspace/CarSharAPITest/test-api/SharedVehicle/flow.py" dialect="PostgreSQL" />
+  </component>
+</project>
