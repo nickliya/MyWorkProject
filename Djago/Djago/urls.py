@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^homepage$', loginviews.homepage),
     url(r'^forreturn/$', loginviews.returndata),
     url(r'^getinterface/$', loginviews.getinterface),
+    url(r'^getinterfacepayload/$', loginviews.getinterfacepayload),
 
     # url(r'^', views.hello),
     # url(r'^yqji', search.yqji),

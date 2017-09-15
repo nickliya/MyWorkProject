@@ -7,6 +7,7 @@ from django.forms.models import model_to_dict
 from Yq_Djago import models
 import json
 import MySQLdb
+from django.http import QueryDict
 
 def login(request):
     return render(request, 'loginsys/login.html')
@@ -36,9 +37,10 @@ def returndata(request):
 
 
 def getinterface(request):
-    conn = MySQLdb.connect(host='192.168.6.237', user='root', passwd='123456')
+    conn = MySQLdb.connect(host='192.168.6.239', user='root', passwd='123456')
     cur = conn.cursor()
-    sql = "SHOW TABLES FROM yangqing"
+    # sql = "SHOW TABLES FROM yangqing"
+    sql = "SELECT interfaceName FROM yangqing.interface;"
     cur.execute(sql)
     info = cur.fetchall()
     listinfo = []
@@ -47,4 +49,17 @@ def getinterface(request):
     response_data = {}
     response_data["resultcode"] = 0
     response_data["message"] = listinfo
+    return HttpResponse(JsonResponse(response_data), content_type="application/json")
+
+
+def getinterfacepayload(request):
+    request.encoding = 'utf-8'
+    res = request.POST
+    name = res.values()
+    info = models.Interface.objects.filter(interfaceName=name[0])
+    isdict = info.values("payload").get()
+    isdict["payload"] = eval(isdict["payload"])
+    response_data = {}
+    response_data["resultcode"] = 0
+    response_data["message"] = isdict
     return HttpResponse(JsonResponse(response_data), content_type="application/json")

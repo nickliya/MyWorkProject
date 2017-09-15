@@ -33,7 +33,8 @@ function sendurl(){
 function addtr() {
     var trinfo = "<tr><td><input placeholder='参数名称' style='width: 95%;margin: 3px'></td>" +
         "<td><input placeholder='参数值' style='width: 85%;margin: 3px'>" +
-        "<button class='btn btn-warning' id='delete-btn' onclick='removetr(event)'>删除参数</button></td></tr>";
+        "<button class='btn btn-warning' id='delete-btn' onclick='removetr(event)'>" +
+        "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span> 删除参数</button></td></tr>";
     $("#keytable").append(trinfo);
 }
 
@@ -48,17 +49,41 @@ function removetr(ev) {
 }
 
 $(document).ready(function() {
+    // 发送请求
     $("#fortest").click(function () {
         $.get("/forreturn/", function (data) {
             // console.log(data);
             $("#resultinfo").val(JSON.stringify(data))
         });
     });
+
+    // 读取数据库保存的接口
     $.get("/getinterface/", function (data) {
         // console.log(data);
         // console.log(data["message"]);
         $.each(data["message"],function(index,element){
-            $("#interfaceselect").append('<option value=index>'+element+'</option>')
+            $("#interfaceselect").append('<option value='+index+'>'+element+'</option>')
+        });
+    });
+
+    // 选择监听，并列出相应接口的参数
+    $("#interfaceselect").select(function(){
+        var interfacename=$("#interfaceselect").find("option:selected").text();
+        // console.log(interfacename);
+        var postinfo={
+            "interfacename":interfacename
+        };
+        $.post("/getinterfacepayload/", postinfo, function (data) {
+            console.log(data["message"]);
+            $.each(data["message"]["payload"],function(index,element){
+                // console.log(index,element);
+
+                var trinfo = "<tr><td><input placeholder='参数名称' style='width: 95%;margin: 3px' value="+index+"></td>" +
+                        "<td><input placeholder='参数值' style='width: 85%;margin: 3px' value="+element+">" +
+                        "<button class='btn btn-warning' id='delete-btn' onclick='removetr(event)'>" +
+                        "<span class='glyphicon glyphicon-minus' aria-hidden='true'></span> 删除参数</button></td></tr>";
+                $("#keytable").append(trinfo);
+            });
         });
     });
 });

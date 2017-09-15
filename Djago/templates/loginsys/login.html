@@ -30,8 +30,13 @@
               <option value="2" onclick="selectClick()">Get</option>
             </select></div>
           <div class="col-md-7"><input class="col-md-12 form-control" id="urlinfo" title="urlinfo" placeholder="接口地址,以http://开头"></div>
-          <div class="col-md-1"><button class="btn btn-info" onclick="sendurl()">请求数据</button></div>
-          <div class="col-md-1"><button class="btn btn-info" id="fortest">测试</button></div>
+          <div class="col-md-2 btn-toolbar" role="toolbar">
+            <button class="btn btn-info" onclick="sendurl()">
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span> 请求数据
+            </button>
+            <button class="btn btn-info" id="fortest">测试</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -45,7 +50,11 @@
         </table>
         <table id="addtable" border="1" style="margin: 0 auto" class="table table-bordered">
           <tr>
-            <td><button class="btn btn-success" onclick="addtr()">添加参数</button></td>
+            <td>
+              <button class="btn btn-success" onclick="addtr()">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 添加参数
+              </button>
+            </td>
           </tr>
         </table>
     </div>
