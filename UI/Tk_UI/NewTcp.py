@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('TCP测试定制 version:2017.08.29')
+root.title('otu设备模拟器 version:2017.09.19')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
