@@ -51,7 +51,7 @@ function removetr(ev) {
 $(document).ready(function() {
     // 发送请求
     $("#fortest").click(function () {
-        $.get("/forreturn/", function (data) {
+        $.get("/returndata/", function (data) {
             // console.log(data);
             $("#resultinfo").val(JSON.stringify(data))
         });
@@ -86,4 +86,22 @@ $(document).ready(function() {
             });
         });
     });
+
+    if ("WebSocket" in window){
+        console.log("yes");
+        var ws = new WebSocket('ws://192.168.6.235:8000/socket/');
+        ws.onopen = function(){
+            console.log("123");
+            ws.send("(1*7c|a3|106,201|101,865328028513165|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)")
+        };
+        ws.onmessage = function(evt){
+            var info = evt.data;
+            console.log(info)
+        };
+        ws.onclose =function(){
+        }
+    }
+    else {
+        console.log("no")
+    }
 });

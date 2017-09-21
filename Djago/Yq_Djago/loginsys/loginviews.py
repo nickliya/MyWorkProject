@@ -4,10 +4,13 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
 from django.forms.models import model_to_dict
+from dwebsocket.decorators import accept_websocket, require_websocket
 from Yq_Djago import models
 import json
 import MySQLdb
 from django.http import QueryDict
+import time
+
 
 def login(request):
     return render(request, 'loginsys/login.html')
@@ -30,6 +33,7 @@ def returndata(request):
     response_data["message"] = isdict
     return HttpResponse(JsonResponse(response_data), content_type="application/json")
 
+
 # def returndata(request):
 #     info = models.Interface.objects.all().values("interfaceName")
 #     isdict = serializers.serialize('json', info)
@@ -37,7 +41,7 @@ def returndata(request):
 
 
 def getinterface(request):
-    conn = MySQLdb.connect(host='192.168.6.239', user='root', passwd='123456')
+    conn = MySQLdb.connect(host='192.168.6.235', user='root', passwd='123456')
     cur = conn.cursor()
     # sql = "SHOW TABLES FROM yangqing"
     sql = "SELECT interfaceName FROM yangqing.interface;"
@@ -63,3 +67,19 @@ def getinterfacepayload(request):
     response_data["resultcode"] = 0
     response_data["message"] = isdict
     return HttpResponse(JsonResponse(response_data), content_type="application/json")
+
+
+@accept_websocket
+def socket(request):
+    if not request.is_websocket():  # 判断是不是websocket连接
+        try:  # 如果是普通的http方法
+            message = request.GET['message']
+            return HttpResponse(message)
+        except:
+            return render(request, 'loginsys/login.html')
+    else:
+        # for message in request.websocket:
+        #     request.websocket.send(message)  # 发送消息到客户端
+        for i in range(5):
+            request.websocket.send("你好啊")
+            time.sleep(3)

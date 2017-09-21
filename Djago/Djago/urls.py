@@ -23,9 +23,10 @@ urlpatterns = [
     url(r'^trip/$', tripviews.hello),
     url(r'^$', loginviews.login),
     url(r'^homepage$', loginviews.homepage),
-    url(r'^forreturn/$', loginviews.returndata),
+    url(r'^returndata/$', loginviews.returndata),
     url(r'^getinterface/$', loginviews.getinterface),
     url(r'^getinterfacepayload/$', loginviews.getinterfacepayload),
+    url(r'^socket/$', loginviews.socket),
 
     # url(r'^', views.hello),
     # url(r'^yqji', search.yqji),
