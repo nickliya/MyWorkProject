@@ -29,10 +29,10 @@ root.rowconfigure(0, weight=1)
 
 framentry_otu = Frame(root)
 framentry_bt = Frame(root)
-frame3 = Frame(root)
+frame_qr = Frame(root)
 framentry_otu.grid(row=0, column=0, sticky=S + W + N + E)
 framentry_bt.grid(row=0, column=2, sticky=S + W + N + E)
-frame3.grid(row=0, column=4, sticky=S + W + N + E)
+frame_qr.grid(row=0, column=4, sticky=S + W + N + E)
 Label(root, bg='#87CEEB').grid(row=0, column=1, rowspan=7, sticky=S + N)
 Label(root, bg='#87CEEB').grid(row=0, column=3, rowspan=7, sticky=S + N)
 
@@ -81,18 +81,18 @@ framentry_bt.rowconfigure(8, weight=1)
 frame2_l1 = Label(framentry_bt, text='不使用了请离线\n需挂机保持连接请\n勾选心跳')
 frame2_l1.grid(row=9, column=0, columnspan=2, sticky=N + S + E + W)
 
-# frame3
-frame3.columnconfigure(0, weight=1)
-frame3.columnconfigure(1, weight=1)
-frame3.columnconfigure(2, weight=1)
-frame3.rowconfigure(3, weight=1)
+# frame_qr
+frame_qr.columnconfigure(0, weight=1)
+frame_qr.columnconfigure(1, weight=1)
+frame_qr.columnconfigure(2, weight=1)
+frame_qr.rowconfigure(3, weight=1)
 # frame3.rowconfigure(1, weight=1)
-Label(frame3, text='转换内容').grid(row=0, column=0, sticky=E + W)
-Label(frame3, text='请检查空格，空格也会作为内容一部分转成二维码').grid(row=2, column=0, columnspan=3, sticky=E + W)
-qrcodecontent = Entry(frame3)
+Label(frame_qr, text='转换内容').grid(row=0, column=0, sticky=E + W)
+Label(frame_qr, text='请检查空格，空格也会作为内容一部分转成二维码').grid(row=2, column=0, columnspan=3, sticky=E + W)
+qrcodecontent = Entry(frame_qr)
 qrcodecontent.grid(row=0, column=1, columnspan=2, sticky=E + W)
 
-frame3_l1 = Label(frame3, text='二维码装填区域')
+frame3_l1 = Label(frame_qr, text='二维码装填区域')
 frame3_l1.grid(row=3, column=0, columnspan=3)
 
 data = open('D:\Tcptemp\data.txt', "a+")
@@ -280,7 +280,6 @@ def sbwz():
         M = '%x' % newminute
         Sec = '%x' % int(second)
         strhextime = str(m) + ',' + str(d) + ',' + str(H) + ',' + str(M) + ',' + str(Sec)
-
         return strhextime
 
     timeinfo = '(1*b2|7|30d,11,' + hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
@@ -449,9 +448,9 @@ frame2_c1 = Checkbutton(framentry_bt, text='心跳挂机', variable=heart_v, com
 frame2_c1.grid(row=8, column=0, columnspan=2, sticky=E + W + S)
 
 # frame3
-frame3_b1 = Button(frame3, text='生成普通二维码', command=createrqimg)
-frame3_b2 = Button(frame3, text='生成展车二维码', command=createrqimg2)
-frame3_b3 = Button(frame3, text='清除二维码', width=12, command=qc)
+frame3_b1 = Button(frame_qr, text='生成普通二维码', command=createrqimg)
+frame3_b2 = Button(frame_qr, text='生成展车二维码', command=createrqimg2)
+frame3_b3 = Button(frame_qr, text='清除二维码', width=12, command=qc)
 frame3_b1.grid(row=1, column=0, sticky=E + W)
 frame3_b2.grid(row=1, column=1, sticky=E + W)
 frame3_b3.grid(row=1, column=2, sticky=E + W)
