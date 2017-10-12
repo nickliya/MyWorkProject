@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Djago/.idea/Djago.iml" filepath="$PROJECT_DIR$/Djago/.idea/Djago.iml" />
+      <module fileurl="file://D:/workspace/CarSharAPITest/Django/.idea/Django.iml" filepath="D:/workspace/CarSharAPITest/Django/.idea/Django.iml" />
       <module fileurl="file://$PROJECT_DIR$/UI/Tk_UI/.idea/Tk_UI.iml" filepath="$PROJECT_DIR$/UI/Tk_UI/.idea/Tk_UI.iml" />
+      <module fileurl="file://D:/workspace/CarSharAPITest/Django/VST/.idea/VST.iml" filepath="D:/workspace/CarSharAPITest/Django/VST/.idea/VST.iml" />
       <module fileurl="file://$PROJECT_DIR$/Carshare/apptest/.idea/apptest.iml" filepath="$PROJECT_DIR$/Carshare/apptest/.idea/apptest.iml" />
       <module fileurl="file://D:/workspace/CarSharAPITest/test-api/.idea/test-api.iml" filepath="D:/workspace/CarSharAPITest/test-api/.idea/test-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/untitled.iml" filepath="$PROJECT_DIR$/.idea/untitled.iml" />

@@ -24,6 +24,9 @@
     <orderEntry type="module" module-name="Tk_UI" />
     <orderEntry type="module" module-name="trip" />
     <orderEntry type="module" module-name="Djago" />
+    <orderEntry type="module" module-name="workspace" />
+    <orderEntry type="module" module-name="Django" />
+    <orderEntry type="module" module-name="VST" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />

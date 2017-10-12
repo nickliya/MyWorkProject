@@ -4910,7 +4910,7 @@ User</ColNames>
     </column>
     <column id="1041" parent="101" name="payload">
       <Position>3</Position>
-      <DataType>varchar(512)|0</DataType>
+      <DataType>json|0</DataType>
       <NotNull>1</NotNull>
     </column>
     <key id="1042" parent="101" name="PRIMARY">

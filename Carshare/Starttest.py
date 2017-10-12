@@ -141,7 +141,6 @@ def creatcaselist(*value):
     print len(cases)
     return modificationcase(cases)
 
-
 cus = App()  # 调用app模块
 tcp = Tcp()  # 调用Tcp模块
 psql = Postgresql()  # 调用Postgresql模块
@@ -152,6 +151,7 @@ setinput('15025463191', '123456')  # 初始化input1和input2
 # setinput('18523641110', '123456')  # 初始化input1和input2
 web.sysuserlogin("admin;123456;6666")  # 保持门户登陆状态,依次是用户名,密码,验证码，不测门户或单测登陆接口时必须屏蔽
 # web.sysuserlogin("admin;123456;1231")  # 保持门户登陆状态,依次是用户名,密码,验证码，不测门户或单测登陆接口时必须屏蔽
+web.configloging()
 tcp.settcp('192.168.6.52', '2103')  # 配置tcp
 psql.setsql('192.168.6.51', 5432, 'postgres', '123456', 'postgres')  # 配置postgresql数据库
 flow = Flow(cus, web, tcp, psql)  # 调用Flow模块
@@ -168,8 +168,7 @@ caselist = {
 }
 # 接口流程测试
 flowcase = [
-    # {"caseid": "case1", "value": "2;True;29.627798;106.500095;25;22;22", "expect": True, "rmak": ""},
-    # {"caseid": "case1", "value": "杨卿自动化机构;杨卿自动化角色;yangqing", "expect": True, "rmak": ""},
+
     {"caseid": "case1", "value": "杨卿TCP666;2017-08-11 15:55:56", "expect": True, "rmak": u"ok"}
 ]
 
@@ -196,7 +195,7 @@ flowcase = [
 # web.activititycouponadd("优惠券杨卿满100减100;100;1;100;2017-08-12 17:00:00;2018-08-12 17:30:00;1000;2;0;")
 # print web.orderurgentOrderfinish("42;处里;50")[1]["resultMessage"]
 
-# flow.feecheck("4;4")
+# flow.feecheck("4;13")
 # flow.feecheck("53;9")
 # flow.appflow("杨卿车辆;83VXGV8U548C08581;杨卿自动化车型;15025463191;王来福")
 # flow.order("11")
@@ -216,11 +215,6 @@ flowcase = [
 
 # 支付
 # print web.payCallbackwxWebFinishPayCallback("1117090113465806")
-print web.payCallbackaliWebPayFinishPayCallback("2117091316032325")
+# print web.payCallbackaliWebPayFinishPayCallback("2117091316032325")
 
-# print web.orderurgentOrderfinish("9;统一;20")[1]["resultMessage"]
-
-# flow.appflow("兰博基尼;20A04PVJ41XMU0695;杨卿自动化车型;15025463191;王来福")
-
-# print cus.customerdetail("")[1]["resultMessage"]
-# print cus.currentOrder("")[2]
+# print web.configaviableset("false;false;false;false")[1]["resultMessage"]
