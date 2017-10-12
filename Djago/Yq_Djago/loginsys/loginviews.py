@@ -73,13 +73,14 @@ def getinterfacepayload(request):
 def socket(request):
     if not request.is_websocket():  # 判断是不是websocket连接
         try:  # 如果是普通的http方法
-            message = request.GET['message']
+            message = request.POST['message']
             return HttpResponse(message)
         except:
             return render(request, 'loginsys/login.html')
     else:
-        # for message in request.websocket:
-        #     request.websocket.send(message)  # 发送消息到客户端
-        for i in range(5):
-            request.websocket.send("你好啊")
-            time.sleep(3)
+        response = request.websocket
+        # msg = response.wait()
+        for i in response:
+            response.send()
+        # request.websocket.send(response.read())  # 发送消息到客户端
+        request.websocket.close()

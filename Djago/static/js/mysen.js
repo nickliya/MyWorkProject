@@ -99,6 +99,7 @@ $(document).ready(function() {
             console.log(info)
         };
         ws.onclose =function(){
+            console.log("退出了")
         }
     }
     else {
