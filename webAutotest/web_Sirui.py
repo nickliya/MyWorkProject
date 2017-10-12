@@ -9,6 +9,34 @@ import string
 from selenium.webdriver.support.ui import Select
 import unittest
 from selenium.webdriver.common.keys import Keys
+import pytesseract
+from PIL import Image
+
+
+def getcode(imgurl):
+    """识别图片"""
+    browser.get_screenshot_as_file(imgurl)
+    imgprocess(imgurl)
+    image = Image.open(imgurl)
+    vcode = pytesseract.image_to_string(image)
+    if vcode == "" or len(vcode) > 4:
+        browser.refresh()
+        browser.get_screenshot_as_file(imgurl)
+        imgprocess(imgurl)
+        image = Image.open(imgurl)
+        vcode = pytesseract.image_to_string(image)
+    else:
+        pass
+    return vcode
+
+
+def imgprocess(imgurl):
+    """截图处理"""
+    img = Image.open(imgurl)
+    region = (350, 458, 469, 499)
+    cropImg = img.crop(region)  # 切割图片
+    cropImg.save(imgurl)
+
 
 phone = random.choice(['139', '188', '185', '136', '158', '151']) + ''.join(
     random.choice("0123456789") for i in range(8))
@@ -24,10 +52,14 @@ price = ''.join(random.choice("123456789") for i in range(6)) + '.' + ''.join(
 
 chromepath = 'C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe'
 browser = webdriver.Chrome(chromepath)
-browser.get('http://192.168.6.148:8080/')
+browser.get('http://192.168.6.52:8080/')
 browser.find_element_by_id('name').send_keys('admin')
 browser.find_element_by_id('password').send_keys('Wg123456')
-input(u'请在网页手动输入验证码:'.encode('gbk'))
+
+temp_img = 'C:\Users\YangQ\Desktop\getImg.png'
+code = getcode(temp_img)
+
+browser.find_element_by_id("authcode").send_keys(code)
 browser.find_element_by_id('loginButton').click()
 browser.implicitly_wait(5)
 time.sleep(1)
@@ -35,6 +67,7 @@ browser.maximize_window()
 
 
 class Rygl(unittest.TestCase):
+    """人员管理"""
     def setUp(self):
         browser._switch_to.frame('iframepage')
         browser._switch_to.frame('leftframe')
@@ -205,6 +238,7 @@ class Rygl(unittest.TestCase):
 
 
 class Dagl(unittest.TestCase):
+    """档案管理"""
     def setUp(self):
         browser._switch_to.frame('iframepage')
         browser._switch_to.frame('leftframe')

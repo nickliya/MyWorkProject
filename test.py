@@ -1,19 +1,16 @@
 # coding=utf-8
-import requests
-import json
-from PIL import *
-import pymssql
-import MySQLdb
-payload = {'key1': u'卧槽', 'key2': u'你好'}
-r = requests.get("http://httpbin.org/get", data=payload)
-x = r.headers
-print x
+# /usr/bin/python
+# coding=utf-8
+# create by 15025463191 2017/10/11
 
 
-# conn = MySQLdb.connect(host='192.168.6.238', user='root', passwd='123456')
-# cur = conn.cursor()
-# sql = "SHOW TABLES FROM yangqing"
-# cur.execute(sql)
-# info = cur.fetchall()
-# for i in info:
-#     print i[0]
+def getcode(strindex):
+    number = 0
+    for i in strindex:
+        number += ord(i)
+    hexnumber = hex(number)[-2:]
+    code = "lin bus tx *"+hexnumber+"#"+strindex
+    return code
+
+codeindex = raw_input("please input your code:")
+print getcode(codeindex)
