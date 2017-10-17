@@ -1,7 +1,7 @@
 # /usr/bin/python
 # coding=utf-8
-# creat by 15025463191 2017/09/01
-
+# creat by 15025463191 2017/06/04
+# version:20171017
 from Tkinter import *
 import socket
 import threading
@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2017.09.19')
+root.title('otu设备模拟器 version:2017.10.17')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -120,7 +120,7 @@ protocol = {
     "OBD": "(1*fa|7|30e,1,2,1,3333,1,0,2|)",
     "ACC": "(1*12|7|301,2,1111)",
     "余油": "(1*e7|5|614,3,7#b312,1,32,3C#|)",
-    "余电": "(1*ed|5|614,3,7#b313,1,32,3C#|)",
+    "余电": "(1*88|7|31F,1,50|)",
 }
 
 # 变量声明
@@ -165,8 +165,8 @@ def sx():
         while 1:
             tcpreceive = s.recv(1024)
             x = tcpreceive[7:10]  # 检测是否为控制协议
-            if x == '511' or x == '512' or x == '513' or x == '514' or x == '515' or x == '516' or x == '517' or x == '518' or x == '519' \
-                    or x == '51A' or x == '51B' or x == '51C':
+            if x == '511' or x == '512' or x == '513' or x == '514' or x == '515' or x == '516' or x == '517' \
+                    or x == '518' or x == '519' or x == '51A' or x == '51B' or x == '51C':
                 t2.insert(END, tcpreceive)
                 t2.update()
                 protocol_dic = {
