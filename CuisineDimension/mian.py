@@ -8,8 +8,9 @@
 #
 # vervion:2017.11.03
 
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtGui,QtCore
 import sys
+import sqlite3
 
 
 class Example(QtGui.QWidget):
@@ -17,6 +18,7 @@ class Example(QtGui.QWidget):
         super(Example, self).__init__()
         self.initUI()
         self.iniGrid()
+        self.wigetIndex = None
 
     def center(self):
         """控件居中"""
@@ -41,7 +43,7 @@ class Example(QtGui.QWidget):
         self.aboutbtn = QtGui.QPushButton(u"关于")
 
         self.charactorbtn.clicked.connect(self.cuisinelist)
-        self.charactorbtn.clicked.connect(self.aboutinfo)
+        self.aboutbtn.clicked.connect(self.aboutinfo)
 
     def iniGrid(self):
         self.maingrid = QtGui.QGridLayout()
@@ -65,19 +67,58 @@ class Example(QtGui.QWidget):
         self.topgrid.addWidget(self.aboutbtn, 0, 6)
 
         # 中间窗体
-        self.bodywiget = QtGui.QWidget()
+        self.bodywiget = QtGui.QTableWidget()
         self.bodygrid = QtGui.QGridLayout()
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
 
+    def inibodywiget(self):
+        """初始化body"""
+        if self.wigetIndex is None:
+            pass
+        else:
+            for i in self.wigetIndex:
+                i.deleteLater()
+
     def cuisinelist(self):
-        self.tablewiget = QtGui.QTableWidget(100,8)
+        self.inibodywiget()
+        self.tablewiget = QtGui.QTableWidget(100,13)
         self.bodygrid.addWidget(self.tablewiget, 0, 0)
-        self.tablewiget.setHorizontalHeaderLabels([u"食灵", u"攻击", u"防御", u"闪避"])
+        # self.tablewiget.verticalHeader().setVisible(False)
+        # self.tablewiget.horizontalHeader().setVisible(False)
+        self.tablewiget.setHorizontalHeaderLabels([u"index", u"No", u"食灵", u"类型", u"生命", u"攻击", u"防御", u"命中", u"闪避",
+                                                   u"暴击", u"攻速", u"石油", u"魔力"])
+        self.lbp = QtGui.QLabel()
+        self.lbp.setPixmap(QtGui.QPixmap("bmf_n.png"))
+        self.tablewiget.setCellWidget(0, 0, self.lbp)
+        self.tablewiget.resizeRowToContents(2)
+        self.tablewiget.resizeColumnsToContents()
+        con = sqlite3.connect("llcy")
+        cur = con.cursor()
+        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_info";'
+        # sql='SELECT * FROM "fairy_info";'
+        cur.execute(sql)
+        a = cur.fetchall()
+        nub = 1
+        for i in a[0]:
+            print i
+            if type(i) == int:
+                info = str(i)
+            else:
+                info = i
+            newItem = QtGui.QTableWidgetItem(info)
+            newItem.setTextAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignHCenter)
+            self.tablewiget.setItem(0, nub, newItem)
+            nub += 1
+
+        self.wigetIndex = [self.tablewiget]
 
     def aboutinfo(self):
-        self.lablewiget = QtGui.QLabel("dsadsa")
+        self.inibodywiget()
+        self.lablewiget = QtGui.QLineEdit("dsadas")
         self.bodygrid.addWidget(self.lablewiget, 0, 0)
+        self.bodygrid.update()
+        self.wigetIndex = [self.lablewiget]
 
 
 def main():
