@@ -32,6 +32,13 @@ class Example(QtGui.QWidget):
         self.center()
         self.setWindowTitle(u'次元料理 version:2017.11.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
+
+        # self.setStyleSheet("background:rgba(0,50,0,100)")
+        palette1 = QtGui.QPalette(self)
+        # palette1.setColor(self.backgroundRole(), QtGui.QColor(0,0,0,200))  # 设置背景颜色
+        palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('background.jpg')))   # 设置背景图片
+        self.setPalette(palette1)
+
         # self.setWindowOpacity(0.9)
 
         self.groupbtn = QtGui.QPushButton(u"队伍")
@@ -68,13 +75,14 @@ class Example(QtGui.QWidget):
         self.topgrid.addWidget(self.aboutbtn, 0, 6)
 
         # 中间窗体
-        self.bodywiget = QtGui.QTableWidget()
+        self.bodywiget = QtGui.QWidget()
         self.bodygrid = QtGui.QGridLayout()
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
 
         self.bodygrid.setRowStretch(0, 1)
         self.bodygrid.setColumnStretch(0, 1)
+        self.bodywiget.setWindowOpacity(1)
 
     def inibodywiget(self):
         """初始化body"""
@@ -138,16 +146,18 @@ class Example(QtGui.QWidget):
         # self.tablewiget.horizontalHeader().setVisible(False)
         self.tablewiget.setHorizontalHeaderLabels([u"No", u"名称", u"种类", u"品质", u"基础属性1", u"基础属性2"])
         self.tablewiget2.setHorizontalHeaderLabels([u"No", u"名称", u"套装属性1", u"套装属性2", u"套装属性3"])
-        self.wigetIndex = [self.tablewiget,self.tablewiget2]
+        self.wigetIndex = [self.tablewiget, self.tablewiget2]
 
     def aboutinfo(self):
         self.inibodywiget()
         self.versionwiget = QtGui.QTreeView()
         self.bodygrid.addWidget(self.versionwiget, 0, 0)
+        self.wigetIndex = [self.versionwiget]
 
     def fortest(self):
-        a=self.tablewiget.show()
+        a = self.tablewiget.show()
         print a
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
