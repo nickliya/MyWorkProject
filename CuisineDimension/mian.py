@@ -95,7 +95,7 @@ class Example(QtGui.QWidget):
         self.tablewiget.resizeColumnsToContents()
         con = sqlite3.connect("llcy")
         cur = con.cursor()
-        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_info";'
+        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
         # sql='SELECT * FROM "fairy_info";'
         cur.execute(sql)
         a = cur.fetchall()
