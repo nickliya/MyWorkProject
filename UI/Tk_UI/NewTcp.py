@@ -153,8 +153,10 @@ def sx():
     global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((tcpadress, int(tcpport)))
+    # s.send('(1*7c|a3|106,201|101,' + str(
+    #     IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
     s.send('(1*7c|a3|106,201|101,' + str(
-        IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
+        IMEI_NUM[0]) + '|102,460079241205511|104,otu.ost,01022300|105,a1,18|622,a1c2|)')  # 商用去掉103
     historydata = open('D:\Tcptemp\data.txt', "wb")  # 生成缓存文件data
     historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport)  # IMEI保存到缓存文件data
     historydata.close()

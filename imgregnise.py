@@ -13,7 +13,7 @@ import re
 
 appid = "1254602529"
 bucket = "imgregnise"
-secret_id = "AKIDZx72kFVWIqTs30nBPRFoC1auynPezyl"
+secret_id = "AKIDZx72kFVWIqTs30nBPRFo8C1auynPezyl"
 secret_key = "h9NUN1RbZIm11mJbYJp68wWrwpUt2vZx"
 expired = time.time() + 2592000
 onceExpired = 0
@@ -38,7 +38,7 @@ headers = {'Host': 'recognition.image.myqcloud.com',
 payload = {
     "appid": appid,
     "bucket": bucket,
-    "url": "http://imgregnise-1254602529.picsh.myqcloud.com/123456.png"
+    "url": "http://imgregnise-1254602529.picsh.myqcloud.com/20171023133858.png"
 }
 
 r = requests.post(url, json=payload, headers=headers)

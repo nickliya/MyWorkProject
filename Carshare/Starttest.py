@@ -197,7 +197,7 @@ flowcase = [
 
 # flow.feecheck("4;13")
 # flow.feecheck("53;9")
-# flow.appflow("杨卿车辆;83VXGV8U548C08581;杨卿自动化车型;15025463191;王来福")
+flow.appflow("杨卿车辆;83VXGV8U548C08581;杨卿自动化车型;15025463191;王来福")
 # flow.order("11")
 # flow.peccancy("杨卿车辆;2017-09-04 15:51:50;15025463191")
 

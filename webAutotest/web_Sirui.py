@@ -33,7 +33,7 @@ def getcode(imgurl):
 def imgprocess(imgurl):
     """截图处理"""
     img = Image.open(imgurl)
-    region = (350, 458, 469, 499)
+    region = (401, 458, 520, 499)
     cropImg = img.crop(region)  # 切割图片
     cropImg.save(imgurl)
 
