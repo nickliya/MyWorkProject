@@ -43,6 +43,7 @@ class Example(QtGui.QWidget):
         self.aboutbtn = QtGui.QPushButton(u"关于")
 
         self.charactorbtn.clicked.connect(self.cuisinelist)
+        self.equipbtn.clicked.connect(self.equiplist)
         self.aboutbtn.clicked.connect(self.aboutinfo)
 
     def iniGrid(self):
@@ -72,6 +73,9 @@ class Example(QtGui.QWidget):
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
 
+        self.bodygrid.setRowStretch(0, 1)
+        self.bodygrid.setColumnStretch(0, 1)
+
     def inibodywiget(self):
         """初始化body"""
         if self.wigetIndex is None:
@@ -91,8 +95,18 @@ class Example(QtGui.QWidget):
         self.lbp = QtGui.QLabel()
         self.lbp.setPixmap(QtGui.QPixmap("bmf_n.png"))
         self.tablewiget.setCellWidget(0, 0, self.lbp)
-        self.tablewiget.resizeRowToContents(2)
-        self.tablewiget.resizeColumnsToContents()
+
+        # self.tablewiget.horizontalHeader().setStretchLastSection(True)
+        # self.tablewiget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.tablewiget.verticalHeader().setStretchLastSection(True)
+        self.tablewiget.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
+        # self.tablewiget.resizeRowsToContents()
+        # self.tablewiget.resizeColumnsToContents()
+        # self.tablewiget.columnResized(1,1,1)
+        # self.tablewiget.rowResized(1,1,1)
+
+        self.tablewiget.setColumnWidth(0, 200)
         con = sqlite3.connect("llcy")
         cur = con.cursor()
         sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
@@ -112,14 +126,28 @@ class Example(QtGui.QWidget):
             nub += 1
 
         self.wigetIndex = [self.tablewiget]
+        # self.tablewiget.cellClicked.connect(self.fortest)
+
+    def equiplist(self):
+        self.inibodywiget()
+        self.tablewiget = QtGui.QTableWidget(20,6)
+        self.bodygrid.addWidget(self.tablewiget, 0, 0)
+        self.tablewiget2 = QtGui.QTableWidget(20,5)
+        self.bodygrid.addWidget(self.tablewiget2, 1, 0)
+        # self.tablewiget.verticalHeader().setVisible(False)
+        # self.tablewiget.horizontalHeader().setVisible(False)
+        self.tablewiget.setHorizontalHeaderLabels([u"No", u"名称", u"种类", u"品质", u"基础属性1", u"基础属性2"])
+        self.tablewiget2.setHorizontalHeaderLabels([u"No", u"名称", u"套装属性1", u"套装属性2", u"套装属性3"])
+        self.wigetIndex = [self.tablewiget,self.tablewiget2]
 
     def aboutinfo(self):
         self.inibodywiget()
-        self.lablewiget = QtGui.QLineEdit("dsadas")
-        self.bodygrid.addWidget(self.lablewiget, 0, 0)
-        self.bodygrid.update()
-        self.wigetIndex = [self.lablewiget]
+        self.versionwiget = QtGui.QTreeView()
+        self.bodygrid.addWidget(self.versionwiget, 0, 0)
 
+    def fortest(self):
+        a=self.tablewiget.show()
+        print a
 
 def main():
     app = QtGui.QApplication(sys.argv)
