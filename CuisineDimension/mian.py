@@ -13,7 +13,7 @@ import sys
 import sqlite3
 
 
-class Example(QtGui.QWidget):
+class Example(QtGui.QMainWindow):
     def __init__(self):
         super(Example, self).__init__()
         self.initUI()
@@ -28,36 +28,48 @@ class Example(QtGui.QWidget):
         self.move(qr.topLeft())
 
     def initUI(self):
-        self.resize(800, 600)
+        self.resize(1280, 650)
         self.center()
         self.setWindowTitle(u'次元料理 version:2017.11.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
 
-        # self.setStyleSheet("background:rgba(0,50,0,100)")
-        palette1 = QtGui.QPalette(self)
-        # palette1.setColor(self.backgroundRole(), QtGui.QColor(0,0,0,200))  # 设置背景颜色
-        palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('background.jpg')))   # 设置背景图片
-        self.setPalette(palette1)
+        styleqss = open("qss/style.qss", "r")
+        styleinfo = styleqss.read()
+        self.setStyleSheet(styleinfo)
+        styleqss.close()
 
-        # self.setWindowOpacity(0.9)
+        # self.setAttribute()
+        # palette1 = QtGui.QPalette()
+        # # palette1.setColor(self.backgroundRole(), QtGui.QColor(50, 50, 50, 80))  # 设置背景颜色
+        # palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('ui/btn_add.png')))   # 设置背景图片
+        # self.setPalette(palette1)
 
-        self.groupbtn = QtGui.QPushButton(u"队伍")
+        self.setWindowOpacity(0.96)
+
+        self.groupbtn = QtGui.QPushButton(u"首页")
         self.charactorbtn = QtGui.QPushButton(u"食灵")
         self.equipbtn = QtGui.QPushButton(u"装备")
-        self.projectbtn = QtGui.QPushButton(u"改修工程")
+        self.projectbtn = QtGui.QPushButton(u"装盘模拟")
         self.cvbtn = QtGui.QPushButton(u"声优")
         self.damagebtn = QtGui.QPushButton(u"伤害计算")
         self.aboutbtn = QtGui.QPushButton(u"关于")
+
+        self.bglabel = QtGui.QLabel()
 
         self.charactorbtn.clicked.connect(self.cuisinelist)
         self.equipbtn.clicked.connect(self.equiplist)
         self.aboutbtn.clicked.connect(self.aboutinfo)
 
     def iniGrid(self):
+        # self.maingrid = QtGui.QGridLayout()
+        # self.setLayout(self.maingrid)
+        # self.maingrid.setRowStretch(1, 1)
+
+        # mainwindow架构
+        mainwidget = QtGui.QWidget()
         self.maingrid = QtGui.QGridLayout()
-        self.setLayout(self.maingrid)
-        # self.setCentralWidget(mainwidget)
-        # self.maingrid.setRowStretch(0, 1)
+        mainwidget.setLayout(self.maingrid)
+        self.setCentralWidget(mainwidget)
         self.maingrid.setRowStretch(1, 1)
 
         # 顶部窗体
@@ -80,7 +92,7 @@ class Example(QtGui.QWidget):
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
 
-        self.bodygrid.setRowStretch(0, 1)
+        # self.bodygrid.setRowStretch(0, 1)
         self.bodygrid.setColumnStretch(0, 1)
         self.bodywiget.setWindowOpacity(1)
 
@@ -94,12 +106,20 @@ class Example(QtGui.QWidget):
 
     def cuisinelist(self):
         self.inibodywiget()
-        self.tablewiget = QtGui.QTableWidget(100,13)
+        self.tablewiget = QtGui.QTableWidget(100, 13)
         self.bodygrid.addWidget(self.tablewiget, 0, 0)
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
         self.tablewiget.setHorizontalHeaderLabels([u"index", u"No", u"食灵", u"类型", u"生命", u"攻击", u"防御", u"命中", u"闪避",
                                                    u"暴击", u"攻速", u"石油", u"魔力"])
+
+        for x in range(self.tablewiget.columnCount()):
+            headItem = self.tablewiget.horizontalHeaderItem(x)  # 获得水平方向表头的Item对象
+            headItem.setBackgroundColor(QtGui.QColor(0, 60, 10))  # 设置单元格背景颜色
+            headItem.setTextColor(QtGui.QColor(200, 111, 30))
+
+            # self.tablewiget.setShowGrid(False)  # 设置网格线
+
         self.lbp = QtGui.QLabel()
         self.lbp.setPixmap(QtGui.QPixmap("bmf_n.png"))
         self.tablewiget.setCellWidget(0, 0, self.lbp)
@@ -150,9 +170,56 @@ class Example(QtGui.QWidget):
 
     def aboutinfo(self):
         self.inibodywiget()
-        self.versionwiget = QtGui.QTreeView()
-        self.bodygrid.addWidget(self.versionwiget, 0, 0)
-        self.wigetIndex = [self.versionwiget]
+
+        # 设置左右框架
+        self.leftwiget=QtGui.QWidget()
+        self.rightwiget=QtGui.QWidget()
+        self.bodygrid.addWidget(self.leftwiget, 0, 0)
+        self.bodygrid.addWidget(self.rightwiget, 0, 1)
+        self.leftgrid = QtGui.QGridLayout()
+        self.rightgrid = QtGui.QGridLayout()
+        self.leftwiget.setLayout(self.leftgrid)
+        self.rightwiget.setLayout(self.rightgrid)
+
+        # 左框架
+        self.infolaber = QtGui.QLabel(u"更新历史")
+        self.leftgrid.addWidget(self.infolaber, 0, 0)
+        self.infolaber.setObjectName("aboutName")
+
+        self.tree = QtGui.QTreeWidget()
+        # self.tree.setHeaderLabel(u"更新历史")
+        self.tree.headerItem().setBackgroundColor(0, QtGui.QColor(255, 0, 0))
+        self.tree.setHeaderHidden(True)
+        self.leftgrid.addWidget(self.tree, 1, 0)
+
+        # 设置root为self.tree的子树，所以root就是跟节点  
+        root = QtGui.QTreeWidgetItem(self.tree)
+        # 设置根节点的名称  
+        root.setText(0, 'Version:1.0.0')
+
+        # 为root节点设置子结点  
+        child1 = QtGui.QTreeWidgetItem(root)
+        child1.setText(0, u'新增食灵、装备功能\n2017.11.07XXXX工具诞生啦!')
+        # child4 = QtGui.QTreeWidgetItem(child3)
+        # child4.setText(0, 'child4')
+        # child4.setText(1, 'name4')
+
+        # 右框架
+
+        self.text=QtGui.QTextBrowser()
+        html = open("view/aboutView.html","r")
+        htmlinfo = html.read()
+        html.close()
+        self.text.setHtml(htmlinfo.decode("utf-8"))
+        self.text.setAlignment(QtCore.Qt.AlignHCenter)
+        self.rightgrid.addWidget(self.text, 0, 0)
+
+        palette1 = QtGui.QPalette()
+        # palette1.setColor(self.backgroundRole(), QtGui.QColor(50, 50, 50, 80))  # 设置背景颜色
+        palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('ui/btn_add.png')))   # 设置背景图片
+        self.text.setPalette(palette1)
+
+        self.wigetIndex = [self.leftwiget, self.rightwiget]
 
     def fortest(self):
         a = self.tablewiget.show()

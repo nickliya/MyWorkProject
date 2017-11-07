@@ -1,0 +1,32 @@
+QWidget{
+background-color:rgb(77, 75, 74);
+}
+QPushButton{
+    color:rgb(255, 170, 127);
+    font:75 20pt "Microsoft YaHei";
+    border:none
+    }
+QPushButton:hover{
+    color:#333333;
+    }
+QLabel#aboutName{
+    color:#FF3366;
+    font:75 30pt "Microsoft YaHei"
+    }
+QTreeWidget{
+    color:floralwhite;
+    border:none;
+    font:75 16pt "Microsoft YaHei"
+    }
+QTableWidget{
+    color:floralwhite;
+    border:none
+}
+QHeaderView:section{
+    background: transparent;
+    }
+QTextBrowser{
+    font:75 10pt "Microsoft YaHei";
+    }
+
+background-image: url(background.jpg);
