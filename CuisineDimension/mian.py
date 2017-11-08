@@ -8,7 +8,7 @@
 #
 # vervion:2017.11.03
 
-from PyQt4 import QtGui,QtCore
+from PyQt4 import QtGui, QtCore
 import sys
 import sqlite3
 
@@ -255,8 +255,8 @@ class Example(QtGui.QMainWindow):
 
     def fortest(self):
         a = self.tablewiget.currentRow()
-        b=1
-        print a,b
+        info = self.tablewiget.item(a, 1).text()
+        print a, info
 
     def fortest2(self):
         a = self.tablewiget.sortByColumn(1)
