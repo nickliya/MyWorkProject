@@ -117,6 +117,10 @@ class Example(QtGui.QMainWindow):
         self.inibodywiget()
         self.tablewiget = QtGui.QTableWidget(100, 13)
         self.bodygrid.addWidget(self.tablewiget, 0, 0)
+
+        self.tablewiget.itemClicked.connect(self.fortest)  # 表格信号
+        self.tablewiget.horizontalHeader().sectionClicked.connect(self.fortest2)  # 表头信号
+
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
         self.tablewiget.setHorizontalHeaderLabels([u"index", u"No", u"食灵", u"类型", u"生命", u"攻击", u"防御", u"命中", u"闪避",
@@ -157,10 +161,11 @@ class Example(QtGui.QMainWindow):
                 info = str(i)
             else:
                 info = i
-            newItem = QtGui.QTableWidgetItem(info)
-            newItem.setTextAlignment(QtCore.Qt.AlignVCenter|QtCore.Qt.AlignHCenter)
-            self.tablewiget.setItem(0, nub, newItem)
+            self.newItem = QtGui.QTableWidgetItem(info)
+            self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+            self.tablewiget.setItem(0, nub, self.newItem)
             nub += 1
+            self.newItem.setWhatsThis(info)
 
         self.wigetIndex = [self.tablewiget]
         # self.tablewiget.cellClicked.connect(self.fortest)
@@ -203,12 +208,12 @@ class Example(QtGui.QMainWindow):
         self.leftgrid.addWidget(self.tree, 1, 0)
         self.tree.setWindowOpacity(0.1)
 
-        # 设置root为self.tree的子树，所以root就是跟节点  
+        # 设置root为self.tree的子树，所以root就是跟节点
         root = QtGui.QTreeWidgetItem(self.tree)
-        # 设置根节点的名称  
+        # 设置根节点的名称
         root.setText(0, 'Version:1.0.0')
 
-        # 为root节点设置子结点  
+        # 为root节点设置子结点
         child1 = QtGui.QTreeWidgetItem(root)
         child1.setText(0, u'新增食灵、装备功能\n2017.11.07XXXX工具诞生啦!')
         # child4 = QtGui.QTreeWidgetItem(child3)
@@ -217,7 +222,6 @@ class Example(QtGui.QMainWindow):
 
         # 右框架
         self.text=QtGui.QTextEdit()
-        # self.text.setAttribute(QtCore.Qt.WA_TranslucentBackground,True)
 
         # html = open("view/aboutView.html","r")
         # htmlinfo = html.read()
@@ -250,7 +254,13 @@ class Example(QtGui.QMainWindow):
         self.wigetIndex = [self.leftwiget, self.rightwiget]
 
     def fortest(self):
-        a = self.tablewiget.show()
+        a = self.tablewiget.currentRow()
+        b=1
+        print a,b
+
+    def fortest2(self):
+        a = self.tablewiget.sortByColumn(1)
+        a = 2
         print a
 
 
