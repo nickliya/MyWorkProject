@@ -30,7 +30,7 @@ QTreeWidget{
 QTableWidget{
     color:floralwhite;
     border:none;
-    background-color: rgba(255,0,0,20)
+    background-color: rgba(25,20,20)
 }
 QHeaderView:section{
     background: transparent;

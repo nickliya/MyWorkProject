@@ -76,6 +76,7 @@ class Example(QtGui.QMainWindow):
         mainwidget.setLayout(self.maingrid)
         self.setCentralWidget(mainwidget)
         self.maingrid.setRowStretch(1, 1)
+        self.maingrid.setColumnStretch(0, 1)
 
         # 顶部窗体
         self.topwiget = QtGui.QWidget()
@@ -115,11 +116,21 @@ class Example(QtGui.QMainWindow):
 
     def cuisinelist(self):
         self.inibodywiget()
-        self.tablewiget = QtGui.QTableWidget(100, 13)
-        self.bodygrid.addWidget(self.tablewiget, 0, 0)
 
+        con = sqlite3.connect("llcy")
+        cur = con.cursor()
+        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
+        # sql='SELECT * FROM "fairy_info";'
+        cur.execute(sql)
+        info = cur.fetchall()
+        rowcount = len(info)
+
+        self.tablewiget = QtGui.QTableWidget(rowcount, 13)
+        self.bodygrid.addWidget(self.tablewiget, 0, 0)
+        self.bodygrid.setColumnStretch(0, 1)
+        self.bodygrid.setRowStretch(0, 1)
         self.tablewiget.itemClicked.connect(self.fortest)  # 表格信号
-        self.tablewiget.horizontalHeader().sectionClicked.connect(self.fortest2)  # 表头信号
+        # self.tablewiget.horizontalHeader().sectionClicked.connect(self.fortest2)  # 表头信号
 
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
@@ -137,10 +148,11 @@ class Example(QtGui.QMainWindow):
         self.lbp.setPixmap(QtGui.QPixmap("bmf_n.png"))
         self.tablewiget.setCellWidget(0, 0, self.lbp)
 
-        # self.tablewiget.horizontalHeader().setStretchLastSection(True)
+        self.tablewiget.horizontalHeader().setStretchLastSection(True)
         # self.tablewiget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-        self.tablewiget.verticalHeader().setStretchLastSection(True)
-        self.tablewiget.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        # self.tablewiget.columnResized(3,3,3)
+        # self.tablewiget.verticalHeader().setStretchLastSection(True)
+        # self.tablewiget.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         # self.tablewiget.resizeRowsToContents()
         # self.tablewiget.resizeColumnsToContents()
@@ -148,24 +160,21 @@ class Example(QtGui.QMainWindow):
         # self.tablewiget.rowResized(1,1,1)
 
         self.tablewiget.setColumnWidth(0, 200)
-        con = sqlite3.connect("llcy")
-        cur = con.cursor()
-        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
-        # sql='SELECT * FROM "fairy_info";'
-        cur.execute(sql)
-        a = cur.fetchall()
-        nub = 1
-        for i in a[0]:
-            print i
-            if type(i) == int:
-                info = str(i)
-            else:
-                info = i
-            self.newItem = QtGui.QTableWidgetItem(info)
-            self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-            self.tablewiget.setItem(0, nub, self.newItem)
-            nub += 1
-            self.newItem.setWhatsThis(info)
+
+        rowindex=0
+        for i in info:
+            columnindex = 1
+            for x in i:
+                if type(x) == int:
+                    info = str(x)
+                else:
+                    info = x
+                self.newItem = QtGui.QTableWidgetItem(info)
+                self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+                self.tablewiget.setItem(rowindex, columnindex, self.newItem)
+                columnindex += 1
+                self.newItem.setWhatsThis(info)
+            rowindex += 1
 
         self.wigetIndex = [self.tablewiget]
         # self.tablewiget.cellClicked.connect(self.fortest)
@@ -259,7 +268,7 @@ class Example(QtGui.QMainWindow):
         print a, info
 
     def fortest2(self):
-        a = self.tablewiget.sortByColumn(1)
+        # a = self.tablewiget.sortByColumn(1)
         a = 2
         print a
 
