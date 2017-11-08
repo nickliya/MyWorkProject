@@ -41,6 +41,7 @@
         <list>
           <option value="selenium.common" />
           <option value="int.*" />
+          <option value="PyQt4.QtCore" />
         </list>
       </option>
     </inspection_tool>
