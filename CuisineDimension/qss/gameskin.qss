@@ -1,0 +1,42 @@
+QWidget#mainwindow{
+background-repeat: no-repeat;
+background-position: center;
+border-image: url(ui/homeskin/home_1.png);
+    }
+QWidget#aboutLeft{
+
+    }
+QPushButton{
+    color:floralwhite;
+    font:75 20pt "Microsoft YaHei";
+    border:none;
+    border-image:url(ui/menu/start_bg.png)
+    }
+QPushButton:hover{
+    color:#333333;
+    }
+QLabel#aboutName{
+    color:#FF3366;
+    font:75 30pt "Microsoft YaHei"
+    }
+QTreeWidget{
+    color:floralwhite;
+    border:none;
+    font:75 16pt "Microsoft YaHei";
+    background-repeat: no-repeat;
+    background-position: center;
+    border-image: url(bg/bg.png);
+    }
+QTableWidget{
+    color:floralwhite;
+    border:none;
+    background-color: rgba(255,0,0,20)
+}
+QHeaderView:section{
+    background: transparent;
+    }
+QTextEdit{
+    font:75 10pt "Microsoft YaHei";
+    background-color: rgba(255,0,0,20);
+    border:none
+    }

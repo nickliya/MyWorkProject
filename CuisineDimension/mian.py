@@ -28,20 +28,24 @@ class Example(QtGui.QMainWindow):
         self.move(qr.topLeft())
 
     def initUI(self):
-        self.resize(1280, 650)
+        self.resize(1180, 650)
         self.center()
         self.setWindowTitle(u'次元料理 version:2017.11.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
+        self.setObjectName("mainwindow")
 
-        styleqss = open("qss/style.qss", "r")
+        styleqss = open("qss/gameskin.qss", "r")
         styleinfo = styleqss.read()
         self.setStyleSheet(styleinfo)
         styleqss.close()
 
-        # self.setAttribute()
+        # palette添加背景
+        # self.setAutoFillBackground(True)
         # palette1 = QtGui.QPalette()
         # # palette1.setColor(self.backgroundRole(), QtGui.QColor(50, 50, 50, 80))  # 设置背景颜色
-        # palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('ui/btn_add.png')))   # 设置背景图片
+        # pix = QtGui.QPixmap('ui/homeskin/home_1.png')
+        # pix = pix.scaled(self.width(), self.height()).scaled(QtCore.Qt.IgnoreAspectRatio)
+        # palette1.setBrush(self.backgroundRole(), QtGui.QBrush(pix))   # 设置背景图片
         # self.setPalette(palette1)
 
         self.setWindowOpacity(0.96)
@@ -56,6 +60,7 @@ class Example(QtGui.QMainWindow):
 
         self.bglabel = QtGui.QLabel()
 
+        self.groupbtn.clicked.connect(self.maniView)
         self.charactorbtn.clicked.connect(self.cuisinelist)
         self.equipbtn.clicked.connect(self.equiplist)
         self.aboutbtn.clicked.connect(self.aboutinfo)
@@ -103,6 +108,10 @@ class Example(QtGui.QMainWindow):
         else:
             for i in self.wigetIndex:
                 i.deleteLater()
+
+    def maniView(self):
+        self.inibodywiget()
+        self.wigetIndex = None
 
     def cuisinelist(self):
         self.inibodywiget()
@@ -180,6 +189,7 @@ class Example(QtGui.QMainWindow):
         self.rightgrid = QtGui.QGridLayout()
         self.leftwiget.setLayout(self.leftgrid)
         self.rightwiget.setLayout(self.rightgrid)
+        self.leftwiget.setObjectName("aboutLeft")
 
         # 左框架
         self.infolaber = QtGui.QLabel(u"更新历史")
@@ -191,6 +201,7 @@ class Example(QtGui.QMainWindow):
         self.tree.headerItem().setBackgroundColor(0, QtGui.QColor(255, 0, 0))
         self.tree.setHeaderHidden(True)
         self.leftgrid.addWidget(self.tree, 1, 0)
+        self.tree.setWindowOpacity(0.1)
 
         # 设置root为self.tree的子树，所以root就是跟节点  
         root = QtGui.QTreeWidgetItem(self.tree)
@@ -205,20 +216,37 @@ class Example(QtGui.QMainWindow):
         # child4.setText(1, 'name4')
 
         # 右框架
+        self.text=QtGui.QTextEdit()
+        # self.text.setAttribute(QtCore.Qt.WA_TranslucentBackground,True)
 
-        self.text=QtGui.QTextBrowser()
-        html = open("view/aboutView.html","r")
-        htmlinfo = html.read()
-        html.close()
-        self.text.setHtml(htmlinfo.decode("utf-8"))
-        self.text.setAlignment(QtCore.Qt.AlignHCenter)
+        # html = open("view/aboutView.html","r")
+        # htmlinfo = html.read()
+        # html.close()
+        # self.text.setHtml(htmlinfo.decode("utf-8"))
+
+        self.text.setHtml("<img src='ui/yzs.png'>")
+        self.text.setAlignment(QtCore.Qt.AlignCenter)
+        self.text.append(u"\n欢迎加入我们\nQQ群:xxxxxx\n")
+        self.text.setTextColor(QtGui.QColor("#FF3366"))
+        self.text.setFontPointSize(20)
+        self.text.append(u"界面设计")
+        self.text.setFontPointSize(14)
+        self.text.append(u"XXX\n")
+        self.text.setFontPointSize(20)
+        self.text.append(u"开发制作")
+        self.text.setFontPointSize(14)
+        self.text.append(u"XXX\n")
+        self.text.setFontPointSize(20)
+        self.text.append(u"数据")
+        self.text.setFontPointSize(14)
+        self.text.append(u"XXX\n")
+        self.text.setFontPointSize(20)
+        self.text.append(u"美工/UI")
+        self.text.setFontPointSize(14)
+        self.text.append(u"XXX\n")
+        self.text.setAlignment(QtCore.Qt.AlignCenter)
+
         self.rightgrid.addWidget(self.text, 0, 0)
-
-        palette1 = QtGui.QPalette()
-        # palette1.setColor(self.backgroundRole(), QtGui.QColor(50, 50, 50, 80))  # 设置背景颜色
-        palette1.setBrush(self.backgroundRole(), QtGui.QBrush(QtGui.QPixmap('ui/btn_add.png')))   # 设置背景图片
-        self.text.setPalette(palette1)
-
         self.wigetIndex = [self.leftwiget, self.rightwiget]
 
     def fortest(self):
