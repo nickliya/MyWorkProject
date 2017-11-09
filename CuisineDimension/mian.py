@@ -178,6 +178,11 @@ class Example(QtGui.QMainWindow):
                     self.tablewiget.setCellWidget(rowindex, columnindex, self.lbp)
                     columnindex += 1
                     pass
+                elif columnindex == 3:
+                    self.lbp = QtGui.QLabel()
+                    self.lbp.setPixmap(QtGui.QPixmap('ui/hero/'+info+'.png'))
+                    self.tablewiget.setCellWidget(rowindex, columnindex, self.lbp)
+                    columnindex += 1
                 else:
                     self.newItem = QtGui.QTableWidgetItem(info)
                     self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
@@ -205,8 +210,8 @@ class Example(QtGui.QMainWindow):
         self.inibodywiget()
 
         # 设置左右框架
-        self.leftwiget=QtGui.QWidget()
-        self.rightwiget=QtGui.QWidget()
+        self.leftwiget = QtGui.QWidget()
+        self.rightwiget = QtGui.QWidget()
         self.bodygrid.addWidget(self.leftwiget, 0, 0)
         self.bodygrid.addWidget(self.rightwiget, 0, 1)
         self.leftgrid = QtGui.QGridLayout()
@@ -214,6 +219,7 @@ class Example(QtGui.QMainWindow):
         self.leftwiget.setLayout(self.leftgrid)
         self.rightwiget.setLayout(self.rightgrid)
         self.leftwiget.setObjectName("aboutLeft")
+        self.leftwiget.setObjectName("aboutRight")
 
         # 左框架
         self.infolaber = QtGui.QLabel(u"更新历史")
@@ -241,16 +247,10 @@ class Example(QtGui.QMainWindow):
 
         # 右框架
         self.text=QtGui.QTextEdit()
-
-        # html = open("view/aboutView.html","r")
-        # htmlinfo = html.read()
-        # html.close()
-        # self.text.setHtml(htmlinfo.decode("utf-8"))
-
         self.text.setHtml("<img src='ui/yzs.png'>")
         self.text.setAlignment(QtCore.Qt.AlignCenter)
         self.text.append(u"\n欢迎加入我们\nQQ群:xxxxxx\n")
-        self.text.setTextColor(QtGui.QColor("#FF3366"))
+        self.text.setTextColor(QtGui.QColor("#FFF3EE"))
         self.text.setFontPointSize(20)
         self.text.append(u"界面设计")
         self.text.setFontPointSize(14)
@@ -266,7 +266,7 @@ class Example(QtGui.QMainWindow):
         self.text.setFontPointSize(20)
         self.text.append(u"美工/UI")
         self.text.setFontPointSize(14)
-        self.text.append(u"XXX\n")
+        self.text.append(u"期待您的加入\n")
         self.text.setAlignment(QtCore.Qt.AlignCenter)
 
         self.rightgrid.addWidget(self.text, 0, 0)
@@ -275,17 +275,17 @@ class Example(QtGui.QMainWindow):
     def fortest(self):
         indexRow = self.tablewiget.currentRow()
         slnumb = self.tablewiget.item(indexRow, 1).text()
-        sql = 'SELECT URL_LH,URL_LH2 FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
+        sql = 'SELECT URL_LH,URL_LH2,SL_NAME,SL_LEVEL,TJ_HP,TJ_GJ,TJ_GJ,TJ_MZ,TJ_FY,TJ_SB FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
         info = ToolFunction.getsqliteInfo(sql)
         print info
 
         self.inibodywiget()
 
-        self.detailFrame = QtGui.QWidget()
+        self.detailWidget = QtGui.QWidget()
         self.detailFrameGrid = QtGui.QGridLayout()
-        self.detailFrame.setLayout(self.detailFrameGrid)
-        self.bodygrid.addWidget(self.detailFrame, 0, 0)
-        self.detailFrame.setObjectName("SLdetail")
+        self.detailWidget.setLayout(self.detailFrameGrid)
+        self.bodygrid.addWidget(self.detailWidget, 0, 0)
+        self.detailWidget.setObjectName("SLdetail")
         self.detailFrameGrid.setColumnStretch(0, 1)
         self.detailFrameGrid.setColumnStretch(1, 1)
 
@@ -297,13 +297,45 @@ class Example(QtGui.QMainWindow):
                      "QLabel#lhLable::hover{border-image: url("+info[0][1]+");}"
         self.cuisineLable.setStyleSheet(stylesheet)
 
-        # 右边列表
-        self.attributeList = QtGui.QListWidget()
+        # 右边窗体
+        self.attributeList = QtGui.QTableWidget(9, 2)
         self.attributeList.setObjectName("sl_Attri")
         self.detailFrameGrid.addWidget(self.attributeList, 0, 1)
-        # self.attributeList.setStyleSheet("background-color: rgba(25,20,20);border:none")
+        self.attributeList.verticalHeader().setVisible(False)
+        self.attributeList.horizontalHeader().setVisible(False)
 
-        self.wigetIndex = [self.cuisineLable, self.attributeList]
+        self.attributeList.setSpan(0, 0, 1, 2)
+        self.attributeList.setSpan(1, 0, 1, 2)
+        self.newItem = QtGui.QTableWidgetItem(u'邦宝')
+        self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+        self.attributeList.setItem(0, 0, self.newItem)
+
+        self.lbp2 = QtGui.QLabel()
+        self.lbp2.setPixmap(QtGui.QPixmap('ui/hero/star.png'))
+        self.attributeList.setCellWidget(1,0, self.lbp2)
+
+        self.slDetailEdit(u'技能', info[0][4], 2, 0)
+        self.slDetailEdit(u'装盘', info[0][4], 2, 1)
+        self.slDetailEdit(u'生命', info[0][4], 3, 0)
+        self.slDetailEdit(u'攻击', info[0][5], 3, 1)
+        self.slDetailEdit(u'攻速', info[0][6], 4, 0)
+        self.slDetailEdit(u'命中', info[0][7], 4, 1)
+        self.slDetailEdit(u'防御', info[0][8], 5, 0)
+        self.slDetailEdit(u'闪避', info[0][9], 5, 1)
+
+        self.wigetIndex = [self.detailWidget]
+
+    def slDetailEdit(self, attr, info, row, column):
+        """食灵属性编辑"""
+        msg = attr + "  " + info
+        iconUrl = {u"技能": 'ui/hero/skill.png', u"装盘": 'ui/hero/skill.png', u"生命": 'ui/hero/hp.png',
+                   u"攻击": 'ui/hero/atk.png', u"攻速": 'ui/hero/atkSpeed.png', u"命中": 'ui/hero/hit.png',
+                   u"防御": 'ui/hero/phyDef.png', u"闪避": 'ui/hero/miss.png',}
+        self.newItem = QtGui.QTableWidgetItem(msg)
+        self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.newItem.setIcon(QtGui.QIcon(iconUrl[attr]))  # 不允许点击表格内容
+        self.attributeList.setItem(row, column, self.newItem)
 
     def fortest2(self):
         # a = self.tablewiget.sortByColumn(1)

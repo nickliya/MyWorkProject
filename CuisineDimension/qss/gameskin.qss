@@ -3,7 +3,9 @@ QWidget#mainwindow{
     background-position: center;
     border-image: url(ui/homeskin/home_1.png);
     }
-QWidget#aboutLeft{
+
+QWidget#aboutRight{
+    background-color: rgba(255,0,0,0);
     }
 QWidget#SLdetail{
     background-color: rgba(25,20,20)
@@ -26,10 +28,10 @@ QPushButton:hover{
 
 QLabel#aboutName{
     color:#FF3366;
-    font:75 30pt "Microsoft YaHei"
+    font:75 30pt "Microsoft YaHei";
     }
 QLabel#lhLable{
-    background-color: rgba(255,0,0,0)
+    background-color: rgba(255,0,0,0);
     }
 
 QTreeWidget{
@@ -47,17 +49,8 @@ QTableWidget{
     background-color: rgba(25,20,20);
 }
 
-QHeaderView:{
-    background: transparent;
-    height:100%
-    }
-
 QTextEdit{
     font:75 10pt "Microsoft YaHei";
     background-color: rgba(255,0,0,20);
     border:none
-    }
-
-QFrame{
-    background-color: rgba(25,20,20);
     }
