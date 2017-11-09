@@ -1,11 +1,19 @@
 QWidget#mainwindow{
-background-repeat: no-repeat;
-background-position: center;
-border-image: url(ui/homeskin/home_1.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-image: url(ui/homeskin/home_1.png);
     }
 QWidget#aboutLeft{
-
     }
+QWidget#SLdetail{
+    background-color: rgba(25,20,20)
+    }
+
+QListWidget#sl_Attri{
+    background-color: rgba(255,0,0,0);
+    border:none
+    }
+
 QPushButton{
     color:floralwhite;
     font:75 20pt "Microsoft YaHei";
@@ -15,10 +23,15 @@ QPushButton{
 QPushButton:hover{
     color:#333333;
     }
+
 QLabel#aboutName{
     color:#FF3366;
     font:75 30pt "Microsoft YaHei"
     }
+QLabel#lhLable{
+    background-color: rgba(255,0,0,0)
+    }
+
 QTreeWidget{
     color:floralwhite;
     border:none;
@@ -27,16 +40,24 @@ QTreeWidget{
     background-position: center;
     border-image: url(bg/bg.png);
     }
+
 QTableWidget{
     color:floralwhite;
     border:none;
-    background-color: rgba(25,20,20)
+    background-color: rgba(25,20,20);
 }
-QHeaderView:section{
+
+QHeaderView:{
     background: transparent;
+    height:100%
     }
+
 QTextEdit{
     font:75 10pt "Microsoft YaHei";
     background-color: rgba(255,0,0,20);
     border:none
+    }
+
+QFrame{
+    background-color: rgba(25,20,20);
     }

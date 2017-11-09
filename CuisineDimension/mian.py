@@ -19,6 +19,7 @@ class Example(QtGui.QMainWindow):
         self.initUI()
         self.iniGrid()
         self.wigetIndex = None
+        self.ToolFun = ToolFunction()
 
     def center(self):
         """控件居中"""
@@ -97,8 +98,7 @@ class Example(QtGui.QMainWindow):
         self.bodygrid = QtGui.QGridLayout()
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
-
-        # self.bodygrid.setRowStretch(0, 1)
+        self.bodygrid.setRowStretch(0, 1)
         self.bodygrid.setColumnStretch(0, 1)
         self.bodywiget.setWindowOpacity(1)
 
@@ -119,23 +119,24 @@ class Example(QtGui.QMainWindow):
 
         con = sqlite3.connect("llcy")
         cur = con.cursor()
-        sql='SELECT SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
+        sql = 'SELECT URL_TX,SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
         # sql='SELECT * FROM "fairy_info";'
         cur.execute(sql)
         info = cur.fetchall()
+        cur.close()
         rowcount = len(info)
 
-        self.tablewiget = QtGui.QTableWidget(rowcount, 13)
+        self.tablewiget = QtGui.QTableWidget(rowcount, 22)
         self.bodygrid.addWidget(self.tablewiget, 0, 0)
-        self.bodygrid.setColumnStretch(0, 1)
-        self.bodygrid.setRowStretch(0, 1)
+
         self.tablewiget.itemClicked.connect(self.fortest)  # 表格信号
         # self.tablewiget.horizontalHeader().sectionClicked.connect(self.fortest2)  # 表头信号
 
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
-        self.tablewiget.setHorizontalHeaderLabels([u"index", u"No", u"食灵", u"类型", u"生命", u"攻击", u"防御", u"命中", u"闪避",
-                                                   u"暴击", u"攻速", u"石油", u"魔力"])
+        self.tablewiget.setHorizontalHeaderLabels([u"头像", u"No", u"食灵", u"类型", u"生命", u"攻击", u"防御", u"命中", u"闪避",
+                                                   u"暴击", u"攻速", u"石油", u"魔力", u"满生命", u"满攻击", u"满防御", u"满命中", u"满闪避",
+                                                   u"满暴击", u"满攻速", u"满石油", u"满魔力"])
 
         for x in range(self.tablewiget.columnCount()):
             headItem = self.tablewiget.horizontalHeaderItem(x)  # 获得水平方向表头的Item对象
@@ -144,36 +145,45 @@ class Example(QtGui.QMainWindow):
 
             # self.tablewiget.setShowGrid(False)  # 设置网格线
 
-        self.lbp = QtGui.QLabel()
-        self.lbp.setPixmap(QtGui.QPixmap("bmf_n.png"))
-        self.tablewiget.setCellWidget(0, 0, self.lbp)
+        # self.lbp = QtGui.QLabel()
+        # self.lbp.setPixmap(QtGui.QPixmap(U"card/cutin/bmf_n.png"))
+        # self.tablewiget.setCellWidget(0, 0, self.lbp)
 
-        self.tablewiget.horizontalHeader().setStretchLastSection(True)
+        # self.tablewiget.horizontalHeader().setStretchLastSection(True)
         # self.tablewiget.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-        # self.tablewiget.columnResized(3,3,3)
         # self.tablewiget.verticalHeader().setStretchLastSection(True)
         # self.tablewiget.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         # self.tablewiget.resizeRowsToContents()
-        # self.tablewiget.resizeColumnsToContents()
-        # self.tablewiget.columnResized(1,1,1)
-        # self.tablewiget.rowResized(1,1,1)
+        self.tablewiget.resizeColumnsToContents()
+        # self.tablewiget.resizeColumnToContents(1)
+        # self.tablewiget.resizeColumnToContents(3)
+        # self.tablewiget.resizeColumnToContents(4)
 
         self.tablewiget.setColumnWidth(0, 200)
+        self.tablewiget.setColumnWidth(2, 160)
 
         rowindex=0
         for i in info:
-            columnindex = 1
+            columnindex = 0
             for x in i:
                 if type(x) == int:
                     info = str(x)
                 else:
                     info = x
-                self.newItem = QtGui.QTableWidgetItem(info)
-                self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-                self.tablewiget.setItem(rowindex, columnindex, self.newItem)
-                columnindex += 1
-                self.newItem.setWhatsThis(info)
+
+                if columnindex == 0:
+                    self.lbp = QtGui.QLabel()
+                    self.lbp.setPixmap(QtGui.QPixmap(info))
+                    self.tablewiget.setCellWidget(rowindex, columnindex, self.lbp)
+                    columnindex += 1
+                    pass
+                else:
+                    self.newItem = QtGui.QTableWidgetItem(info)
+                    self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+                    self.tablewiget.setItem(rowindex, columnindex, self.newItem)
+                    columnindex += 1
+                    self.newItem.setWhatsThis(info)
             rowindex += 1
 
         self.wigetIndex = [self.tablewiget]
@@ -263,14 +273,56 @@ class Example(QtGui.QMainWindow):
         self.wigetIndex = [self.leftwiget, self.rightwiget]
 
     def fortest(self):
-        a = self.tablewiget.currentRow()
-        info = self.tablewiget.item(a, 1).text()
-        print a, info
+        indexRow = self.tablewiget.currentRow()
+        slnumb = self.tablewiget.item(indexRow, 1).text()
+        sql = 'SELECT URL_LH,URL_LH2 FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
+        info = ToolFunction.getsqliteInfo(sql)
+        print info
+
+        self.inibodywiget()
+
+        self.detailFrame = QtGui.QWidget()
+        self.detailFrameGrid = QtGui.QGridLayout()
+        self.detailFrame.setLayout(self.detailFrameGrid)
+        self.bodygrid.addWidget(self.detailFrame, 0, 0)
+        self.detailFrame.setObjectName("SLdetail")
+        self.detailFrameGrid.setColumnStretch(0, 1)
+        self.detailFrameGrid.setColumnStretch(1, 1)
+
+        # 左边贴图
+        self.cuisineLable = QtGui.QLabel()
+        self.cuisineLable.setObjectName("lhLable")
+        self.detailFrameGrid.addWidget(self.cuisineLable, 0, 0)
+        stylesheet = "QLabel#lhLable{border-image: url("+info[0][0]+");}" + \
+                     "QLabel#lhLable::hover{border-image: url("+info[0][1]+");}"
+        self.cuisineLable.setStyleSheet(stylesheet)
+
+        # 右边列表
+        self.attributeList = QtGui.QListWidget()
+        self.attributeList.setObjectName("sl_Attri")
+        self.detailFrameGrid.addWidget(self.attributeList, 0, 1)
+        # self.attributeList.setStyleSheet("background-color: rgba(25,20,20);border:none")
+
+        self.wigetIndex = [self.cuisineLable, self.attributeList]
 
     def fortest2(self):
         # a = self.tablewiget.sortByColumn(1)
         a = 2
         print a
+
+
+class ToolFunction:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def getsqliteInfo(sql):
+        con = sqlite3.connect("llcy")
+        cur = con.cursor()
+        cur.execute(sql)
+        info = cur.fetchall()
+        cur.close()
+        return info
 
 
 def main():
