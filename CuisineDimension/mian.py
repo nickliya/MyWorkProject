@@ -129,7 +129,7 @@ class Example(QtGui.QMainWindow):
         self.tablewiget = QtGui.QTableWidget(rowcount, 22)
         self.bodygrid.addWidget(self.tablewiget, 0, 0)
 
-        self.tablewiget.itemClicked.connect(self.fortest)  # 表格信号
+        self.tablewiget.itemClicked.connect(self.slDetail)  # 表格信号
         # self.tablewiget.horizontalHeader().sectionClicked.connect(self.fortest2)  # 表头信号
 
         # self.tablewiget.verticalHeader().setVisible(False)
@@ -192,7 +192,7 @@ class Example(QtGui.QMainWindow):
             rowindex += 1
 
         self.wigetIndex = [self.tablewiget]
-        # self.tablewiget.cellClicked.connect(self.fortest)
+        # self.tablewiget.cellClicked.connect(self.slDetail)
 
     def equiplist(self):
         self.inibodywiget()
@@ -272,7 +272,7 @@ class Example(QtGui.QMainWindow):
         self.rightgrid.addWidget(self.text, 0, 0)
         self.wigetIndex = [self.leftwiget, self.rightwiget]
 
-    def fortest(self):
+    def slDetail(self):
         indexRow = self.tablewiget.currentRow()
         slnumb = self.tablewiget.item(indexRow, 1).text()
         sql = 'SELECT URL_LH,URL_LH2,SL_NAME,SL_LEVEL,TJ_HP,TJ_GJ,TJ_GJ,TJ_MZ,TJ_FY,TJ_SB FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
@@ -337,10 +337,8 @@ class Example(QtGui.QMainWindow):
         self.newItem.setIcon(QtGui.QIcon(iconUrl[attr]))  # 不允许点击表格内容
         self.attributeList.setItem(row, column, self.newItem)
 
-    def fortest2(self):
-        # a = self.tablewiget.sortByColumn(1)
-        a = 2
-        print a
+    def fortest(self):
+        pass
 
 
 class ToolFunction:
