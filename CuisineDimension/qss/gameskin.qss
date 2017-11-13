@@ -21,14 +21,21 @@ QListWidget#sl_Attri{
     border:none
     }
 
-QPushButton{
+QPushButton#headbtn{
     color:floralwhite;
     font:75 20pt "Microsoft YaHei";
     border:none;
     border-image:url(ui/menu/start_bg.png)
     }
-QPushButton:hover{
+QPushButton#headbtn:hover{
     color:#333333;
+    }
+
+QPushButton#sybtn{
+    color:floralwhite;
+    border-image:url(ui/main/frame.png);
+    background-repeat: no-repeat;
+    font:75 14pt "Microsoft YaHei";
     }
 
 QLabel#aboutName{
@@ -37,6 +44,12 @@ QLabel#aboutName{
     }
 QLabel#lhLable{
     background-color: rgba(255,0,0,0);
+    }
+
+QLabel#syLabel{
+    background-color: rgba(255,0,0,20);
+    color:floralwhite;
+    font:1000 18pt "Microsoft YaHei";
     }
 
 QTreeWidget{
@@ -54,9 +67,17 @@ QTableWidget{
     background-color: rgba(25,20,20);
 }
 
-QTextEdit{
+
+QTextEdit#rightInfo{
     font:75 10pt "Microsoft YaHei";
     background-color: rgba(255,0,0,20);
+    border:none
+    }
+
+QTextBrowser#syText{
+    color:floralwhite;
+    font:75 16pt "Microsoft YaHei";
+    background-color: rgba(255,0,0,10);
     border:none
     }
 

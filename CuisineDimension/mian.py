@@ -52,12 +52,19 @@ class Example(QtGui.QMainWindow):
         self.setWindowOpacity(0.96)
 
         self.groupbtn = QtGui.QPushButton(u"首页")
+        self.groupbtn.setObjectName("headbtn")
         self.charactorbtn = QtGui.QPushButton(u"食灵")
+        self.charactorbtn.setObjectName("headbtn")
         self.equipbtn = QtGui.QPushButton(u"装备")
+        self.equipbtn.setObjectName("headbtn")
         self.projectbtn = QtGui.QPushButton(u"装盘模拟")
+        self.projectbtn.setObjectName("headbtn")
         self.cvbtn = QtGui.QPushButton(u"声优")
+        self.cvbtn.setObjectName("headbtn")
         self.damagebtn = QtGui.QPushButton(u"伤害计算")
+        self.damagebtn.setObjectName("headbtn")
         self.aboutbtn = QtGui.QPushButton(u"关于")
+        self.aboutbtn.setObjectName("headbtn")
 
         self.bglabel = QtGui.QLabel()
 
@@ -119,6 +126,38 @@ class Example(QtGui.QMainWindow):
         self.sywiget = QtGui.QWidget()
         self.sywiget.setObjectName("main_sy")  # 首页
         self.bodygrid.addWidget(self.sywiget, 0, 0)
+        self.sygrid = QtGui.QGridLayout()
+        self.sywiget.setLayout(self.sygrid)
+
+
+        self.syLabel = QtGui.QLabel(u"使用说明")
+        self.syLabel.setObjectName("syLabel")
+        self.syLabel.setMaximumHeight(100)
+        self.syLabel.setAlignment(QtCore.Qt.AlignTop| QtCore.Qt.AlignHCenter)
+        self.sygrid.addWidget(self.syLabel, 0, 1, 1, 2)
+
+        def setsybtn(grid, btnName, row, column):
+            """创建首页btn"""
+            sybtn = QtGui.QPushButton(btnName)
+            sybtn.setFixedSize(100, 30)
+            sybtn.setObjectName("sybtn")
+            grid.addWidget(sybtn, row, column)
+            return sybtn
+
+        self.sybtn1 = setsybtn(self.sygrid, u"关于1", 1, 0)
+        self.sybtn2 = setsybtn(self.sygrid, u"关于2", 1, 1)
+        self.sybtn3 = setsybtn(self.sygrid, u"关于3", 1, 2)
+        self.sybtn4 = setsybtn(self.sygrid, u"关于4", 1, 3)
+
+        self.syText = QtGui.QTextBrowser()
+        self.syText.setObjectName("syText")
+        self.syText.setFixedHeight(390)
+        self.syText.append(u"\n\n\n◆任何用于商业行为将和本人无关")
+        self.syText.append(u"◆任何用于商业行为将和本人无关")
+        self.sygrid.addWidget(self.syText, 3, 0, 1, 4)
+
+        # self.sygrid.setRowStretch(1, 6)
+        # self.sygrid.setRowStretch(2, 2)
 
         self.wigetIndex = [self.sywiget]
 
@@ -237,7 +276,6 @@ class Example(QtGui.QMainWindow):
         self.equipTzList.itemClicked.connect(self.equipEdit)
         self.bodygrid.addWidget(self.equipTzList, 0, 0, 0, 1)
 
-        self.bodygrid.setRowStretch(1, 1)
         self.bodygrid.setColumnStretch(0, 0)
         self.bodygrid.setColumnStretch(1, 1)
 
@@ -332,6 +370,7 @@ class Example(QtGui.QMainWindow):
 
         # 右框架
         self.text=QtGui.QTextEdit()
+        self.text.setObjectName("rightInfo")
         self.text.setHtml("<img src='ui/yzs.png'>")
         self.text.setAlignment(QtCore.Qt.AlignCenter)
         self.text.append(u"\n欢迎加入我们\nQQ群:xxxxxx\n")
