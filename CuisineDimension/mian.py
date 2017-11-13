@@ -111,7 +111,16 @@ class Example(QtGui.QMainWindow):
 
     def maniView(self):
         self.inibodywiget()
-        self.wigetIndex = None
+        self.bodygrid.setRowStretch(0, 0)
+        self.bodygrid.setRowStretch(1, 0)
+        self.bodygrid.setColumnStretch(0, 0)
+        self.bodygrid.setColumnStretch(1, 0)
+
+        self.sywiget = QtGui.QWidget()
+        self.sywiget.setObjectName("main_sy")  # 首页
+        self.bodygrid.addWidget(self.sywiget, 0, 0)
+
+        self.wigetIndex = [self.sywiget]
 
     def cuisinelist(self):
         self.inibodywiget()
@@ -203,17 +212,30 @@ class Example(QtGui.QMainWindow):
         sql = 'SELECT TZ_NAME FROM "equip_suit";'
         info = ToolFunction.getsqliteInfo(sql)
 
-        self.tablewiget = QtGui.QTableWidget(3,1)
+        self.tablewiget = QtGui.QTableWidget(3, 1)
+        self.tablewiget.horizontalHeader().setStretchLastSection(True)
+        self.tablewiget.verticalHeader().setStretchLastSection(True)
+        self.tablewiget.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.tablewiget.setFixedHeight(100)
+        self.tablewiget.setHorizontalHeaderLabels([u"套装属性"])
+        self.tablewiget.verticalHeader().setVisible(False)
         self.bodygrid.addWidget(self.tablewiget, 0, 1)
-        self.tablewiget2 = QtGui.QTableWidget(20,5)
+
+        self.tablewiget2 = QtGui.QTableWidget(10, 5)
+        self.tablewiget2.setHorizontalHeaderLabels([u"名称", u"品质", u"类型", u"基础属性1", u"基础属性2"])
+        self.tablewiget2.verticalHeader().setVisible(False)
+
+        self.tablewiget2.verticalHeader().setStretchLastSection(True)
+        self.tablewiget2.verticalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.bodygrid.addWidget(self.tablewiget2, 1, 1)
-        equipTzList = QtGui.QListWidget()
+        self.equipTzList = QtGui.QListWidget()
         for tzNameIndex in info:
             newItem = QtGui.QListWidgetItem(tzNameIndex[0])
             newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-            equipTzList.addItem(newItem)
+            self.equipTzList.addItem(newItem)
 
-        self.bodygrid.addWidget(equipTzList, 0, 0, 0, 1)
+        self.equipTzList.itemClicked.connect(self.equipEdit)
+        self.bodygrid.addWidget(self.equipTzList, 0, 0, 0, 1)
 
         self.bodygrid.setRowStretch(1, 1)
         self.bodygrid.setColumnStretch(0, 0)
@@ -221,9 +243,49 @@ class Example(QtGui.QMainWindow):
 
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
+
+        self.wigetIndex = [self.tablewiget, self.tablewiget2, self.equipTzList]
+
+    def equipEdit(self):
+        listItemName = unicode(self.equipTzList.currentItem().text())
+        sql = "select TZ_ATTR_FIR, TZ_ATTR_SEC, TZ_ATTR_TRI, b1.code_name, b2.code_name, s.tz_name||e_type_sub equip_name, e_attr_fir, e_attr_sec from equip_info t, equip_suit s, (select code, code_name from bas_code where code_id = 'equip_type') b2, (select code, code_name from bas_code where code_id = 'equip_level') b1 where t.e_level = b1.code and t.e_type = b2.code and t.e_tz = s.tz_no and s.TZ_NAME = '"+listItemName+"' order by t.E_TYPE"
+        datainfo = ToolFunction.getsqliteInfo(sql)
+        # print datainfo
+        self.tablewiget.clear()
+        self.tablewiget2.clear()
         self.tablewiget.setHorizontalHeaderLabels([u"套装属性"])
-        self.tablewiget2.setHorizontalHeaderLabels([u"名称", u"品质", u"类型" , u"基础属性1", u"基础属性2"])
-        self.wigetIndex = [self.tablewiget, self.tablewiget2, equipTzList]
+        self.tablewiget2.setHorizontalHeaderLabels([u"名称", u"品质", u"类型", u"基础属性1", u"基础属性2"])
+
+        typeIndex={u"食器":1, u"厨具":2, u"餐具":3}
+        rowindex = 0
+        for rowData in datainfo:
+            columnindex = 0
+            for columnData in rowData:
+                if type(columnData) == int:
+                    info = str(columnData)
+                else:
+                    info = columnData
+
+                if columnindex < 3:
+                    self.newItem = QtGui.QTableWidgetItem(info)
+                    # self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+                    self.tablewiget.setItem(columnindex, 0, self.newItem)
+                    self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                    columnindex += 1
+                elif columnindex == 4:
+                    self.newItem = QtGui.QTableWidgetItem(info)
+                    self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+                    self.tablewiget2.setItem(rowindex, columnindex-3, self.newItem)
+                    self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                    self.newItem.setIcon(QtGui.QIcon('ui/equip/'+str(typeIndex[info])+'.png'))
+                    columnindex += 1
+                else:
+                    self.newItem = QtGui.QTableWidgetItem(info)
+                    self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+                    self.tablewiget2.setItem(rowindex, columnindex-3, self.newItem)
+                    self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+                    columnindex += 1
+            rowindex += 1
 
     def aboutinfo(self):
         self.inibodywiget()
@@ -299,6 +361,7 @@ class Example(QtGui.QMainWindow):
         indexRow = self.tablewiget.currentRow()
         slnumb = self.tablewiget.item(indexRow, 1).text()
         sql = 'SELECT URL_LH,URL_LH2,SL_NAME,SL_LEVEL,TJ_HP,TJ_GJ,TJ_GJ,TJ_MZ,TJ_FY,TJ_SB FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
+        print sql
         info = ToolFunction.getsqliteInfo(sql)
         print info
 

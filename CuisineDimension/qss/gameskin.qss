@@ -7,8 +7,13 @@ QWidget#mainwindow{
 QWidget#aboutRight{
     background-color: rgba(255,0,0,0);
     }
+
 QWidget#SLdetail{
     background-color: rgba(25,20,20)
+    }
+
+QWidget#main_sy{
+    border-image:url(ui/main/blackboard.png);
     }
 
 QListWidget#sl_Attri{
@@ -54,3 +59,12 @@ QTextEdit{
     background-color: rgba(255,0,0,20);
     border:none
     }
+
+QListWidget{
+    background-color: rgba(25,20,20);
+    font:10pt "Microsoft YaHei";
+    border:none;
+    color:floralwhite
+}
+QListWidget:Item{
+}
