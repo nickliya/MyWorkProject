@@ -98,8 +98,7 @@ class Example(QtGui.QMainWindow):
         self.bodygrid = QtGui.QGridLayout()
         self.bodywiget.setLayout(self.bodygrid)
         self.maingrid.addWidget(self.bodywiget, 1, 0)
-        self.bodygrid.setRowStretch(0, 1)
-        self.bodygrid.setColumnStretch(0, 1)
+        # self.bodygrid.setRowStretch(0, 1)
         self.bodywiget.setWindowOpacity(1)
 
     def inibodywiget(self):
@@ -116,6 +115,10 @@ class Example(QtGui.QMainWindow):
 
     def cuisinelist(self):
         self.inibodywiget()
+
+        self.bodygrid.setRowStretch(1, 0)
+        self.bodygrid.setColumnStretch(0, 1)
+        self.bodygrid.setColumnStretch(1, 0)
 
         con = sqlite3.connect("llcy")
         cur = con.cursor()
@@ -196,18 +199,38 @@ class Example(QtGui.QMainWindow):
 
     def equiplist(self):
         self.inibodywiget()
-        self.tablewiget = QtGui.QTableWidget(20,6)
-        self.bodygrid.addWidget(self.tablewiget, 0, 0)
+
+        sql = 'SELECT TZ_NAME FROM "equip_suit";'
+        info = ToolFunction.getsqliteInfo(sql)
+
+        self.tablewiget = QtGui.QTableWidget(3,1)
+        self.bodygrid.addWidget(self.tablewiget, 0, 1)
         self.tablewiget2 = QtGui.QTableWidget(20,5)
-        self.bodygrid.addWidget(self.tablewiget2, 1, 0)
+        self.bodygrid.addWidget(self.tablewiget2, 1, 1)
+        equipTzList = QtGui.QListWidget()
+        for tzNameIndex in info:
+            newItem = QtGui.QListWidgetItem(tzNameIndex[0])
+            newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
+            equipTzList.addItem(newItem)
+
+        self.bodygrid.addWidget(equipTzList, 0, 0, 0, 1)
+
+        self.bodygrid.setRowStretch(1, 1)
+        self.bodygrid.setColumnStretch(0, 0)
+        self.bodygrid.setColumnStretch(1, 1)
+
         # self.tablewiget.verticalHeader().setVisible(False)
         # self.tablewiget.horizontalHeader().setVisible(False)
-        self.tablewiget.setHorizontalHeaderLabels([u"No", u"名称", u"种类", u"品质", u"基础属性1", u"基础属性2"])
-        self.tablewiget2.setHorizontalHeaderLabels([u"No", u"名称", u"套装属性1", u"套装属性2", u"套装属性3"])
-        self.wigetIndex = [self.tablewiget, self.tablewiget2]
+        self.tablewiget.setHorizontalHeaderLabels([u"套装属性"])
+        self.tablewiget2.setHorizontalHeaderLabels([u"名称", u"品质", u"类型" , u"基础属性1", u"基础属性2"])
+        self.wigetIndex = [self.tablewiget, self.tablewiget2, equipTzList]
 
     def aboutinfo(self):
         self.inibodywiget()
+
+        self.bodygrid.setRowStretch(1, 0)
+        self.bodygrid.setColumnStretch(0, 1)
+        self.bodygrid.setColumnStretch(1, 0)
 
         # 设置左右框架
         self.leftwiget = QtGui.QWidget()
@@ -333,8 +356,8 @@ class Example(QtGui.QMainWindow):
                    u"防御": 'ui/hero/phyDef.png', u"闪避": 'ui/hero/miss.png',}
         self.newItem = QtGui.QTableWidgetItem(msg)
         self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
-        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
-        self.newItem.setIcon(QtGui.QIcon(iconUrl[attr]))  # 不允许点击表格内容
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)  # 不允许点击表格内容
+        self.newItem.setIcon(QtGui.QIcon(iconUrl[attr]))
         self.attributeList.setItem(row, column, self.newItem)
 
     def fortest(self):
