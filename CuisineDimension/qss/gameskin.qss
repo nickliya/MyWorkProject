@@ -1,7 +1,7 @@
 QWidget#mainwindow{
     background-repeat: no-repeat;
     background-position: center;
-    border-image: url(ui/homeskin/home_1.png);
+    border-image: url(bg/homeskin/home_1.png);
     }
 
 QWidget#aboutRight{
@@ -16,9 +16,8 @@ QWidget#main_sy{
     border-image:url(ui/main/blackboard.png);
     }
 
-QListWidget#sl_Attri{
-    background-color: rgba(255,0,0,0);
-    border:none
+QTableWidget#sl_Attri{
+    font:75 10pt "Microsoft YaHei";
     }
 
 QPushButton#headbtn{

@@ -11,6 +11,7 @@
 from PyQt4 import QtGui, QtCore
 import sys
 import sqlite3
+import random
 
 
 class Example(QtGui.QMainWindow):
@@ -34,6 +35,8 @@ class Example(QtGui.QMainWindow):
         self.setWindowTitle(u'次元料理 version:2017.11.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.setObjectName("mainwindow")
+        bgList = ["bg/homeskin/home_1.png", "bg/homeskin/home_2.png", "bg/homeskin/home_main.png"]
+        bg = random.choice(bgList)
 
         styleqss = open("qss/gameskin.qss", "r")
         styleinfo = styleqss.read()
@@ -166,7 +169,7 @@ class Example(QtGui.QMainWindow):
 
         self.wigetIndex = [self.sywiget]
 
-    def mainViewEdit(self,index):
+    def mainViewEdit(self, index):
         if index == 1:
             self.syText.clear()
             self.syText.append(u"\n\n\n◆欢迎使用本工具！初次使用可以在此处查看使用帮助，有任何疑问和建议可以联系作者。")
@@ -189,7 +192,7 @@ class Example(QtGui.QMainWindow):
 
         con = sqlite3.connect("llcy")
         cur = con.cursor()
-        sql = 'SELECT URL_TX,SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML FROM "fairy_detail";'
+        sql = 'SELECT URL_TX,n.SL_NO,SL_NAME,SL_TYPE,SL_HP,SL_GJ,SL_FY,SL_MZ,SL_SB,SL_BJ,SL_GS,SL_SY,SL_ML,MAX_HP,MAX_GJ,MAX_FY,MAX_MZ,MAX_SB,MAX_BJ,MAX_GS,MAX_SY,MAX_ML FROM fairy_detail n,fairy_detail_max m WHERE n.SL_NO=m.SL_NO;'
         # sql='SELECT * FROM "fairy_info";'
         cur.execute(sql)
         info = cur.fetchall()
@@ -418,7 +421,7 @@ class Example(QtGui.QMainWindow):
     def slDetail(self):
         indexRow = self.tablewiget.currentRow()
         slnumb = self.tablewiget.item(indexRow, 1).text()
-        sql = 'SELECT URL_LH,URL_LH2,SL_NAME,SL_LEVEL,TJ_HP,TJ_GJ,TJ_GJ,TJ_MZ,TJ_FY,TJ_SB FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
+        sql = 'SELECT URL_LH,URL_LH2,SL_NAME,SL_LEVEL,TJ_HP,TJ_GJ,TJ_GJ,TJ_MZ,TJ_FY,TJ_SB,SKILL_NAME,SKILL_DESC,SKILL_GY_NAME,SKILL_GY_DESC,GROUP_DECS,SL_TYPE FROM "fairy_detail" WHERE SL_NO = '+str(slnumb)+';'
         print sql
         info = ToolFunction.getsqliteInfo(sql)
         print info
@@ -442,21 +445,29 @@ class Example(QtGui.QMainWindow):
         self.cuisineLable.setStyleSheet(stylesheet)
 
         # 右边窗体
-        self.attributeList = QtGui.QTableWidget(9, 2)
+        self.attributeList = QtGui.QTableWidget(15, 4)
         self.attributeList.setObjectName("sl_Attri")
         self.detailFrameGrid.addWidget(self.attributeList, 0, 1)
         self.attributeList.verticalHeader().setVisible(False)
         self.attributeList.horizontalHeader().setVisible(False)
-
+        self.attributeList.setShowGrid(False)
         self.attributeList.setSpan(0, 0, 1, 2)
         self.attributeList.setSpan(1, 0, 1, 2)
-        self.newItem = QtGui.QTableWidgetItem(u'邦宝')
+        self.attributeList.setSpan(7, 0, 2, 4)
+        self.attributeList.setSpan(10, 0, 2, 4)
+        self.attributeList.setSpan(13, 0, 2, 4)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][2])
+        self.lbp2 = QtGui.QLabel()
+        self.lbp2.setPixmap(QtGui.QPixmap('ui/hero/'+str(info[0][15])+'.png'))
+        self.attributeList.setCellWidget(0, 0, self.lbp2)
+        self.newItem.setFont(QtGui.QFont("youyuan", 18, 100))
+        # self.newItem.setIcon(QtGui.QIcon('ui/hero/'+str(info[0][15])+'.png'))
         self.newItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignHCenter)
         self.attributeList.setItem(0, 0, self.newItem)
-
         self.lbp2 = QtGui.QLabel()
-        self.lbp2.setPixmap(QtGui.QPixmap('ui/hero/star.png'))
-        self.attributeList.setCellWidget(1,0, self.lbp2)
+        self.lbp2.setPixmap(QtGui.QPixmap('ui/hero/star'+str(info[0][3])+'.png'))
+        self.attributeList.setCellWidget(1, 0, self.lbp2)
 
         self.slDetailEdit(u'技能', info[0][4], 2, 0)
         self.slDetailEdit(u'装盘', info[0][4], 2, 1)
@@ -466,6 +477,41 @@ class Example(QtGui.QMainWindow):
         self.slDetailEdit(u'命中', info[0][7], 4, 1)
         self.slDetailEdit(u'防御', info[0][8], 5, 0)
         self.slDetailEdit(u'闪避', info[0][9], 5, 1)
+
+        self.newItem = QtGui.QTableWidgetItem(u"料理技")
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.newItem.setFont(QtGui.QFont("youyuan", 14, 100))
+        self.attributeList.setItem(6, 0, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][10])
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.attributeList.setItem(6, 1, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][11])
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.attributeList.setItem(7, 0, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(u"固有技")
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.newItem.setFont(QtGui.QFont("youyuan", 14, 100))
+        self.attributeList.setItem(9, 0, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][12])
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.attributeList.setItem(9, 1, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][13])
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.attributeList.setItem(10, 0, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(u"装盘效果")
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.newItem.setFont(QtGui.QFont("youyuan", 14, 100))
+        self.attributeList.setItem(12, 0, self.newItem)
+
+        self.newItem = QtGui.QTableWidgetItem(info[0][14])
+        self.newItem.setFlags(QtCore.Qt.ItemIsEnabled)
+        self.attributeList.setItem(13, 0, self.newItem)
 
         self.wigetIndex = [self.detailWidget]
 
