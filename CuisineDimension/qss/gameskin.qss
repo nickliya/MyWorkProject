@@ -42,12 +42,13 @@ QLabel#aboutName{
     color:#FF3366;
     font:75 30pt "Microsoft YaHei";
     }
+
 QLabel#lhLable{
     background-color: rgba(255,0,0,0);
     }
 
 QLabel#syLabel{
-    background-color: rgba(255,0,0,20);
+    background-color: rgba(255,0,0,0);
     color:floralwhite;
     font:1000 18pt "Microsoft YaHei";
     }
@@ -77,7 +78,7 @@ QTextEdit#rightInfo{
 QTextBrowser#syText{
     color:floralwhite;
     font:75 16pt "Microsoft YaHei";
-    background-color: rgba(255,0,0,10);
+    background-color: rgba(255,0,0,0);
     border:none
     }
 

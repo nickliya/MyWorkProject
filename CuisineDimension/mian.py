@@ -68,7 +68,7 @@ class Example(QtGui.QMainWindow):
 
         self.bglabel = QtGui.QLabel()
 
-        self.groupbtn.clicked.connect(self.maniView)
+        self.groupbtn.clicked.connect(self.mainView)
         self.charactorbtn.clicked.connect(self.cuisinelist)
         self.equipbtn.clicked.connect(self.equiplist)
         self.aboutbtn.clicked.connect(self.aboutinfo)
@@ -93,8 +93,8 @@ class Example(QtGui.QMainWindow):
         self.maingrid.addWidget(self.topwiget, 0, 0)
 
         self.topgrid.addWidget(self.groupbtn, 0, 0)
-        self.topgrid.addWidget(self.charactorbtn, 0, 2)
-        self.topgrid.addWidget(self.equipbtn, 0, 1)
+        self.topgrid.addWidget(self.charactorbtn, 0, 1)
+        self.topgrid.addWidget(self.equipbtn, 0, 2)
         self.topgrid.addWidget(self.projectbtn, 0, 3)
         self.topgrid.addWidget(self.cvbtn, 0, 4)
         self.topgrid.addWidget(self.damagebtn, 0, 5)
@@ -116,7 +116,7 @@ class Example(QtGui.QMainWindow):
             for i in self.wigetIndex:
                 i.deleteLater()
 
-    def maniView(self):
+    def mainView(self):
         self.inibodywiget()
         self.bodygrid.setRowStretch(0, 0)
         self.bodygrid.setRowStretch(1, 0)
@@ -144,22 +144,41 @@ class Example(QtGui.QMainWindow):
             grid.addWidget(sybtn, row, column)
             return sybtn
 
-        self.sybtn1 = setsybtn(self.sygrid, u"关于1", 1, 0)
-        self.sybtn2 = setsybtn(self.sygrid, u"关于2", 1, 1)
-        self.sybtn3 = setsybtn(self.sygrid, u"关于3", 1, 2)
-        self.sybtn4 = setsybtn(self.sygrid, u"关于4", 1, 3)
+        self.sybtn1 = setsybtn(self.sygrid, u"声  明", 1, 0)
+        self.sybtn2 = setsybtn(self.sygrid, u"食灵说明", 1, 1)
+        self.sybtn3 = setsybtn(self.sygrid, u"装备说明", 1, 2)
+        self.sybtn4 = setsybtn(self.sygrid, u"少女祈祷中", 1, 3)
+        self.sybtn1.clicked.connect(lambda: self.mainViewEdit(1))
+        self.sybtn2.clicked.connect(lambda: self.mainViewEdit(2))
+        self.sybtn3.clicked.connect(lambda: self.mainViewEdit(3))
+        # self.sybtn4.clicked.connect(lambda: self.mainViewEdit(4))
 
         self.syText = QtGui.QTextBrowser()
         self.syText.setObjectName("syText")
         self.syText.setFixedHeight(390)
-        self.syText.append(u"\n\n\n◆任何用于商业行为将和本人无关")
-        self.syText.append(u"◆任何用于商业行为将和本人无关")
+        self.syText.append(u"\n\n\n◆欢迎使用本工具！初次使用可以在此处查看使用帮助，有任何疑问和建议可以联系作者。")
+        self.syText.append(u"◆本工具所有美术资源或算法由萌百黑大@划破黑夜 破解，破解不易请珍惜成果，任何非法和损害他人利益行为与作者无关！")
+        self.syText.append(u"◆本工具旨在辅助玩家了解游戏信息，工具界面大致还原游戏界面是为了让玩家对工具产生亲切感。禁止窃取、泄露本工具美术资源，任何非法和损害他人利益行为与作者无关！")
         self.sygrid.addWidget(self.syText, 3, 0, 1, 4)
 
         # self.sygrid.setRowStretch(1, 6)
         # self.sygrid.setRowStretch(2, 2)
 
         self.wigetIndex = [self.sywiget]
+
+    def mainViewEdit(self,index):
+        if index == 1:
+            self.syText.clear()
+            self.syText.append(u"\n\n\n◆欢迎使用本工具！初次使用可以在此处查看使用帮助，有任何疑问和建议可以联系作者。")
+            self.syText.append(u"◆本工具所有美术资源或算法由萌百黑大@划破黑夜 破解，破解不易请珍惜成果")
+            self.syText.append(u"◆本工具旨在辅助玩家了解游戏信息，工具界面大致还原游戏界面是为了让玩家对工具产生亲切感。禁止窃取、泄露本工具美术资源，任何非法和损害他人利益行为与作者无关！")
+        elif index == 2:
+            self.syText.clear()
+            self.syText.append(u"\n\n\n◆食灵界面目前提供食灵列表和食灵详细信息查看")
+            self.syText.append(u"◆搜索功能少女祈祷中...")
+        else:
+            self.syText.clear()
+            self.syText.append(u"\n\n\n◆装备界面提供一个比较自由的功能，请先选择左侧套装，右边即会显示相关信息")
 
     def cuisinelist(self):
         self.inibodywiget()
