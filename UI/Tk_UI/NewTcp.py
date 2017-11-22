@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2017.10.17')
+root.title('otu设备模拟器 version:2017.11.22')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -79,7 +79,7 @@ framentry_bt.rowconfigure(8, weight=1)
 # framentry_bt.rowconfigure(9, weight=1)
 
 frame2_l1 = Label(framentry_bt, text='不使用了请离线\n需挂机保持连接请\n勾选心跳')
-frame2_l1.grid(row=9, column=0, columnspan=2, sticky=N + S + E + W)
+frame2_l1.grid(row=11, column=0, columnspan=2, sticky=N + S + E + W)
 
 # frame_qr
 frame_qr.columnconfigure(0, weight=1)
@@ -119,8 +119,12 @@ protocol = {
     "车门": "(1*33|7|304,1,11111|)",
     "OBD": "(1*fa|7|30e,1,2,1,3333,1,0,2|)",
     "ACC": "(1*12|7|301,2,1111)",
-    "余油": "(1*e7|5|614,3,7#b312,1,32,3C#|)",
-    "余电": "(1*88|7|31F,1,50|)",
+    "余油614": "(1*ea|5|614,3,7#b312,1,32,32#|)",
+    "余电614": "(1*ea|5|614,3,7#b313,1,32,32#|)",
+    "余电31F": "(1*88|7|31F,1,32,0,0|)",
+    "余油30A": "(1*88|7|30A,1,22|)",
+    "总里程614": "(1*ea|5|614,3,7#b311,9C4#|)",
+    "总里程313": "(1*10|7|313,1,10,1,552.0.0.0f39202a00,|)",
 }
 
 # 变量声明
@@ -410,8 +414,12 @@ frame2_b11 = Button(framentry_bt, text='车窗')
 frame2_b12 = Button(framentry_bt, text='车门')
 frame2_b13 = Button(framentry_bt, text='OBD')
 frame2_b14 = Button(framentry_bt, text='ACC')
-frame2_b15 = Button(framentry_bt, text='余油')
-frame2_b16 = Button(framentry_bt, text='余电')
+frame2_b15 = Button(framentry_bt, text='余油614')
+frame2_b16 = Button(framentry_bt, text='余电614')
+frame2_b17 = Button(framentry_bt, text='余油30A')
+frame2_b18 = Button(framentry_bt, text='余电31F')
+frame2_b19 = Button(framentry_bt, text='总里程614')
+frame2_b20 = Button(framentry_bt, text='总里程313')
 
 frame2_b2.bind("<Button-1>", showpic)
 frame2_b3.bind("<Button-1>", showpic)
@@ -427,6 +435,10 @@ frame2_b13.bind("<Button-1>", showpic)
 frame2_b14.bind("<Button-1>", showpic)
 frame2_b15.bind("<Button-1>", showpic)
 frame2_b16.bind("<Button-1>", showpic)
+frame2_b17.bind("<Button-1>", showpic)
+frame2_b18.bind("<Button-1>", showpic)
+frame2_b19.bind("<Button-1>", showpic)
+frame2_b20.bind("<Button-1>", showpic)
 
 frame2_b1.grid(row=0, column=0, sticky=N + S + W + E)
 frame2_b2.grid(row=0, column=1, sticky=N + S + W + E)
@@ -444,10 +456,14 @@ frame2_b13.grid(row=6, column=0, sticky=N + S + W + E)
 frame2_b14.grid(row=6, column=1, sticky=N + S + W + E)
 frame2_b15.grid(row=7, column=0, sticky=N + S + W + E)
 frame2_b16.grid(row=7, column=1, sticky=N + S + W + E)
+frame2_b17.grid(row=8, column=0, sticky=N + S + W + E)
+frame2_b18.grid(row=8, column=1, sticky=N + S + W + E)
+frame2_b19.grid(row=9, column=0, sticky=N + S + W + E)
+frame2_b20.grid(row=9, column=1, sticky=N + S + W + E)
 
 heart_v = IntVar()
 frame2_c1 = Checkbutton(framentry_bt, text='心跳挂机', variable=heart_v, command=xt, state=DISABLED)
-frame2_c1.grid(row=8, column=0, columnspan=2, sticky=E + W + S)
+frame2_c1.grid(row=10, column=0, columnspan=2, sticky=E + W + S)
 
 # frame3
 frame3_b1 = Button(frame_qr, text='生成普通二维码', command=createrqimg)
