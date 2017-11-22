@@ -1,33 +1,14 @@
-#!/usr/bin/env python
-# coding=utf-8
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+# -*- coding:utf-8 -*-
 
+import requests
 
-class MyDialog(QDialog):
-    def __init__(self, parent=None):
-        super(MyDialog, self).__init__(parent)
-        self.MyTable = QTableWidget(4, 3)
-        self.MyTable.setHorizontalHeaderLabels(['姓名', '身高', '体重'])
-
-        newItem = QTableWidgetItem("松鼠")
-        self.MyTable.setItem(0, 0, newItem)
-
-        newItem = QTableWidgetItem("10cm")
-        self.MyTable.setItem(0, 1, newItem)
-
-        newItem = QTableWidgetItem("60g")
-        self.MyTable.setItem(0, 2, newItem)
-
-        layout = QHBoxLayout()
-        layout.addWidget(self.MyTable)
-        self.setLayout(layout)
-
-
-if __name__ == '__main__':
-    import sys
-
-    app = QApplication(sys.argv)
-    myWindow = MyDialog()
-    myWindow.show()
-    sys.exit(app.exec_())
+header = {"user-agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.89 Safari/537.36"}
+payload = {
+    "action": "parse",
+    "prop": "text|images|links|externallinks|wikitext",
+    "page": "料理次元",
+    "format": "json"
+}
+r = requests.get("https://zh.moegirl.org/api.php", params=payload, headers=header)
+htmlData = r.json()
+print htmlData

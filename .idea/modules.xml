@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://D:/CuisineDimension/.idea/CuisineDimension.iml" filepath="D:/CuisineDimension/.idea/CuisineDimension.iml" />
       <module fileurl="file://$PROJECT_DIR$/Djago/.idea/Djago.iml" filepath="$PROJECT_DIR$/Djago/.idea/Djago.iml" />
       <module fileurl="file://D:/workspace/CarSharAPITest/Django/.idea/Django.iml" filepath="D:/workspace/CarSharAPITest/Django/.idea/Django.iml" />
       <module fileurl="file://$PROJECT_DIR$/UI/Tk_UI/.idea/Tk_UI.iml" filepath="$PROJECT_DIR$/UI/Tk_UI/.idea/Tk_UI.iml" />
