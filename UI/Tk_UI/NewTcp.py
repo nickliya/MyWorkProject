@@ -123,8 +123,8 @@ protocol = {
     "余电614": "(1*ea|5|614,3,7#b313,1,32,32#|)",
     "余电31F": "(1*88|7|31F,1,32,0,0|)",
     "余油30A": "(1*88|7|30A,1,22|)",
-    "总里程614": "(1*ea|5|614,3,7#b311,9C4#|)",
-    "总里程313": "(1*10|7|313,1,10,1,552.0.0.0f39202a00,|)",
+    "里程614": "(1*ea|5|614,3,7#b311,9C4#|)",
+    "里程313": "(1*10|7|313,1,10,1,552.0.0.0f39202a00,|)",
 }
 
 # 变量声明
@@ -418,8 +418,8 @@ frame2_b15 = Button(framentry_bt, text='余油614')
 frame2_b16 = Button(framentry_bt, text='余电614')
 frame2_b17 = Button(framentry_bt, text='余油30A')
 frame2_b18 = Button(framentry_bt, text='余电31F')
-frame2_b19 = Button(framentry_bt, text='总里程614')
-frame2_b20 = Button(framentry_bt, text='总里程313')
+frame2_b19 = Button(framentry_bt, text='里程614')
+frame2_b20 = Button(framentry_bt, text='里程313')
 
 frame2_b2.bind("<Button-1>", showpic)
 frame2_b3.bind("<Button-1>", showpic)

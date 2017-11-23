@@ -141,16 +141,18 @@ def creatcaselist(*value):
     print len(cases)
     return modificationcase(cases)
 
+
 cus = App()  # 调用app模块
 tcp = Tcp()  # 调用Tcp模块
 psql = Postgresql()  # 调用Postgresql模块
 web = Web(psql)  # 调用web模块
 
 sethost('http://192.168.6.52:8090')  # 域名
+# sethost('http://192.168.6.113:30011')  # 域名
 setinput('15025463191', '123456')  # 初始化input1和input2
 # setinput('18523641110', '123456')  # 初始化input1和input2
 web.sysuserlogin("admin;123456;6666")  # 保持门户登陆状态,依次是用户名,密码,验证码，不测门户或单测登陆接口时必须屏蔽
-# web.sysuserlogin("admin;123456;1231")  # 保持门户登陆状态,依次是用户名,密码,验证码，不测门户或单测登陆接口时必须屏蔽
+# web.sysuserlogin("admin;123456;6666")  # 保持门户登陆状态,依次是用户名,密码,验证码，不测门户或单测登陆接口时必须屏蔽
 web.configloging()
 tcp.settcp('192.168.6.52', '2103')  # 配置tcp
 psql.setsql('192.168.6.51', 5432, 'postgres', '123456', 'postgres')  # 配置postgresql数据库
@@ -195,15 +197,15 @@ flowcase = [
 # web.activititycouponadd("优惠券杨卿满100减100;100;1;100;2017-08-12 17:00:00;2018-08-12 17:30:00;1000;2;0;")
 # print web.orderurgentOrderfinish("42;处里;50")[1]["resultMessage"]
 
-# flow.feecheck("4;13")
-# flow.feecheck("53;9")
-flow.appflow("杨卿车辆;83VXGV8U548C08581;杨卿自动化车型;15025463191;王来福")
-# flow.order("11")
+flow.feecheck("23;29")
+# flow.feecheck("53;4")
+# flow.appflow("接口车辆;9C4KWG6Y71AFS3710;接口测试车型;15025463191;大大")
+# flow.order("24")
 # flow.peccancy("杨卿车辆;2017-09-04 15:51:50;15025463191")
-
+# print cus.carrent("24")[1]["resultMessage"]
 # print cus.sysdetail("")
 # 车型定价
-# feeinfo = "检查计费;4;检查计费是否正确;0.3;7;0.5;9:00;16:00;0.6;2017-08-18;2017-08-25;1;12:00;14:00;1.2"
+# feeinfo = "接口检查计费;19;接口检查计费是否正确;0.3;7;0.5;9:00;16:00;0.6;2017-08-18;2017-08-25;1;12:00;14:00;1.2;1;2;3;5;3"
 # print web.carvehicleModelsetFee(feeinfo)[1]["resultMessage"]
 
 # 租车还车全套
