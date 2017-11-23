@@ -1,7 +1,7 @@
 # /usr/bin/python
 # coding=utf-8
 # creat by 15025463191 2017/06/04
-# version:20171017
+
 from Tkinter import *
 import socket
 import threading
@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2017.11.22')
+root.title('otu设备模拟器 version:2017.11.23')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -44,25 +44,25 @@ framentry_otu.rowconfigure(6, weight=1)
 Label(framentry_otu, text="端口").grid(row=0, sticky=W)
 Label(framentry_otu, text="IP:").grid(row=0, column=1, sticky=W)
 Label(framentry_otu, text="主机_IMEI").grid(row=1, sticky=W)
-Label(framentry_otu, text="蓝牙_IMEI").grid(row=2, sticky=W)
+Label(framentry_otu, text="蓝牙_IMEI").grid(row=3, sticky=W)
 entry_otu = Entry(framentry_otu)
 entry_bt = Entry(framentry_otu)
 entry_port = Entry(framentry_otu, width=4)
 entry_ip = Entry(framentry_otu, width=16)
 entry_otu.grid(row=1, column=1, sticky=W + S + N + E)
-entry_bt.grid(row=2, column=1, sticky=W + S + N + E)
+entry_bt.grid(row=3, column=1, sticky=W + S + N + E)
 entry_port.grid(row=0, column=0, sticky=S + N + E)
 entry_ip.grid(row=0, column=1, sticky=E)
 
 frame1_l1 = Label(framentry_otu, text='自定义输入界面:')
-frame1_l1.grid(row=3, columnspan=2, sticky=W)
+frame1_l1.grid(row=4, columnspan=2, sticky=W)
 frame1_l2 = Label(framentry_otu, text='接收界面:')
-frame1_l2.grid(row=5, columnspan=2, sticky=W)
+frame1_l2.grid(row=6, columnspan=2, sticky=W)
 
 t1 = Text(framentry_otu, width=34, height=4)
-t1.grid(row=4, column=0, columnspan=3, sticky=W + S + E + N)
+t1.grid(row=5, column=0, columnspan=3, sticky=W + S + E + N)
 t2 = Text(framentry_otu, width=34, height=13)
-t2.grid(row=6, column=0, columnspan=3, sticky=W + S + E + N)
+t2.grid(row=7, column=0, columnspan=3, sticky=W + S + E + N)
 
 # framentry_bt
 framentry_bt.columnconfigure(0, weight=1)
@@ -76,15 +76,16 @@ framentry_bt.rowconfigure(5, weight=1)
 framentry_bt.rowconfigure(6, weight=1)
 framentry_bt.rowconfigure(7, weight=1)
 framentry_bt.rowconfigure(8, weight=1)
-# framentry_bt.rowconfigure(9, weight=1)
+framentry_bt.rowconfigure(9, weight=1)
+framentry_bt.rowconfigure(10, weight=1)
 
 frame2_l1 = Label(framentry_bt, text='不使用了请离线\n需挂机保持连接请\n勾选心跳')
-frame2_l1.grid(row=11, column=0, columnspan=2, sticky=N + S + E + W)
+frame2_l1.grid(row=12, column=0, columnspan=2, sticky=N + S + E + W)
 
 # frame_qr
 frame_qr.columnconfigure(0, weight=1)
 frame_qr.columnconfigure(1, weight=1)
-frame_qr.columnconfigure(2, weight=1)
+# frame_qr.columnconfigure(2, weight=1)
 frame_qr.rowconfigure(3, weight=1)
 # frame3.rowconfigure(1, weight=1)
 Label(frame_qr, text='转换内容').grid(row=0, column=0, sticky=E + W)
@@ -125,6 +126,8 @@ protocol = {
     "余油30A": "(1*88|7|30A,1,22|)",
     "里程614": "(1*ea|5|614,3,7#b311,9C4#|)",
     "里程313": "(1*10|7|313,1,10,1,552.0.0.0f39202a00,|)",
+    "里程320": "(1*10|7|320,1,9C4|)",
+    "里程614新": "(1*c1|5|614,3,7#b318,9C4#|)",
 }
 
 # 变量声明
@@ -132,6 +135,7 @@ r_blank = r'\d*\d'  # 识别空格的正则
 stopsingle = 0  # 停止信号
 tkimg = None  # 图片
 s = None  # soket连接
+loginType = "ost"  # 登陆方式
 
 
 def Btbd():
@@ -159,8 +163,9 @@ def sx():
     s.connect((tcpadress, int(tcpport)))
     # s.send('(1*7c|a3|106,201|101,' + str(
     #     IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
-    s.send('(1*7c|a3|106,201|101,' + str(
-        IMEI_NUM[0]) + '|102,460079241205511|104,otu.ost,01022300|105,a1,18|622,a1c2|)')  # 商用去掉103
+    loginMsg = '(1*7c|a3|106,201|101,' + str(
+        IMEI_NUM[0]) + '|102,460079241205511|104,otu.'+loginType+',01022300|105,a1,18|622,a1c2|)'
+    s.send(loginMsg)  # 商用去掉103
     historydata = open('D:\Tcptemp\data.txt', "wb")  # 生成缓存文件data
     historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport)  # IMEI保存到缓存文件data
     historydata.close()
@@ -385,6 +390,18 @@ def mr():
     entry_ip.insert(END, '192.168.6.52')
 
 
+def regniseLoginType():
+    """识别上线模式"""
+    loginTypeDic = {
+        1: "ost",
+        2: "audi",
+        3: "buick"
+    }
+    index = radVar.get()
+    global loginType
+    loginType = loginTypeDic[index]
+
+
 # frame1
 frame1_b1 = Button(framentry_otu, text='默认', command=mr)
 frame1_b2 = Button(framentry_otu, text='上线', command=sx)
@@ -392,12 +409,22 @@ frame1_b3 = Button(framentry_otu, text='绑定', command=Btbd)
 frame1_b4 = Button(framentry_otu, text='发送', command=send)
 frame1_b5 = Button(framentry_otu, text='清空', command=qk1)
 frame1_b6 = Button(framentry_otu, text='清空', command=qk2)
-frame1_b1.grid(row=0, column=2)
-frame1_b2.grid(row=1, column=2)
-frame1_b3.grid(row=2, column=2)
-frame1_b4.grid(row=3, column=2)
-frame1_b5.grid(row=3, column=1, sticky=E)
-frame1_b6.grid(row=5, column=2)
+frame1_b1.grid(row=0, column=2, sticky=N + S + W + E)
+frame1_b2.grid(row=1, column=2, sticky=N + S + W + E)
+frame1_b3.grid(row=3, column=2, sticky=N + S + W + E)
+frame1_b4.grid(row=4, column=2, sticky=N + S + W + E)
+frame1_b5.grid(row=4, column=1, sticky=E + S + N)
+frame1_b6.grid(row=6, column=2, sticky=N + S + W + E)
+
+
+radVar = IntVar()
+radVar.set(1)
+otuRadioBtn = Radiobutton(framentry_otu, text="otu", variable=radVar, value=1, command=regniseLoginType)
+otuRadioBtn2 = Radiobutton(framentry_otu, text="audi", variable=radVar, value=2, command=regniseLoginType)
+otuRadioBtn3 = Radiobutton(framentry_otu, text="buick", variable=radVar, value=3, command=regniseLoginType)
+otuRadioBtn.grid(row=2, column=0)
+otuRadioBtn2.grid(row=2, column=1)
+otuRadioBtn3.grid(row=2, column=2)
 
 # frame2
 frame2_b1 = Button(framentry_bt, text='能力', command=fz, cursor="circle")
@@ -420,6 +447,8 @@ frame2_b17 = Button(framentry_bt, text='余油30A')
 frame2_b18 = Button(framentry_bt, text='余电31F')
 frame2_b19 = Button(framentry_bt, text='里程614')
 frame2_b20 = Button(framentry_bt, text='里程313')
+frame2_b21 = Button(framentry_bt, text='里程614新')
+frame2_b22 = Button(framentry_bt, text='里程320')
 
 frame2_b2.bind("<Button-1>", showpic)
 frame2_b3.bind("<Button-1>", showpic)
@@ -439,6 +468,8 @@ frame2_b17.bind("<Button-1>", showpic)
 frame2_b18.bind("<Button-1>", showpic)
 frame2_b19.bind("<Button-1>", showpic)
 frame2_b20.bind("<Button-1>", showpic)
+frame2_b21.bind("<Button-1>", showpic)
+frame2_b22.bind("<Button-1>", showpic)
 
 frame2_b1.grid(row=0, column=0, sticky=N + S + W + E)
 frame2_b2.grid(row=0, column=1, sticky=N + S + W + E)
@@ -460,10 +491,12 @@ frame2_b17.grid(row=8, column=0, sticky=N + S + W + E)
 frame2_b18.grid(row=8, column=1, sticky=N + S + W + E)
 frame2_b19.grid(row=9, column=0, sticky=N + S + W + E)
 frame2_b20.grid(row=9, column=1, sticky=N + S + W + E)
+frame2_b21.grid(row=10, column=0, sticky=N + S + W + E)
+frame2_b22.grid(row=10, column=1, sticky=N + S + W + E)
 
 heart_v = IntVar()
 frame2_c1 = Checkbutton(framentry_bt, text='心跳挂机', variable=heart_v, command=xt, state=DISABLED)
-frame2_c1.grid(row=10, column=0, columnspan=2, sticky=E + W + S)
+frame2_c1.grid(row=11, column=0, columnspan=2, sticky=E + W + S)
 
 # frame3
 frame3_b1 = Button(frame_qr, text='生成普通二维码', command=createrqimg)
