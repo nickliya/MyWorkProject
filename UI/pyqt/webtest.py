@@ -67,7 +67,7 @@ class Example(QtGui.QMainWindow):
 
         self.startestbtn = QtGui.QPushButton(u"开始测试")
         self.startestbtn.clicked.connect(self.startest)
-        self.startestbtn.setStyleSheet("border:none")
+        # self.startestbtn.setStyleSheet("border:none")
 
     def iniGrid(self):
         # 主窗体
