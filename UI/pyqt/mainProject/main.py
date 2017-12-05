@@ -93,9 +93,15 @@ class Example(QtGui.QMainWindow):
     def initUI(self):
         self.resize(800, 600)
         self.center()
-        self.setWindowTitle('Icon')
+        self.setWindowTitle(u'桴之科测试工具')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
+
+        styleqss = open("qss/style.qss", "r")
+        styleinfo = styleqss.read()
+        self.setStyleSheet(styleinfo)
+        styleqss.close()
+
         # self.setWindowOpacity(0.9)
 
         self.labelUser = QtGui.QLabel("user", self)
@@ -122,6 +128,7 @@ class Example(QtGui.QMainWindow):
         mainwidget = QtGui.QWidget()
         self.maingrid = QtGui.QGridLayout()
         mainwidget.setLayout(self.maingrid)
+        mainwidget.setObjectName("mainwidget")
         self.setCentralWidget(mainwidget)
         self.maingrid.setRowStretch(0, 0)
         self.maingrid.setRowStretch(1, 1)
