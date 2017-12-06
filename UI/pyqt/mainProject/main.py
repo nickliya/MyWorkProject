@@ -203,16 +203,16 @@ class Example(QtGui.QMainWindow):
             return
 
         if self.radioBtn.isChecked():
-            print "开始测试小时计费"
+            print "start hourfee test"
             flow.feecheck4(unicode(vmid) + ";" + unicode(vehicleid))
         if self.radioBtn2.isChecked():
-            print "开始测试分钟计费"
+            print "start minutefee test"
             flow.feecheck1(unicode(vmid) + ";" + unicode(vehicleid))
         if self.radioBtn3.isChecked():
-            print "开始测试里程计费"
+            print "start milefee test"
             flow.feecheck2(unicode(vmid) + ";" + unicode(vehicleid))
         if self.radioBtn4.isChecked():
-            print "开始测试分钟里程计费"
+            print "start minute_Milefee test"
             flow.feecheck3(unicode(vmid) + ";" + unicode(vehicleid))
 
 
