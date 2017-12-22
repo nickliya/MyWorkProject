@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui
-from test import *
+from animatest import *
 
 class MainWindow(QtGui.QMainWindow):
 
