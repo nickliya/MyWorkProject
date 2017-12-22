@@ -26,4 +26,5 @@ for i in range(10):
     else:
         pass
     TrueVIN = VIN_number[:8] + str(VIN) + VIN_number[9:]
-    print (str(VIN) + ':' + str(TrueVIN))
+    # print (str(VIN) + ':' + str(TrueVIN))
+    print (str(TrueVIN))
