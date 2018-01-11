@@ -38,8 +38,8 @@ Label(root, bg='#87CEEB').grid(row=0, column=3, rowspan=7, sticky=S + N)
 
 # framentry_otu
 framentry_otu.columnconfigure(1, weight=1)
-framentry_otu.rowconfigure(4, weight=1)
-framentry_otu.rowconfigure(6, weight=1)
+framentry_otu.rowconfigure(5, weight=1)
+framentry_otu.rowconfigure(7, weight=1)
 
 Label(framentry_otu, text="端口").grid(row=0, sticky=W)
 Label(framentry_otu, text="IP:").grid(row=0, column=1, sticky=W)
