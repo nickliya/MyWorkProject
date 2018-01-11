@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2017.11.23')
+root.title('otu设备模拟器 version:2018.01.11')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -164,7 +164,7 @@ def sx():
     # s.send('(1*7c|a3|106,201|101,' + str(
     #     IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
     loginMsg = '(1*7c|a3|106,201|101,' + str(
-        IMEI_NUM[0]) + '|102,460079241205511|104,otu.'+loginType+',01022300|105,a1,18|622,a1c2|)'
+        IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',01022300|105,a1,18|622,a1c2|)'
     s.send(loginMsg)  # 商用去掉103
     historydata = open('D:\Tcptemp\data.txt', "wb")  # 生成缓存文件data
     historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport)  # IMEI保存到缓存文件data
@@ -285,6 +285,13 @@ def sbwz():
         minute = utc_tran.strftime('%M')
         newminute = int(minute) - 3
         second = utc_tran.strftime('%S')
+
+        if newminute < 0:
+            newminute = newminute + 60
+            hour = int(hour) - 1
+        else:
+            pass
+
         m = '%x' % int(month)
         d = '%x' % int(day)
         H = '%x' % int(hour)
@@ -415,7 +422,6 @@ frame1_b3.grid(row=3, column=2, sticky=N + S + W + E)
 frame1_b4.grid(row=4, column=2, sticky=N + S + W + E)
 frame1_b5.grid(row=4, column=1, sticky=E + S + N)
 frame1_b6.grid(row=6, column=2, sticky=N + S + W + E)
-
 
 radVar = IntVar()
 radVar.set(1)
