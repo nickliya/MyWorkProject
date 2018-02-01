@@ -349,6 +349,7 @@ def createCarQRcode():
         cur.execute(sql)
         info = cur.fetchall()
         randomID = str(info)[4:-4]
+        # randomID = 'ccafd8'
         c = Bt_IMEI + '_' + randomID + '_0_copyright@sirui ChungKing'
     else:
         c = Bt_IMEI + '_' + Bt_IMEI[-6:] + Bt_IMEI[-2:] + '_0_copyright@sirui ChungKing'
