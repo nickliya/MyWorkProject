@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2018.01.11')
+root.title('otu设备模拟器 version:2018.02.06')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -175,9 +175,13 @@ def sx():
         stopsingle = 0
         while 1:
             tcpreceive = s.recv(1024)
-            x = tcpreceive[7:10]  # 检测是否为控制协议
-            if x == '511' or x == '512' or x == '513' or x == '514' or x == '515' or x == '516' or x == '517' \
-                    or x == '518' or x == '519' or x == '51A' or x == '51B' or x == '51C':
+            xinfo = re.findall(r'\|(\w\w\w),', tcpreceive) # 检测是否为控制协议
+            # x = tcpreceive[7:10]  # 检测是否为控制协议
+            # if x == '511' or x == '512' or x == '513' or x == '514' or x == '515' or x == '516' or x == '517' \
+            #         or x == '518' or x == '519' or x == '51A' or x == '51B' or x == '51C':
+            if "511" in xinfo or "512" in xinfo or "513" in xinfo or '514' in xinfo or '515' in xinfo or '516' in xinfo \
+                    or '517' in xinfo or '518' in xinfo or '519' in xinfo or '51A' in xinfo or '51B' in xinfo \
+                    or '51C' in xinfo:
                 t2.insert(END, tcpreceive)
                 t2.update()
                 protocol_dic = {

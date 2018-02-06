@@ -46,7 +46,7 @@ def decrypt(images_path):
     f2.close()
 
 
-path = 'C:\\Users\\YangQ\\Desktop\\bg'
+path = 'C:\\Users\\fuzhi\\Desktop\\1234\\123'
 for dirpath, dirnames, filenames in os.walk(path):
     for file in filenames:
         fullpath = os.path.join(dirpath, file)

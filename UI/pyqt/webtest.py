@@ -31,7 +31,7 @@ class Example(QtGui.QMainWindow):
             if i.isChecked():
                 print indexdic[i] + "已选择"
                 testunit.addTest(Case.Bdxt(indexdic[i]))
-        HtmlFile = 'C:\Users\YangQ\Desktop\Result.html'
+        HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
         fp = open(HtmlFile, "wb")
         runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'4S门户自动化测试', description=u'用例测试情况')
         runner.run(testunit)

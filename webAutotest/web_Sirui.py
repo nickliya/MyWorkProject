@@ -33,7 +33,7 @@ def getcode(imgurl):
 def imgprocess(imgurl):
     """截图处理"""
     img = Image.open(imgurl)
-    region = (401, 458, 520, 499)
+    region = (351, 460, 468, 498)
     cropImg = img.crop(region)  # 切割图片
     cropImg.save(imgurl)
 
@@ -52,11 +52,11 @@ price = ''.join(random.choice("123456789") for i in range(6)) + '.' + ''.join(
 
 chromepath = 'C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe'
 browser = webdriver.Chrome(chromepath)
-browser.get('http://192.168.6.52:8080/')
+browser.get('http://192.168.6.52:8080')
 browser.find_element_by_id('name').send_keys('admin')
 browser.find_element_by_id('password').send_keys('Wg123456')
 
-temp_img = 'C:\Users\YangQ\Desktop\getImg.png'
+temp_img = 'C:\\Users\\fuzhi\\Desktop\\getImg.png'
 code = getcode(temp_img)
 
 browser.find_element_by_id("authcode").send_keys(code)
@@ -308,7 +308,7 @@ class Bdxt(unittest.TestCase):
         browser.find_element_by_partial_link_text('保单系统').click()
         time.sleep(1)
         browser.find_element_by_partial_link_text("保单管理").click()
-        time.sleep(1)
+        time.sleep(2)
         browser._switch_to.parent_frame()
         browser._switch_to.frame('middleframe')
         browser.find_element_by_id('addModalBtn').click()
@@ -318,7 +318,7 @@ class Bdxt(unittest.TestCase):
         time.sleep(1)
         browser.find_element_by_id('ownerIdentifyNum').send_keys(idcard)
         time.sleep(1)
-        browser.find_element_by_id('brandModel').send_keys('11')
+        browser.find_element_by_id('brandModel').send_keys(u'丰田')
         browser.find_element_by_id('engineNumber').send_keys('11')
         browser.find_element_by_id('price').send_keys(price)
         ######生成车架号######
@@ -349,7 +349,7 @@ class Bdxt(unittest.TestCase):
         # browser.find_element_by_id('billingDate').click()
         # browser.find_element_by_xpath("//*[@id='laydate_table']/tbody/tr[1]/td[2]").click()
         browser.find_element_by_id('serialNum').send_keys('C1000000018')
-        browser.find_element_by_id('loanTime').send_keys('60')
+        browser.find_element_by_id('loanTime').send_keys('36')
         global kh_name
         kh_name = ''.join(random.choice(string.letters) for i in range(6))
         browser.find_element_by_id('name').send_keys(kh_name)
@@ -458,7 +458,7 @@ class Bdxt(unittest.TestCase):
         browser.find_element_by_partial_link_text('保单系统').click()
         time.sleep(1)
         browser.find_element_by_partial_link_text("保单管理").click()
-        time.sleep(1)  # 等待加载完成
+        time.sleep(2)  # 等待加载完成
         browser._switch_to.parent_frame()
         browser._switch_to.frame('middleframe')
         browser.find_element_by_id('additionalModalBtn').click()
