@@ -185,7 +185,7 @@ class Example(QtGui.QMainWindow):
     def startTest(self):
         cus = App()  # 调用app模块
         tcp = Tcp()  # 调用Tcp模块
-        psql = Postgresql()  # 调用Postgresql模块
+        psql = Postgresql_db()  # 调用Postgresql模块
         web = Web(psql)  # 调用web模块
         sethost(self.entryUrl.text())  # 域名
         setinput(unicode(self.entryCustomerUser.text()), unicode(self.entryCustomerPasswd.text()))  # 初始化input1和input2
