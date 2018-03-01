@@ -3,6 +3,8 @@
 
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from socket import *
 import socket
 import re
@@ -28,6 +30,7 @@ stopsingle = None
 
 class Bianlifunction:
     """个人便利方法集合"""
+
     @staticmethod
     def timeNow():
         now_stamp = time.time()
@@ -75,6 +78,7 @@ class Bianlifunction:
 
 class Sqlfunticon:
     """sql方法"""
+
     @staticmethod
     def getinfo(sql):
         """sqlserver"""
@@ -85,6 +89,54 @@ class Sqlfunticon:
         cur.close()
         conn.close()
         return info
+
+
+class TcpBackgroudView(QGraphicsView):
+    """自定义界面2d
+    当前未采用"""
+    def __init__(self):
+        super().__init__()
+        self._set_color(QColor(105, 105, 105))
+        self.iniAnimation()
+
+    def _set_color(self, col):
+        self.palette = QPalette()
+        self.palette.setColor(self.backgroundRole(), col)
+        # self.palette.setBrush(self.backgroundRole(), col)
+        self.setPalette(self.palette)
+
+    color = pyqtProperty(QColor, fset=_set_color)
+
+
+class TcpBackgroudScene(QGraphicsScene):
+    """自定义场景"""
+    def __init__(self, widget):
+        super(TcpBackgroudScene, self).__init__(widget)
+        self.setBackgroundBrush(QColor(105, 105, 105))
+
+        self.onlineAnimation()
+        self.offlineAnimation()
+
+    def _set_color(self, col):
+        self.setBackgroundBrush(col)
+
+    def onlineAnimation(self):
+        """上线动画"""
+        self.onlineCol = QPropertyAnimation(self, b'color')
+        self.onlineCol.setDuration(1000)
+        self.onlineCol.setStartValue(QColor(105, 105, 105))
+        # self.onlineCol.setKeyValueAt(0.1, QColor(255, 255, 240))
+        self.onlineCol.setEndValue(QColor(47, 79, 79))
+
+    def offlineAnimation(self):
+        """离线动画"""
+        self.offlineCol = QPropertyAnimation(self, b'color')
+        self.offlineCol.setDuration(1000)
+        self.offlineCol.setStartValue(QColor(47, 79, 79))
+        # self.offlineCol.setKeyValueAt(0.1, QColor(255, 255, 240))
+        self.offlineCol.setEndValue(QColor(105, 105, 105))
+
+    color = pyqtProperty(QColor, fset=_set_color)
 
 
 class MainWidget(QMainWindow):
@@ -148,9 +200,9 @@ class MainWidget(QMainWindow):
         fileMenu.addAction(menuAction5)
 
     def initUI(self):
-        self.resize(1280, 720)
+        self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.02.28')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -158,11 +210,14 @@ class MainWidget(QMainWindow):
 
     def iniGrid(self):
         # 主窗体
-        self.mainwidget = QWidget()
+        self.mainwidget = QGraphicsView()
+        self.scene = TcpBackgroudScene(self.mainwidget)  # 创建场景
+        self.mainwidget.setScene(self.scene)  # 添加场景
+
         self.mainwidget.setFont(QtGui.QFont("75 10pt Microsoft YaHei"))
         self.maingrid = QGridLayout()
         self.mainwidget.setLayout(self.maingrid)
-        self.mainwidget.setObjectName("mainwidget")
+        # self.mainwidget.setObjectName("mainwidget")
         self.setCentralWidget(self.mainwidget)
         self.maingrid.setRowStretch(0, 0)
 
@@ -171,7 +226,7 @@ class TcpThread(QtCore.QThread):
     recv_signal = QtCore.pyqtSignal(str)
     send_signal = QtCore.pyqtSignal(str)
 
-    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn):
+    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, scene):
         super().__init__()
         self.s = socketcp
         self.yqtool = Bianlifunction()
@@ -179,6 +234,7 @@ class TcpThread(QtCore.QThread):
         self.heartcheck = heartcheck
         self.sendBtn = senBtn
         self.bindBtn = bindBtn
+        self.scene = scene
 
     def run(self):
         """线程"""
@@ -214,6 +270,7 @@ class TcpThread(QtCore.QThread):
                 self.s.shutdown(2)
                 self.s.close()
                 self.onBtn.setText("上线")
+                self.scene.offlineCol.start()
                 self.heartcheck.setChecked(False)
                 self.heartcheck.setVisible(False)
                 self.sendBtn.setDisabled(True)
@@ -266,7 +323,7 @@ class OtuMonitor(MainWidget):
     def OtuMonitor_UI(self):
         # styleqss = open("otu.qss", "r", encoding='UTF-8')
         # styleinfo = styleqss.read()
-        styleinfo = 'QMainWindow{}QWidget#mainwidget{background-color:#2F4F4F;}QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:#2F4F4F;}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
+        styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
         self.mainwidget.setStyleSheet(styleinfo)
         # styleqss.close()
 
@@ -288,7 +345,8 @@ class OtuMonitor(MainWidget):
         self.entryOtuIMEI = QLineEdit()
         self.entryBTIMEI = QLineEdit()
 
-        data = open('D:\Tcptemp\data.txt', "r")
+        data = open('D:\\Tcptemp\\data.txt', "a+")
+        data.seek(0)  # 移动指针到头部
         historyinfo = data.read()  # 读取缓存文件data
         historyinfolist = historyinfo.split(",")
 
@@ -445,8 +503,8 @@ class OtuMonitor(MainWidget):
         self.labelqrode.setObjectName("qrlabel")
 
     def OtuMonitor_grid(self):
-        self.maingrid.setColumnStretch(0, 4)
-        self.maingrid.setColumnStretch(1, 1)
+        self.maingrid.setColumnStretch(0, 7)
+        self.maingrid.setColumnStretch(1, 2)
 
         # 左边窗体
         self.lefwidget = QWidget()
@@ -525,10 +583,12 @@ class OtuMonitor(MainWidget):
         # self.middlegrid.addWidget(self.btnCreatqrcode3, 12, 2)
 
     def setDefalut(self):
+        """默认按钮"""
         self.entryPort.setText("2103")
         self.entryIP.setText("192.168.6.52")
 
     def clearinfo(self, clearindex):
+        """清 空"""
         if clearindex == 1:
             self.textInput.clear()
         elif clearindex == 2:
@@ -539,6 +599,7 @@ class OtuMonitor(MainWidget):
             pass
 
     def sendTcpmsg(self):
+        """发 送"""
         msg = self.textInput.toPlainText()
         self.s.send(msg.encode())
         self.textSend.append(self.yqtool.timeNow() + " " + msg)
@@ -556,21 +617,24 @@ class OtuMonitor(MainWidget):
         Bt_IMEI = self.entryBTIMEI.text()
         sql = "SELECT mac FROM [sirui].[dbo].[Terminal] WHERE IMEI=\'" + Bt_IMEI + "\';"
         info = self.sqlserver.getinfo(sql)
-        mac = str(info)[4:-4]
+        mac = str(info)[3:-4]
 
         msg = '(1*f5|7|315,8_btu.CC2640.0_0113.release.0_BT_M_B1b.0.00_mac' + str(mac) + '_300,|)'
         self.s.send(msg.encode())
         self.textSend.append(self.yqtool.timeNow() + " " + msg)
 
     def fillsendmsg(self, message):
+        """填充发送历史"""
         self.textSend.append(self.yqtool.timeNow() + " " + message)
 
     def fillrecvmsg(self, message):
+        """填充接收历史"""
         self.textRecv.append(self.yqtool.timeNow() + " " + message)
 
     def go_online(self):
         """上线"""
         if self.onBtn.text() == "上线":
+            self.scene.onlineCol.start()  # 上线动画
             otu_IMEI = self.entryOtuIMEI.text()
             tcpadress = self.entryIP.text()
             tcpport = self.entryPort.text()
@@ -603,7 +667,7 @@ class OtuMonitor(MainWidget):
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport)  # IMEI保存到缓存文件data
             historydata.close()
 
-            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn)
+            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.scene)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
             self.tcpth.start()
@@ -612,9 +676,9 @@ class OtuMonitor(MainWidget):
             self.heartcheck.setVisible(True)
             self.sendBtn.setDisabled(False)
             self.bindBtn.setDisabled(False)
-            # frame2_c1['state'] = NORMAL
 
         elif self.onBtn.text() == "离线":
+            self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
             self.s.shutdown(2)
@@ -643,7 +707,7 @@ class OtuMonitor(MainWidget):
             if clientType == '16':
                 sql = "SELECT randomID FROM [sirui].[dbo].[Bluetooth] WHERE mac=\'" + Bt_IMEI + "\';"
                 info = self.sqlserver.getinfo(sql)
-                randomID = str(info)[4:-4]
+                randomID = str(info)[3:-4]
                 # randomID = 'ccafd8'
                 c = Bt_IMEI + '_' + randomID + '_0_copyright@sirui ChungKing'
             else:
