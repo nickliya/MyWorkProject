@@ -23,14 +23,17 @@ class Ball(QObject):
         super().__init__()
         # self.pixmap_item = QGraphicsPixmapItem(QPixmap("ball.png"))
         path = QPainterPath()
-        # path.addRect(20, 20, 60, 60)
-        path.moveTo(0, 0)
-        path.arcTo(10,100,100,10,200,70)
-        # path.cubicTo(0, 99, 50, 50, 0, 0)
+        path.moveTo(30, 30)
+        path.cubicTo(30, 30, 40, 120, 130, 130)
 
         self.pixmap_item = QGraphicsPathItem(path)
         self.pixmap_item.setBrush(QColor(122, 163, 39))
-        # self.pixmap_item = QGraphicsItem()
+
+        # self.transform = QTransform()
+        # self.transform.rotate(45.0)
+        # self.transform.translate(-50, -5)
+
+        # self.pixmap_item.setTransform(self.transform)
 
         self._set_pos(QPointF(5, 30))
 
@@ -107,7 +110,7 @@ class Example(Myview):
         self.maingrid = QGridLayout()
         self.setLayout(self.maingrid)
         self.maingrid.addWidget(self.btn, 0, 0)
-        self.maingrid.addWidget(self.btn2, 1, 0)
+        self.maingrid.addWidget(self.btn2, 0, 1)
         self.btn.clicked.connect(self.runAnim)
 
     def runAnim(self):
