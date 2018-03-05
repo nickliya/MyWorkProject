@@ -202,7 +202,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.02.29')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.03.05')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -307,6 +307,7 @@ class OtuMonitor(MainWidget):
         super(OtuMonitor, self).__init__()
         self.zu()
         self.sqlserver = Sqlfunticon()
+        self.num = 0
 
     # def inittoolBar(self):
     #     toolbarAction = QAction(u'保单系统', self)
@@ -332,6 +333,7 @@ class OtuMonitor(MainWidget):
         self.labelPort.setMaximumWidth(50)
         self.labelIP = QLabel("IP", self)
         self.labelIP.setMaximumWidth(20)
+        self.labelHardver = QLabel("硬件版本", self)
 
         self.labelOtuIMEI = QLabel(u"主机IMEI", self)
         self.labelBTIMEI = QLabel("蓝牙IMEI", self)
@@ -344,18 +346,26 @@ class OtuMonitor(MainWidget):
         self.entryIP = QLineEdit()
         self.entryOtuIMEI = QLineEdit()
         self.entryBTIMEI = QLineEdit()
+        self.entryHardver = QLineEdit()
 
         data = open('D:\\Tcptemp\\data.txt', "a+")
         data.seek(0)  # 移动指针到头部
         historyinfo = data.read()  # 读取缓存文件data
         historyinfolist = historyinfo.split(",")
-
-        self.entryOtuIMEI.insert(historyinfolist[0])
         data.close()
-        if len(historyinfolist) == 3:
+
+        try:
+            self.entryOtuIMEI.insert(historyinfolist[0])
             self.entryPort.insert(historyinfolist[2])
-        if len(historyinfolist) == 2 or len(historyinfolist) == 3:
             self.entryIP.insert(historyinfolist[1])
+            self.entryHardver.insert(historyinfolist[3])
+        except IndexError as msg:
+            print(msg)
+
+        # if len(historyinfolist) == 3:
+        #     self.entryPort.insert(historyinfolist[2])
+        # if len(historyinfolist) == 2 or len(historyinfolist) == 3:
+        #     self.entryIP.insert(historyinfolist[1])
 
         self.defalBtn = QPushButton(u"默认")
         self.onBtn = QPushButton(u"上线")
@@ -443,6 +453,7 @@ class OtuMonitor(MainWidget):
         self.Btn20 = QPushButton(u"里程313")
         self.Btn21 = QPushButton(u"里程614新")
         self.Btn22 = QPushButton(u"里程320")
+        self.Btn23 = QPushButton(u"单程421")
 
         # stylesheet = "QPushButton{border-image: url('qrcode.png');}"
         # self.Btn22.setStyleSheet(stylesheet)
@@ -483,6 +494,7 @@ class OtuMonitor(MainWidget):
         self.Btn20.clicked.connect(lambda: self.btnclickevent(self.Btn20))
         self.Btn21.clicked.connect(lambda: self.btnclickevent(self.Btn21))
         self.Btn22.clicked.connect(lambda: self.btnclickevent(self.Btn22))
+        self.Btn23.clicked.connect(self.dancheng)
         # for i in self.btnlist:
         #     i.clicked.connect(lambda: self.btnclickevent(i))
 
@@ -520,29 +532,30 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.entryPort, 0, 1)
         self.leftgrid.addWidget(self.labelIP, 0, 2)
         self.leftgrid.addWidget(self.entryIP, 0, 3)
-        self.leftgrid.addWidget(self.seleOtu, 0, 4)
-        self.leftgrid.addWidget(self.seleAudi, 0, 5)
-        self.leftgrid.addWidget(self.seleBuick, 0, 6)
-        self.leftgrid.addWidget(self.defalBtn, 0, 7)
-
+        self.leftgrid.addWidget(self.labelHardver, 0, 4)
+        self.leftgrid.addWidget(self.entryHardver, 0, 5)
+        self.leftgrid.addWidget(self.seleOtu, 0, 6)
+        self.leftgrid.addWidget(self.seleAudi, 0, 7)
+        self.leftgrid.addWidget(self.seleBuick, 0, 8)
+        self.leftgrid.addWidget(self.defalBtn, 0, 9)
         self.leftgrid.addWidget(self.labelOtuIMEI, 1, 0)
-        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 6)
-        self.leftgrid.addWidget(self.onBtn, 1, 7)
+        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 8)
+        self.leftgrid.addWidget(self.onBtn, 1, 9)
 
         self.leftgrid.addWidget(self.labelBTIMEI, 2, 0)
-        self.leftgrid.addWidget(self.entryBTIMEI, 2, 1, 1, 6)
-        self.leftgrid.addWidget(self.bindBtn, 2, 7)
+        self.leftgrid.addWidget(self.entryBTIMEI, 2, 1, 1, 8)
+        self.leftgrid.addWidget(self.bindBtn, 2, 9)
         self.leftgrid.addWidget(self.labelInput, 3, 0, 1, 2)
         self.leftgrid.addWidget(self.heartcheck, 3, 3, QtCore.Qt.AlignCenter)
-        self.leftgrid.addWidget(self.clearBtn, 3, 6)
-        self.leftgrid.addWidget(self.sendBtn, 3, 7)
-        self.leftgrid.addWidget(self.textInput, 4, 0, 1, 8)
-        self.leftgrid.addWidget(self.labelSendHistory, 5, 0, 1, 5)
-        self.leftgrid.addWidget(self.clearBtn2, 5, 7)
-        self.leftgrid.addWidget(self.textSend, 6, 0, 1, 8)
-        self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 2)
-        self.leftgrid.addWidget(self.clearBtn3, 7, 7)
-        self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 8)
+        self.leftgrid.addWidget(self.clearBtn, 3, 8)
+        self.leftgrid.addWidget(self.sendBtn, 3, 9)
+        self.leftgrid.addWidget(self.textInput, 4, 0, 1, 10)
+        self.leftgrid.addWidget(self.labelSendHistory, 5, 0, 1, 7)
+        self.leftgrid.addWidget(self.clearBtn2, 5, 9)
+        self.leftgrid.addWidget(self.textSend, 6, 0, 1, 10)
+        self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 4)
+        self.leftgrid.addWidget(self.clearBtn3, 7, 9)
+        self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 10)
 
         # 中间窗体
         self.middlewiget = QWidget()
@@ -572,6 +585,7 @@ class OtuMonitor(MainWidget):
         self.middlegrid.addWidget(self.Btn20, 6, 1)
         self.middlegrid.addWidget(self.Btn21, 6, 2)
         self.middlegrid.addWidget(self.Btn22, 7, 0)
+        self.middlegrid.addWidget(self.Btn23, 7, 1)
 
         self.middlegrid.addWidget(self.labelmsg, 11, 0)
         self.middlegrid.addWidget(self.entrymsg, 11, 1, 1, 2)
@@ -586,6 +600,7 @@ class OtuMonitor(MainWidget):
         """默认按钮"""
         self.entryPort.setText("2103")
         self.entryIP.setText("192.168.6.52")
+        self.entryHardver.setText("01022300")
 
     def clearinfo(self, clearindex):
         """清 空"""
@@ -634,12 +649,16 @@ class OtuMonitor(MainWidget):
     def go_online(self):
         """上线"""
         if self.onBtn.text() == "上线":
-            self.scene.onlineCol.start()  # 上线动画
             otu_IMEI = self.entryOtuIMEI.text()
             tcpadress = self.entryIP.text()
             tcpport = self.entryPort.text()
+            hardver = self.entryHardver.text()
             r_blank = r'\d*\d'
             IMEI_NUM = re.findall(r_blank, otu_IMEI)
+            if not IMEI_NUM:
+                self.textRecv.append("未输入IEMI")
+                return False
+
             if self.seleOtu.isChecked():
                 loginType = "ost"
             elif self.seleAudi.isChecked():
@@ -655,16 +674,19 @@ class OtuMonitor(MainWidget):
                 appendinfo = errorinfo[2].strerror
                 self.textRecv.append(appendinfo)
                 return False
+
+            self.scene.onlineCol.start()  # 上线动画
+
             # s.send('(1*7c|a3|106,201|101,' + str(
             #     IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
             loginMsg = '(1*7c|a3|106,201|101,' + str(
-                IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',01022300|105,a1,18|622,a1c2|)'
+                IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',' + str(hardver)+'|105,a1,18|622,a1c2|)'
 
             self.s.send(loginMsg.encode())  # 商用去掉103
             self.textSend.append(self.yqtool.timeNow() + " " + loginMsg)
 
             historydata = open('D:\Tcptemp\data.txt', "w")  # 生成缓存文件data
-            historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport)  # IMEI保存到缓存文件data
+            historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
             self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.scene)
@@ -684,6 +706,13 @@ class OtuMonitor(MainWidget):
             self.s.shutdown(2)
         else:
             pass
+
+    def dancheng(self):
+        u"""单程"""
+        self.num += 1
+        hexnum = "%x" % self.num
+        msg = "(1*b4|7|421," + hexnum + ",ab0,59d8,0,0,8,2|)"
+        self.textInput.append(msg)
 
     def sendHeart(self):
         if self.heartcheck.isChecked():
