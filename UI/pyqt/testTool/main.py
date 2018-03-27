@@ -202,7 +202,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.03.05')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.03.27')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -226,7 +226,7 @@ class TcpThread(QtCore.QThread):
     recv_signal = QtCore.pyqtSignal(str)
     send_signal = QtCore.pyqtSignal(str)
 
-    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, scene):
+    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, scene, wg315Btn):
         super().__init__()
         self.s = socketcp
         self.yqtool = Bianlifunction()
@@ -235,6 +235,7 @@ class TcpThread(QtCore.QThread):
         self.sendBtn = senBtn
         self.bindBtn = bindBtn
         self.scene = scene
+        self.wg315Btn = wg315Btn
 
     def run(self):
         """线程"""
@@ -275,6 +276,7 @@ class TcpThread(QtCore.QThread):
                 self.heartcheck.setVisible(False)
                 self.sendBtn.setDisabled(True)
                 self.bindBtn.setDisabled(True)
+                self.wg315Btn.setDisabled(True)
             else:
                 self.recv_signal.emit(tcpreceive)
             if stopsingle == 1:
@@ -347,6 +349,8 @@ class OtuMonitor(MainWidget):
         self.entryOtuIMEI = QLineEdit()
         self.entryBTIMEI = QLineEdit()
         self.entryHardver = QLineEdit()
+        self.entrywaiguadev = QLineEdit()
+        self.entrywaiguadev.setPlaceholderText("产品型号")
 
         data = open('D:\\Tcptemp\\data.txt', "a+")
         data.seek(0)  # 移动指针到头部
@@ -376,6 +380,8 @@ class OtuMonitor(MainWidget):
         self.clearBtn = QPushButton(u"清空")
         self.clearBtn2 = QPushButton(u"清空")
         self.clearBtn3 = QPushButton(u"清空")
+        self.wg315Btn = QPushButton(u"315")
+        self.wg315Btn.setDisabled(True)
 
         self.seleOtu = QRadioButton(u"otu")
         self.seleOtu.setFont(QtGui.QFont("dsa"))
@@ -470,6 +476,8 @@ class OtuMonitor(MainWidget):
         self.clearBtn3.clicked.connect(lambda: self.clearinfo(3))
         self.Btn9.clicked.connect(self.sendEN)
         self.bindBtn.clicked.connect(self.bindBt)
+        self.wg315Btn.clicked.connect(self.waiguadev)
+
         self.heartcheck.stateChanged.connect(self.sendHeart)
 
         self.Btn1.clicked.connect(lambda: self.btnclickevent(self.Btn1))
@@ -543,8 +551,11 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.onBtn, 1, 9)
 
         self.leftgrid.addWidget(self.labelBTIMEI, 2, 0)
-        self.leftgrid.addWidget(self.entryBTIMEI, 2, 1, 1, 8)
-        self.leftgrid.addWidget(self.bindBtn, 2, 9)
+        self.leftgrid.addWidget(self.entryBTIMEI, 2, 1, 1, 3)
+        self.leftgrid.addWidget(self.bindBtn, 2, 4)
+        self.leftgrid.addWidget(self.entrywaiguadev, 2, 5, 1, 4)
+        self.leftgrid.addWidget(self.wg315Btn, 2, 9)
+
         self.leftgrid.addWidget(self.labelInput, 3, 0, 1, 2)
         self.leftgrid.addWidget(self.heartcheck, 3, 3, QtCore.Qt.AlignCenter)
         self.leftgrid.addWidget(self.clearBtn, 3, 8)
@@ -638,6 +649,12 @@ class OtuMonitor(MainWidget):
         self.s.send(msg.encode())
         self.textSend.append(self.yqtool.timeNow() + " " + msg)
 
+    def waiguadev(self):
+        """315外挂设备"""
+        wgdev = self.entrywaiguadev.text()
+        msg = ' (1*2c|2|315,3_' + str(wgdev) + '_0548.release.1_b4_a1_rf444.0.0212_300,|)'
+        self.textInput.insertPlainText(msg)
+
     def fillsendmsg(self, message):
         """填充发送历史"""
         self.textSend.append(self.yqtool.timeNow() + " " + message)
@@ -689,7 +706,7 @@ class OtuMonitor(MainWidget):
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
-            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.scene)
+            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.scene, self.wg315Btn)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
             self.tcpth.start()
@@ -698,6 +715,7 @@ class OtuMonitor(MainWidget):
             self.heartcheck.setVisible(True)
             self.sendBtn.setDisabled(False)
             self.bindBtn.setDisabled(False)
+            self.wg315Btn.setDisabled(False)
 
         elif self.onBtn.text() == "离线":
             self.scene.offlineCol.start()
