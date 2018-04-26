@@ -20,7 +20,7 @@ else:
 
 threads = []
 root = Tk()
-root.title('otu设备模拟器 version:2018.02.06')
+root.title('otu设备模拟器 version:2018.02.24')
 
 root.columnconfigure(0, weight=1)
 root.columnconfigure(2, weight=1)
@@ -80,7 +80,7 @@ framentry_bt.rowconfigure(9, weight=1)
 framentry_bt.rowconfigure(10, weight=1)
 
 frame2_l1 = Label(framentry_bt, text='不使用了请离线\n需挂机保持连接请\n勾选心跳')
-frame2_l1.grid(row=12, column=0, columnspan=2, sticky=N + S + E + W)
+frame2_l1.grid(row=13, column=0, columnspan=2, sticky=N + S + E + W)
 
 # frame_qr
 frame_qr.columnconfigure(0, weight=1)
@@ -136,6 +136,7 @@ stopsingle = 0  # 停止信号
 tkimg = None  # 图片
 s = None  # soket连接
 loginType = "ost"  # 登陆方式
+num = 0  # 编号
 
 
 def Btbd():
@@ -175,7 +176,7 @@ def sx():
         stopsingle = 0
         while 1:
             tcpreceive = s.recv(1024)
-            xinfo = re.findall(r'\|(\w\w\w),', tcpreceive) # 检测是否为控制协议
+            xinfo = re.findall(r'\|(\w\w\w),', tcpreceive)  # 检测是否为控制协议
             # x = tcpreceive[7:10]  # 检测是否为控制协议
             # if x == '511' or x == '512' or x == '513' or x == '514' or x == '515' or x == '516' or x == '517' \
             #         or x == '518' or x == '519' or x == '51A' or x == '51B' or x == '51C':
@@ -189,7 +190,7 @@ def sx():
                     "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51A": "开天窗",
                     "51B": "通油", "51C": "断油",
                 }
-                r = r'\(\*..\|7\|\d\d\w,\w*?,\d\|\)'
+                r = r'\(\*..\|7\|\d\d\w,\w*?,\w*?\|\)'
                 datainfo = re.findall(r, tcpreceive)
                 str_data = str(datainfo[0])
                 print('recv:' + protocol_dic[str_data[7:10]] + str_data)
@@ -236,7 +237,19 @@ def lx():
 
 def fz():
     u"""能力赋值"""
-    s.send('(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100|)')
+    msg = '(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100|)'
+    t1.insert(END, msg)
+    t1.update()
+
+
+def dc():
+    u"""单程"""
+    global num
+    num += 1
+    hexnum = "%x" % num
+    msg = "(1*b4|7|421,"+hexnum+",ab0,59d8,0,0,8,2|)"
+    t1.insert(END, msg)
+    t1.update()
 
 
 def send():
@@ -283,6 +296,7 @@ def sbwz():
 
         utc_tran = local2utc(local_time)
         # nowtime = utc_tran.strftime('%Y%m%d%H%M%S')
+        year = utc_tran.strftime('%Y')
         month = utc_tran.strftime('%m')
         day = utc_tran.strftime('%d')
         hour = utc_tran.strftime('%H')
@@ -293,18 +307,22 @@ def sbwz():
         if newminute < 0:
             newminute = newminute + 60
             hour = int(hour) - 1
+            if hour < 0:
+                hour = hour + 24
+                day = int(day) - 1
         else:
             pass
 
+        Y = '%x' % int(year[-2:])
         m = '%x' % int(month)
         d = '%x' % int(day)
         H = '%x' % int(hour)
         M = '%x' % newminute
         Sec = '%x' % int(second)
-        strhextime = str(m) + ',' + str(d) + ',' + str(H) + ',' + str(M) + ',' + str(Sec)
+        strhextime = str(Y) + ',' + str(m) + ',' + str(d) + ',' + str(H) + ',' + str(M) + ',' + str(Sec)
         return strhextime
 
-    timeinfo = '(1*b2|7|30d,11,' + hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
+    timeinfo = '(1*b2|7|30d,' + hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
     t1.insert(END, timeinfo)
     t1.update()
 
@@ -438,7 +456,7 @@ otuRadioBtn2.grid(row=2, column=1)
 otuRadioBtn3.grid(row=2, column=2)
 
 # frame2
-frame2_b1 = Button(framentry_bt, text='能力', command=fz, cursor="circle")
+frame2_b1 = Button(framentry_bt, text='能力', command=fz)
 frame2_b2 = Button(framentry_bt, text='设防')
 frame2_b3 = Button(framentry_bt, text='引擎')
 frame2_b4 = Button(framentry_bt, text='门锁')
@@ -460,6 +478,7 @@ frame2_b19 = Button(framentry_bt, text='里程614')
 frame2_b20 = Button(framentry_bt, text='里程313')
 frame2_b21 = Button(framentry_bt, text='里程614新')
 frame2_b22 = Button(framentry_bt, text='里程320')
+frame2_b23 = Button(framentry_bt, text='单程421', command=dc)
 
 frame2_b2.bind("<Button-1>", showpic)
 frame2_b3.bind("<Button-1>", showpic)
@@ -504,10 +523,11 @@ frame2_b19.grid(row=9, column=0, sticky=N + S + W + E)
 frame2_b20.grid(row=9, column=1, sticky=N + S + W + E)
 frame2_b21.grid(row=10, column=0, sticky=N + S + W + E)
 frame2_b22.grid(row=10, column=1, sticky=N + S + W + E)
+frame2_b23.grid(row=11, column=0, columnspan=2, sticky=N + S + W + E)
 
 heart_v = IntVar()
 frame2_c1 = Checkbutton(framentry_bt, text='心跳挂机', variable=heart_v, command=xt, state=DISABLED)
-frame2_c1.grid(row=11, column=0, columnspan=2, sticky=E + W + S)
+frame2_c1.grid(row=12, column=0, columnspan=2, sticky=E + W + S)
 
 # frame3
 frame3_b1 = Button(frame_qr, text='生成普通二维码', command=createrqimg)
