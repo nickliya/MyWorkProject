@@ -44,6 +44,7 @@ class Bianlifunction:
     def BSJhextime():
         now_stamp = time.time()
         local_time = datetime.datetime.fromtimestamp(now_stamp)
+
         def local2utc(local_st):
             time_struct = time.mktime(local_st.timetuple())
             utc_st = datetime.datetime.utcfromtimestamp(time_struct)
@@ -244,7 +245,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.04.23')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -336,7 +337,7 @@ class BSJTcpThread(QtCore.QThread):
         self.onBtn = onBtn
         self.heartcheck = heartcheck
         self.sendBtn = senBtn
-        self.scene = scene
+        self.scene1 = scene
 
     def run(self):
         """线程"""
@@ -344,13 +345,24 @@ class BSJTcpThread(QtCore.QThread):
         stopsingle = 0
         while 1:
             btcpreceive = self.s.recv(1024)
-            tcpreceive = str(binascii.b2a_hex(btcpreceive), encoding="utf-8")
+            tcpreceive1 = str(binascii.b2a_hex(btcpreceive), encoding="utf-8")
+
+            tcpreceive = ""
+            i = 0
+            while i < len(tcpreceive1) - 1:  # 十六进制数据处理,两个字节隔开
+                if i == len(tcpreceive1) - 2:
+                    tcpreceive += tcpreceive1[i:i + 2]
+                    i += 2
+                else:
+                    tcpreceive += tcpreceive1[i:i + 2] + " "
+                    i += 2
+
             if tcpreceive == "":
                 stopsingle = 1
                 self.s.shutdown(2)
                 self.s.close()
                 self.onBtn.setText("连接")
-                self.scene.offlineCol.start()
+                self.scene1.offlineCol.start()
                 self.heartcheck.setChecked(False)
                 self.heartcheck.setVisible(False)
                 self.sendBtn.setDisabled(True)
@@ -671,7 +683,6 @@ class OtuMonitor(MainWidget):
         self.middlegrid.addWidget(self.entrymsg, 11, 1, 1, 2)
         self.middlegrid.addWidget(self.btnCreatqrcode, 12, 0, 1, 3, QtCore.Qt.AlignLeft)
         self.middlegrid.addWidget(self.btnCreatqrcode2, 12, 0, 1, 3, QtCore.Qt.AlignRight)
-        self.middlegrid.addWidget(self.btnCreatqrcode2, 12, 0, 1, 3, QtCore.Qt.AlignRight)
         self.middlegrid.addWidget(self.labelqrode, 13, 0, 1, 3, QtCore.Qt.AlignCenter)
 
         # self.middlegrid.addWidget(self.btnCreatqrcode3, 12, 2)
@@ -894,6 +905,7 @@ class BSJMonitor(MainWidget):
         self.gpsbox.setLayout(self.gpsboxGrid)
         self.labelsatelliteCount = QLabel(u"星数", self)
         self.entrysatelliteCount = QLineEdit()
+        self.entrysatelliteCount.setMaximumWidth(50)
         self.entrysatelliteCount.insert("13")
         self.labelLat = QLabel(u"经度", self)
         self.entryLat = QLineEdit()
@@ -903,7 +915,11 @@ class BSJMonitor(MainWidget):
         self.entryLng.insert("29.61881556261095")
         self.labelSpeed = QLabel(u"速度", self)
         self.entrySpeed = QLineEdit()
+        self.entrySpeed.setMaximumWidth(50)
         self.entrySpeed.insert("60")
+        self.labelCourse = QLabel(u"航向", self)
+        self.entryCourse = QLineEdit()
+        self.entryCourse.setMaximumWidth(50)
         self.gpsdataCreatebtn = QPushButton(u"生成")
 
         # 告警box
@@ -922,7 +938,7 @@ class BSJMonitor(MainWidget):
         self.labelvoltage = QLabel(u"电压", self)
         self.entryvoltage = QLineEdit()
         self.entryvoltage.insert("1200")
-        self.labelAcceleration = QLabel(u"加速度最大差值", self)
+        self.labelAcceleration = QLabel(u"加速度\n最大差值", self)
         self.entryAcceleration = QLineEdit()
         self.entryAcceleration.insert("484")
 
@@ -1049,22 +1065,9 @@ class BSJMonitor(MainWidget):
         self.gpsboxGrid.addWidget(self.entryLng, 0, 5)
         self.gpsboxGrid.addWidget(self.labelSpeed, 0, 6)
         self.gpsboxGrid.addWidget(self.entrySpeed, 0, 7)
-        self.gpsboxGrid.addWidget(self.gpsdataCreatebtn, 0, 8)
-
-        self.leftgrid.addWidget(self.alarmbox, 3, 0, 1, 6)
-        self.alarmboxGrid.addWidget(self.checkbox1, 0, 0)
-        self.alarmboxGrid.addWidget(self.checkbox2, 0, 1)
-        self.alarmboxGrid.addWidget(self.checkbox3, 0, 2)
-        self.alarmboxGrid.addWidget(self.checkbox4, 0, 3)
-        self.alarmboxGrid.addWidget(self.checkbox5, 0, 4)
-        self.alarmboxGrid.addWidget(self.checkbox6, 0, 5)
-        self.alarmboxGrid.addWidget(self.checkbox7, 0, 6)
-        self.alarmboxGrid.addWidget(self.checkbox8, 0, 7)
-        self.alarmboxGrid.addWidget(self.labelvoltage, 0, 8)
-        self.alarmboxGrid.addWidget(self.entryvoltage, 0, 9)
-        self.alarmboxGrid.addWidget(self.labelAcceleration, 0, 10)
-        self.alarmboxGrid.addWidget(self.entryAcceleration, 0, 11)
-        self.alarmboxGrid.addWidget(self.alarmdataCreatebtn, 0, 12)
+        self.gpsboxGrid.addWidget(self.labelCourse, 0, 8)
+        self.gpsboxGrid.addWidget(self.entryCourse, 0, 9)
+        self.gpsboxGrid.addWidget(self.gpsdataCreatebtn, 0, 10)
 
         self.leftgrid.addWidget(self.heartbeatbox, 4, 0, 1, 6)
         self.heartbeatboxGrid.addWidget(self.labelGSM, 0, 0)
@@ -1095,12 +1098,26 @@ class BSJMonitor(MainWidget):
         self.middlewiget.setLayout(self.middlegrid)
         self.maingrid.addWidget(self.middlewiget, 0, 1)
 
-        self.middlegrid.addWidget(self.labelmsg, 11, 0)
-        self.middlegrid.addWidget(self.entrymsg, 11, 1, 1, 2)
-        self.middlegrid.addWidget(self.btnCreatqrcode, 12, 0, 1, 3, QtCore.Qt.AlignLeft)
-        self.middlegrid.addWidget(self.btnCreatqrcode2, 12, 0, 1, 3, QtCore.Qt.AlignRight)
-        self.middlegrid.addWidget(self.btnCreatqrcode2, 12, 0, 1, 3, QtCore.Qt.AlignRight)
-        self.middlegrid.addWidget(self.labelqrode, 13, 0, 1, 3, QtCore.Qt.AlignCenter)
+        self.middlegrid.addWidget(self.alarmbox, 0, 0, 1, 3)
+        self.alarmboxGrid.addWidget(self.checkbox1, 0, 0)
+        self.alarmboxGrid.addWidget(self.checkbox2, 0, 1)
+        self.alarmboxGrid.addWidget(self.checkbox3, 0, 2)
+        self.alarmboxGrid.addWidget(self.checkbox4, 1, 0)
+        self.alarmboxGrid.addWidget(self.checkbox5, 1, 1)
+        self.alarmboxGrid.addWidget(self.checkbox6, 1, 2)
+        self.alarmboxGrid.addWidget(self.checkbox7, 2, 0)
+        self.alarmboxGrid.addWidget(self.checkbox8, 2, 1)
+        self.alarmboxGrid.addWidget(self.labelvoltage, 3, 0)
+        self.alarmboxGrid.addWidget(self.entryvoltage, 3, 1)
+        self.alarmboxGrid.addWidget(self.labelAcceleration, 4, 0)
+        self.alarmboxGrid.addWidget(self.entryAcceleration, 4, 1)
+        self.alarmboxGrid.addWidget(self.alarmdataCreatebtn, 4, 2)
+
+        self.middlegrid.addWidget(self.labelmsg, 3, 0)
+        self.middlegrid.addWidget(self.entrymsg, 3, 1, 1, 2)
+        self.middlegrid.addWidget(self.btnCreatqrcode, 4, 0, 1, 3, QtCore.Qt.AlignLeft)
+        self.middlegrid.addWidget(self.btnCreatqrcode2, 4, 0, 1, 3, QtCore.Qt.AlignRight)
+        self.middlegrid.addWidget(self.labelqrode, 5, 0, 1, 3, QtCore.Qt.AlignCenter)
 
     def bsjsetDefalut(self):
         """默认按钮"""
@@ -1141,7 +1158,12 @@ class BSJMonitor(MainWidget):
         hexlng = hexlng[0:2] + " " + hexlng[2:4] + " " + hexlng[4:6] + " " + hexlng[-2:]
 
         speed = ('%x' % int(self.entrySpeed.text())).zfill(2)
-        data = "78 78 22 22 " + self.yqtool.BSJhextime() + "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " 14 8f 01 cc 00 28 7d 00 1f b8 01 01 00 00 03 80 81 0d 0a"
+
+        course1 = ('%x' % int('000101' + bin(int(self.entryCourse.text()))[2:].zfill(10)[:2], 2)).zfill(2)
+        course2 = ('%x' % int((bin(int(self.entryCourse.text()))[2:].zfill(10)[-8:]), 2)).zfill(2)
+        course = course1 + " " + course2
+
+        data = "78 78 22 22 " + self.yqtool.BSJhextime() + "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course + " 01 cc 00 28 7d 00 1f b8 01 01 00 00 03 80 81 0d 0a"
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
@@ -1170,9 +1192,11 @@ class BSJMonitor(MainWidget):
 
         acceleration = self.entryAcceleration.text()
         accelerationdatahex = ('%x' % int(acceleration)).zfill(8)
-        accelerationdata = accelerationdatahex[0:2] + " " + accelerationdatahex[2:4] + " " + accelerationdatahex[4:6] + " " + accelerationdatahex[-2:]
+        accelerationdata = accelerationdatahex[0:2] + " " + accelerationdatahex[2:4] + " " + accelerationdatahex[
+                                                                                             4:6] + " " + accelerationdatahex[
+                                                                                                          -2:]
 
-        data = "78 78 41 26 10 0B 0A 09 05 31 C5 02 6D DE C0 0C 3B FE E6 00 15 54 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " EB 1B 05 01 00 00 00 AE 03 02 00 EB 05 03 " + accelerationdata + " 03 04 "+voltagedata+" 02 05 0E 03 06 FF FC 00 93 68 6F 0D 0A"
+        data = "78 78 41 26 10 0B 0A 09 05 31 C5 02 6D DE C0 0C 3B FE E6 00 15 54 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " EB 1B 05 01 00 00 00 AE 03 02 00 EB 05 03 " + accelerationdata + " 03 04 " + voltagedata + " 02 05 0E 03 06 FF FC 00 93 68 6F 0D 0A"
         self.textInput.insertPlainText(data)
 
     def heartbeatdatacreate(self):
@@ -1272,7 +1296,7 @@ class BSJMonitor(MainWidget):
             self.sendBtn.setDisabled(False)
 
         elif self.onBtn.text() == "离线":
-            self.scene.offlineCol.start()
+            # self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
             self.s.shutdown(2)
