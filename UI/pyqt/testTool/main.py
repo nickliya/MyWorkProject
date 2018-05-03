@@ -165,6 +165,11 @@ class TcpBackgroudScene(QGraphicsScene):
         # self.offlineCol.setKeyValueAt(0.1, QColor(255, 255, 240))
         self.offlineCol.setEndValue(QColor(105, 105, 105))
 
+    def threadAnimate(self, message):
+        """多线程离线动画信号"""
+        if message == "1":
+            self.offlineCol.start()
+
     color = pyqtProperty(QColor, fset=_set_color)
 
 
@@ -268,8 +273,9 @@ class MainWidget(QMainWindow):
 class TcpThread(QtCore.QThread):
     recv_signal = QtCore.pyqtSignal(str)
     send_signal = QtCore.pyqtSignal(str)
+    animate_signal = QtCore.pyqtSignal(str)
 
-    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, scene, wg315Btn):
+    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, wg315Btn):
         super().__init__()
         self.s = socketcp
         self.yqtool = Bianlifunction()
@@ -277,7 +283,6 @@ class TcpThread(QtCore.QThread):
         self.heartcheck = heartcheck
         self.sendBtn = senBtn
         self.bindBtn = bindBtn
-        self.scene = scene
         self.wg315Btn = wg315Btn
 
     def run(self):
@@ -314,7 +319,7 @@ class TcpThread(QtCore.QThread):
                 self.s.shutdown(2)
                 self.s.close()
                 self.onBtn.setText("上线")
-                self.scene.offlineCol.start()
+                self.animate_signal.emit("1")
                 self.heartcheck.setChecked(False)
                 self.heartcheck.setVisible(False)
                 self.sendBtn.setDisabled(True)
@@ -329,15 +334,15 @@ class TcpThread(QtCore.QThread):
 class BSJTcpThread(QtCore.QThread):
     recv_signal = QtCore.pyqtSignal(str)
     send_signal = QtCore.pyqtSignal(str)
+    animate_signal = QtCore.pyqtSignal(str)
 
-    def __init__(self, socketcp, onBtn, heartcheck, senBtn, scene):
+    def __init__(self, socketcp, onBtn, heartcheck, senBtn):
         super().__init__()
         self.s = socketcp
         self.yqtool = Bianlifunction()
         self.onBtn = onBtn
         self.heartcheck = heartcheck
         self.sendBtn = senBtn
-        self.scene1 = scene
 
     def run(self):
         """线程"""
@@ -362,7 +367,7 @@ class BSJTcpThread(QtCore.QThread):
                 self.s.shutdown(2)
                 self.s.close()
                 self.onBtn.setText("连接")
-                self.scene1.offlineCol.start()
+                self.animate_signal.emit("1")
                 self.heartcheck.setChecked(False)
                 self.heartcheck.setVisible(False)
                 self.sendBtn.setDisabled(True)
@@ -787,10 +792,10 @@ class OtuMonitor(MainWidget):
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
-            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.scene,
-                                   self.wg315Btn)
+            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.wg315Btn)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
+            self.tcpth.animate_signal.connect(self.scene.threadAnimate)
             self.tcpth.start()
 
             self.onBtn.setText("离线")
@@ -1286,9 +1291,10 @@ class BSJMonitor(MainWidget):
                 conf.write(configfile)
                 configfile.close()
 
-            self.tcpth = BSJTcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.scene)
+            self.tcpth = BSJTcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
+            self.tcpth.animate_signal.connect(self.scene.threadAnimate)
             self.tcpth.start()
 
             self.onBtn.setText("离线")
@@ -1296,7 +1302,7 @@ class BSJMonitor(MainWidget):
             self.sendBtn.setDisabled(False)
 
         elif self.onBtn.text() == "离线":
-            # self.scene.offlineCol.start()
+            self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
             self.s.shutdown(2)
