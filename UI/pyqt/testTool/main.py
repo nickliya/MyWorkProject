@@ -744,7 +744,10 @@ class OtuMonitor(MainWidget):
         """发 送"""
         msg = self.textInput.toPlainText()
         self.s.send(msg.encode())
-        self.textSend.append(self.yqtool.timeNow() + " " + msg)
+        self.textSend.setTextColor(QColor("#FF3030"))
+        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.setTextColor(QColor("#FFFFFF"))
+        self.textSend.insertPlainText(msg)
         self.textInput.clear()
 
     def sendEN(self):
@@ -823,7 +826,10 @@ class OtuMonitor(MainWidget):
                 hardver) + '|105,a1,18|622,a1c2|)'
 
             self.s.send(loginMsg.encode())  # 商用去掉103
-            self.textSend.append(self.yqtool.timeNow() + " " + loginMsg)
+            self.textSend.setTextColor(QColor("#FF3030"))
+            self.textSend.append(self.yqtool.timeNow() + " ")
+            self.textSend.setTextColor(QColor("#FFFFFF"))
+            self.textSend.insertPlainText(loginMsg)
 
             historydata = open('D:\Tcptemp\data.txt', "w")  # 生成缓存文件data
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
