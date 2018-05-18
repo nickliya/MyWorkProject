@@ -250,7 +250,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.07')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.18')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -374,58 +374,6 @@ class BSJTcpThread(QtCore.QThread):
             else:
                 self.recv_signal.emit(tcpreceive)
             if stopsingle == 1:
-                break
-
-
-class HeartThread(QtCore.QThread):
-    recv_signal = QtCore.pyqtSignal(str)
-    send_signal = QtCore.pyqtSignal(str)
-
-    def __init__(self, socketcp, heartcheck):
-        super().__init__()
-        self.s = socketcp
-        self.heartcheck = heartcheck
-
-    def run(self):
-        """心跳线程"""
-        while self.heartcheck.isChecked():
-            self.s.send('()'.encode())
-            self.send_signal.emit("()")
-            # self.textSend.append(self.yqtool.timeNow() + " ()")
-            time.sleep(30)
-            if not self.heartcheck.isChecked():
-                print("停止")
-                break
-
-
-class HeartThreadBSJ(QtCore.QThread):
-    recv_signal = QtCore.pyqtSignal(str)
-    send_signal = QtCore.pyqtSignal(str)
-
-    def __init__(self, socketcp, heartcheck):
-        super().__init__()
-        self.s = socketcp
-        self.heartcheck = heartcheck
-
-    def dataSwitch(self, data):
-        str1 = ''
-        str2 = b''
-        while data:
-            str1 = data[0:2]
-            s = int(str1, 16)
-            str2 += struct.pack('B', s)
-            data = data[3:]
-        return str2
-
-    def run(self):
-        """心跳线程"""
-        while self.heartcheck.isChecked():
-            self.s.send(self.dataSwitch('78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a'))
-            self.send_signal.emit("78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a")
-            # self.textSend.append(self.yqtool.timeNow() + " ()")
-            time.sleep(30)
-            if not self.heartcheck.isChecked():
-                print("停止")
                 break
 
 
@@ -597,6 +545,8 @@ class OtuMonitor(MainWidget):
         self.wg315Btn.clicked.connect(self.waiguadev)
 
         self.heartcheck.stateChanged.connect(self.sendHeart)
+        self.otutimer = QTimer(self)  # 初始化一个定时器
+        self.otutimer.timeout.connect(self.otudisabledHeartcheck)  # 计时结束调用disabledHeartcheck()方法
 
         self.Btn1.clicked.connect(lambda: self.btnclickevent(self.Btn1))
         self.Btn2.clicked.connect(lambda: self.btnclickevent(self.Btn2))
@@ -862,11 +812,17 @@ class OtuMonitor(MainWidget):
         msg = "(1*b4|7|421," + hexnum + ",ab0,59d8,0,0,8,2|)"
         self.textInput.append(msg)
 
+    def otudisabledHeartcheck(self):
+        self.s.send('()'.encode())
+        self.fillsendmsg("()")
+
     def sendHeart(self):
         if self.heartcheck.isChecked():
-            self.heartth = HeartThread(self.s, self.heartcheck)
-            self.heartth.send_signal.connect(self.fillsendmsg)
-            self.heartth.start()
+            self.s.send('()'.encode())
+            self.fillsendmsg("()")
+            self.otutimer.start(30000)
+        else:
+            self.otutimer.stop()
 
     def btnclickevent(self, btn):
         info = self.protocol[btn.text()]
@@ -1063,6 +1019,8 @@ class BSJMonitor(MainWidget):
         self.clearBtn3.clicked.connect(lambda: self.clearinfo(3))
 
         self.heartcheck.stateChanged.connect(self.sendHeartBSJ)
+        self.bsjtimer = QTimer(self)  # 初始化一个定时器
+        self.bsjtimer.timeout.connect(self.bsjdisabledHeartcheck)  # 计时结束调用disabledHeartcheck()方法
 
         self.labelmsg = QLabel("转换内容")
         self.labelmsg.setAlignment(QtCore.Qt.AlignCenter)
@@ -1363,11 +1321,17 @@ class BSJMonitor(MainWidget):
         else:
             pass
 
+    def bsjdisabledHeartcheck(self):
+        self.s.send(self.dataSwitch('78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a'))
+        self.fillsendmsg("78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a")
+
     def sendHeartBSJ(self):
         if self.heartcheck.isChecked():
-            self.heartth = HeartThreadBSJ(self.s, self.heartcheck)
-            self.heartth.send_signal.connect(self.fillsendmsg)
-            self.heartth.start()
+            self.s.send(self.dataSwitch('78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a'))
+            self.fillsendmsg("78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a")
+            self.bsjtimer.start(30000)
+        else:
+            self.bsjtimer.stop()
 
     def btnclickevent(self, btn):
         info = self.protocol[btn.text()]
