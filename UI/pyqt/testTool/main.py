@@ -966,7 +966,7 @@ class BSJMonitor(MainWidget):
         self.entryAcceleration = QLineEdit()
         self.entryAcceleration.insert("484")
 
-        self.heartbeatdataCreatebtn = QPushButton(u"生成")
+        # self.heartbeatdataCreatebtn = QPushButton(u"生成")
 
         self.labelPort = QLabel("端口2", self)
         self.labelPort.setMaximumWidth(50)
@@ -1016,7 +1016,7 @@ class BSJMonitor(MainWidget):
         self.logindataCreatebtn.clicked.connect(self.logindatacreate)
         self.gpsdataCreatebtn.clicked.connect(self.gpsdatacreate)
         self.alarmdataCreatebtn.clicked.connect(self.alarmdatacreate)
-        self.heartbeatdataCreatebtn.clicked.connect(self.heartbeatdatacreate)
+        # self.heartbeatdataCreatebtn.clicked.connect(self.heartbeatdatacreate)
 
         """中间窗口"""
         self.onBtn.clicked.connect(self.connectTcp)
@@ -1099,7 +1099,7 @@ class BSJMonitor(MainWidget):
         self.heartbeatboxGrid.addWidget(self.labelGSM, 0, 6)
         self.heartbeatboxGrid.addWidget(self.entryGSM, 0, 7)
 
-        self.heartbeatboxGrid.addWidget(self.heartbeatdataCreatebtn, 0, 8)
+        # self.heartbeatboxGrid.addWidget(self.heartbeatdataCreatebtn, 0, 8)
 
         self.leftgrid.addWidget(self.labelInput, 5, 0, 1, 2)
         self.leftgrid.addWidget(self.heartcheck, 5, 3, QtCore.Qt.AlignCenter)
@@ -1154,6 +1154,22 @@ class BSJMonitor(MainWidget):
         extendedField = "eb 23 05 01 "+mileage+" 03 02 01 1c 05 03 "+acceleration+" 03 04 "+voltage+" 02 05 "+gsm+" 03 06 ff fc 07 07 00 b4 80 b4 03 48"
         return extendedField
 
+    def getgpsinfo(self):
+        satelliteCount = ('%x' % int(self.entrysatelliteCount.text())).zfill(1)
+        lat = self.entryLat.text()
+        hexlat = ('%x' % (int(float(lat) * 60 * 30000))).zfill(8)
+        hexlat = hexlat[0:2] + " " + hexlat[2:4] + " " + hexlat[4:6] + " " + hexlat[-2:]
+        lng = self.entryLng.text()
+        hexlng = ('%x' % (int(float(lng) * 60 * 30000))).zfill(8)
+        hexlng = hexlng[0:2] + " " + hexlng[2:4] + " " + hexlng[4:6] + " " + hexlng[-2:]
+        speed = ('%x' % int(self.entrySpeed.text())).zfill(2)
+        course1 = ('%x' % int('000101' + bin(int(self.entryCourse.text()))[2:].zfill(10)[:2], 2)).zfill(2)
+        course2 = ('%x' % int((bin(int(self.entryCourse.text()))[2:].zfill(10)[-8:]), 2)).zfill(2)
+        course = course1 + " " + course2
+
+        gpsinfo = "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course
+        return gpsinfo
+
     def logindatacreate(self):
         imei = self.entryOtuIMEI.text()
         imei2 = imei.zfill(16)
@@ -1180,21 +1196,10 @@ class BSJMonitor(MainWidget):
             configfile.close()
 
     def gpsdatacreate(self):
-        satelliteCount = ('%x' % int(self.entrysatelliteCount.text())).zfill(1)
-        lat = self.entryLat.text()
-        hexlat = ('%x' % (int(float(lat) * 60 * 30000))).zfill(8)
-        hexlat = hexlat[0:2] + " " + hexlat[2:4] + " " + hexlat[4:6] + " " + hexlat[-2:]
-        lng = self.entryLng.text()
-        hexlng = ('%x' % (int(float(lng) * 60 * 30000))).zfill(8)
-        hexlng = hexlng[0:2] + " " + hexlng[2:4] + " " + hexlng[4:6] + " " + hexlng[-2:]
-        speed = ('%x' % int(self.entrySpeed.text())).zfill(2)
-        course1 = ('%x' % int('000101' + bin(int(self.entryCourse.text()))[2:].zfill(10)[:2], 2)).zfill(2)
-        course2 = ('%x' % int((bin(int(self.entryCourse.text()))[2:].zfill(10)[-8:]), 2)).zfill(2)
-        course = course1 + " " + course2
-
+        gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
-        data = "78 78 22 22 " + self.yqtool.BSJhextime() + "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
+        data = "78 78 22 22 " + self.yqtool.BSJhextime() + gpsinfo + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
@@ -1217,27 +1222,18 @@ class BSJMonitor(MainWidget):
         alarmdatahex = '%x' % int(alarm, 2)
         alarmdata = alarmdatahex[0:2] + " " + alarmdatahex[2:4] + " " + alarmdatahex[4:6] + " " + alarmdatahex[-2:]
 
+        gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
-        data = "78 78 49 26 10 0B 0A 09 05 31 C5 02 6D DE C0 0C 3B FE E6 00 15 54 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " "+extendedField+" 00 cb 31 52 0d 0a"
+        data = "78 78 49 26 " + self.yqtool.BSJhextime() + gpsinfo +" 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " "+extendedField+" 00 cb 31 52 0d 0a"
         self.textInput.insertPlainText(data)
 
     def heartbeatdatacreate(self):
-        datahex = "not select"
-        if self.sele1.isChecked():
-            datahex = hex(0)[2:]
-        elif self.sele2.isChecked():
-            datahex = hex(7)[2:]
-        elif self.sele3.isChecked():
-            datahex = hex(14)[2:]
-        elif self.sele4.isChecked():
-            datahex = hex(21)[2:]
-        elif self.sele5.isChecked():
-            datahex = hex(30)[2:]
-        else:
-            pass
-
-        data = "78 78 12 13 eb 0b 03 04 05 14 02 05 " + datahex + " 03 06 ff fb 00 6a 02 da 0d 0a"
+        voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
+        voltage = voltage[0:2] + " " + voltage[-2:]
+        datahex = ("%x" % (int(self.entryGSM.text()))).zfill(2)
+        extendedField = "eb 23 03 04 " + voltage + " 02 05 " + datahex + " 03 06 ff fc"
+        data = "78 78 12 13 " + extendedField + " 00 6a 02 da 0d 0a"
         self.textInput.insertPlainText(data)
 
     def clearinfo(self, clearindex):
@@ -1342,8 +1338,14 @@ class BSJMonitor(MainWidget):
 
     def sendHeartBSJ(self):
         if self.heartcheck.isChecked():
-            self.s.send(self.dataSwitch('78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a'))
-            self.fillsendmsg("78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a")
+            voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
+            voltage = voltage[0:2] + " " + voltage[-2:]
+            datahex = ("%x" % (int(self.entryGSM.text()))).zfill(2)
+            extendedField = "eb 23 03 04 " + voltage + " 02 05 " + datahex + " 03 06 ff fc"
+            data = "78 78 12 13 " + extendedField + " 00 6a 02 da 0d 0a"
+
+            self.s.send(self.dataSwitch(data))
+            self.fillsendmsg(data)
             self.bsjtimer.start(30000)
         else:
             self.bsjtimer.stop()
