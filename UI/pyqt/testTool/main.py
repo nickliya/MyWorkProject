@@ -250,7 +250,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.23')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.30')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -940,24 +940,32 @@ class BSJMonitor(MainWidget):
         self.checkbox7 = QCheckBox("主电源")
         self.checkbox8 = QCheckBox("加速度传感器")
         self.alarmdataCreatebtn = QPushButton(u"生成")
-        self.labelvoltage = QLabel(u"电压", self)
-        self.entryvoltage = QLineEdit()
-        self.entryvoltage.insert("1200")
-        self.labelAcceleration = QLabel(u"加速度\n最大差值", self)
-        self.entryAcceleration = QLineEdit()
-        self.entryAcceleration.insert("484")
+
 
         # 心跳box
-        self.heartbeatbox = QGroupBox("心跳包")
+        self.heartbeatbox = QGroupBox("扩展字段")
         self.heartbeatboxGrid = QGridLayout()
         self.heartbeatbox.setLayout(self.heartbeatboxGrid)
         self.labelGSM = QLabel(u"GSM信号强度", self)
-        self.sele1 = QRadioButton(u"无信号")
-        self.sele2 = QRadioButton(u"极弱")
-        self.sele3 = QRadioButton(u"较弱")
-        self.sele4 = QRadioButton(u"良好")
-        self.sele5 = QRadioButton(u"强")
-        self.sele5.setChecked(True)
+        self.entryGSM = QLineEdit()
+        self.entryGSM.insert("31")
+        self.labelMileage = QLabel(u"里程", self)
+        self.entryMileage = QLineEdit()
+        self.entryMileage.insert("1000")
+        # self.sele1 = QRadioButton(u"无信号")
+        # self.sele2 = QRadioButton(u"极弱")
+        # self.sele3 = QRadioButton(u"较弱")
+        # self.sele4 = QRadioButton(u"良好")
+        # self.sele5 = QRadioButton(u"强")
+        # self.sele5.setChecked(True)
+
+        self.labelvoltage = QLabel(u"电压", self)
+        self.entryvoltage = QLineEdit()
+        self.entryvoltage.insert("1200")
+        self.labelAcceleration = QLabel(u"加速度最大差值", self)
+        self.entryAcceleration = QLineEdit()
+        self.entryAcceleration.insert("484")
+
         self.heartbeatdataCreatebtn = QPushButton(u"生成")
 
         self.labelPort = QLabel("端口2", self)
@@ -1077,13 +1085,21 @@ class BSJMonitor(MainWidget):
         self.gpsboxGrid.addWidget(self.gpsdataCreatebtn, 0, 10)
 
         self.leftgrid.addWidget(self.heartbeatbox, 4, 0, 1, 6)
-        self.heartbeatboxGrid.addWidget(self.labelGSM, 0, 0)
-        self.heartbeatboxGrid.addWidget(self.sele1, 0, 1)
-        self.heartbeatboxGrid.addWidget(self.sele2, 0, 2)
-        self.heartbeatboxGrid.addWidget(self.sele3, 0, 3)
-        self.heartbeatboxGrid.addWidget(self.sele4, 0, 4)
-        self.heartbeatboxGrid.addWidget(self.sele5, 0, 5)
-        self.heartbeatboxGrid.addWidget(self.heartbeatdataCreatebtn, 0, 6)
+        # self.heartbeatboxGrid.addWidget(self.sele1, 0, 1)
+        # self.heartbeatboxGrid.addWidget(self.sele2, 0, 2)
+        # self.heartbeatboxGrid.addWidget(self.sele3, 0, 3)
+        # self.heartbeatboxGrid.addWidget(self.sele4, 0, 4)
+        # self.heartbeatboxGrid.addWidget(self.sele5, 0, 5)
+        self.heartbeatboxGrid.addWidget(self.labelMileage, 0, 0)
+        self.heartbeatboxGrid.addWidget(self.entryMileage, 0, 1)
+        self.heartbeatboxGrid.addWidget(self.labelAcceleration, 0, 2)
+        self.heartbeatboxGrid.addWidget(self.entryAcceleration, 0, 3)
+        self.heartbeatboxGrid.addWidget(self.labelvoltage, 0, 4)
+        self.heartbeatboxGrid.addWidget(self.entryvoltage, 0, 5)
+        self.heartbeatboxGrid.addWidget(self.labelGSM, 0, 6)
+        self.heartbeatboxGrid.addWidget(self.entryGSM, 0, 7)
+
+        self.heartbeatboxGrid.addWidget(self.heartbeatdataCreatebtn, 0, 8)
 
         self.leftgrid.addWidget(self.labelInput, 5, 0, 1, 2)
         self.leftgrid.addWidget(self.heartcheck, 5, 3, QtCore.Qt.AlignCenter)
@@ -1114,11 +1130,7 @@ class BSJMonitor(MainWidget):
         self.alarmboxGrid.addWidget(self.checkbox6, 1, 2)
         self.alarmboxGrid.addWidget(self.checkbox7, 2, 0)
         self.alarmboxGrid.addWidget(self.checkbox8, 2, 1)
-        self.alarmboxGrid.addWidget(self.labelvoltage, 3, 0)
-        self.alarmboxGrid.addWidget(self.entryvoltage, 3, 1)
-        self.alarmboxGrid.addWidget(self.labelAcceleration, 4, 0)
-        self.alarmboxGrid.addWidget(self.entryAcceleration, 4, 1)
-        self.alarmboxGrid.addWidget(self.alarmdataCreatebtn, 4, 2)
+        self.alarmboxGrid.addWidget(self.alarmdataCreatebtn, 2, 2)
 
         self.middlegrid.addWidget(self.labelmsg, 3, 0)
         self.middlegrid.addWidget(self.entrymsg, 3, 1, 1, 2)
@@ -1130,6 +1142,17 @@ class BSJMonitor(MainWidget):
         """默认按钮"""
         self.entryPort.setText("2111")
         self.entryIP.setText("192.168.6.52")
+
+    def getExtendedField(self):
+        mileage = ('%x' % (int(self.entryMileage.text()))).zfill(8)
+        mileage = mileage[0:2] + " " + mileage[2:4] + " " + mileage[4:6] + " " + mileage[-2:]
+        acceleration = ('%x' % (int(self.entryAcceleration.text()))).zfill(8)
+        acceleration = acceleration[0:2] + " " + acceleration[2:4] + " " + acceleration[4:6] + " " + acceleration[-2:]
+        voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
+        voltage = voltage[0:2] + " " + voltage[-2:]
+        gsm = ('%x' % (int(self.entryGSM.text()))).zfill(2)
+        extendedField = "eb 23 05 01 "+mileage+" 03 02 01 1c 05 03 "+acceleration+" 03 04 "+voltage+" 02 05 "+gsm+" 03 06 ff fc 07 07 00 b4 80 b4 03 48"
+        return extendedField
 
     def logindatacreate(self):
         imei = self.entryOtuIMEI.text()
@@ -1164,14 +1187,14 @@ class BSJMonitor(MainWidget):
         lng = self.entryLng.text()
         hexlng = ('%x' % (int(float(lng) * 60 * 30000))).zfill(8)
         hexlng = hexlng[0:2] + " " + hexlng[2:4] + " " + hexlng[4:6] + " " + hexlng[-2:]
-
         speed = ('%x' % int(self.entrySpeed.text())).zfill(2)
-
         course1 = ('%x' % int('000101' + bin(int(self.entryCourse.text()))[2:].zfill(10)[:2], 2)).zfill(2)
         course2 = ('%x' % int((bin(int(self.entryCourse.text()))[2:].zfill(10)[-8:]), 2)).zfill(2)
         course = course1 + " " + course2
 
-        data = "78 78 22 22 " + self.yqtool.BSJhextime() + "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course + " 01 cc 00 28 7d 00 1f b8 01 01 00 00 03 80 81 0d 0a"
+        extendedField = self.getExtendedField()
+
+        data = "78 78 22 22 " + self.yqtool.BSJhextime() + "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
@@ -1194,35 +1217,27 @@ class BSJMonitor(MainWidget):
         alarmdatahex = '%x' % int(alarm, 2)
         alarmdata = alarmdatahex[0:2] + " " + alarmdatahex[2:4] + " " + alarmdatahex[4:6] + " " + alarmdatahex[-2:]
 
-        voltage = self.entryvoltage.text()
-        voltagedatahex = ('%x' % int(voltage)).zfill(4)
-        voltagedata = voltagedatahex[0:2] + " " + voltagedatahex[-2:]
+        extendedField = self.getExtendedField()
 
-        acceleration = self.entryAcceleration.text()
-        accelerationdatahex = ('%x' % int(acceleration)).zfill(8)
-        accelerationdata = accelerationdatahex[0:2] + " " + accelerationdatahex[2:4] + " " + accelerationdatahex[
-                                                                                             4:6] + " " + accelerationdatahex[
-                                                                                                          -2:]
-
-        data = "78 78 41 26 10 0B 0A 09 05 31 C5 02 6D DE C0 0C 3B FE E6 00 15 54 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " EB 1B 05 01 00 00 00 AE 03 02 00 EB 05 03 " + accelerationdata + " 03 04 " + voltagedata + " 02 05 0E 03 06 FF FC 00 93 68 6F 0D 0A"
+        data = "78 78 49 26 10 0B 0A 09 05 31 C5 02 6D DE C0 0C 3B FE E6 00 15 54 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " "+extendedField+" 00 cb 31 52 0d 0a"
         self.textInput.insertPlainText(data)
 
     def heartbeatdatacreate(self):
         datahex = "not select"
         if self.sele1.isChecked():
-            datahex = "00"
+            datahex = hex(0)[2:]
         elif self.sele2.isChecked():
-            datahex = "01"
+            datahex = hex(7)[2:]
         elif self.sele3.isChecked():
-            datahex = "02"
+            datahex = hex(14)[2:]
         elif self.sele4.isChecked():
-            datahex = "03"
+            datahex = hex(21)[2:]
         elif self.sele5.isChecked():
-            datahex = "04"
+            datahex = hex(30)[2:]
         else:
             pass
 
-        data = "78 78 12 13 eb 0b " + datahex + " 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a"
+        data = "78 78 12 13 eb 0b 03 04 05 14 02 05 " + datahex + " 03 06 ff fb 00 6a 02 da 0d 0a"
         self.textInput.insertPlainText(data)
 
     def clearinfo(self, clearindex):
