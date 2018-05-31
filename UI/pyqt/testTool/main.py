@@ -1199,7 +1199,7 @@ class BSJMonitor(MainWidget):
         gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
-        data = "78 78 22 22 " + self.yqtool.BSJhextime() + gpsinfo + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
+        data = "78 78 47 22 " + self.yqtool.BSJhextime() + gpsinfo + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
