@@ -250,7 +250,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.05.30')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.06.05')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -911,12 +911,12 @@ class BSJMonitor(MainWidget):
         self.entrysatelliteCount = QLineEdit()
         self.entrysatelliteCount.setMaximumWidth(50)
         self.entrysatelliteCount.insert("13")
-        self.labelLat = QLabel(u"经度", self)
-        self.entryLat = QLineEdit()
-        self.entryLat.insert("106.49557015756179")
-        self.labelLng = QLabel(u"纬度", self)
+        self.labelLng = QLabel(u"经度", self)
         self.entryLng = QLineEdit()
-        self.entryLng.insert("29.61881556261095")
+        self.entryLng.insert("106.49557015756179")
+        self.labelLat = QLabel(u"纬度", self)
+        self.entryLat = QLineEdit()
+        self.entryLat.insert("29.61881556261095")
         self.labelSpeed = QLabel(u"速度", self)
         self.entrySpeed = QLineEdit()
         self.entrySpeed.setMaximumWidth(50)
@@ -1167,7 +1167,7 @@ class BSJMonitor(MainWidget):
         course2 = ('%x' % int((bin(int(self.entryCourse.text()))[2:].zfill(10)[-8:]), 2)).zfill(2)
         course = course1 + " " + course2
 
-        gpsinfo = "c" + satelliteCount + " " + hexlng + " " + hexlat + " " + speed + " " + course
+        gpsinfo = "c" + satelliteCount + " " + hexlat + " " + hexlng + " " + speed + " " + course
         return gpsinfo
 
     def logindatacreate(self):
