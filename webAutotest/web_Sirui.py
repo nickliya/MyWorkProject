@@ -299,7 +299,7 @@ class Bdxt(unittest.TestCase):
     def tearDown(self):
         time.sleep(3)
         browser._switch_to.default_content()
-        browser.refresh()
+        # browser.refresh()
 
     def case1(self):
         u"""保单新增"""
@@ -318,7 +318,7 @@ class Bdxt(unittest.TestCase):
         time.sleep(1)
         browser.find_element_by_id('ownerIdentifyNum').send_keys(idcard)
         time.sleep(1)
-        browser.find_element_by_id('brandModel').send_keys(u'丰田')
+        browser.find_element_by_id('brandModel').send_keys(u'本田')
         browser.find_element_by_id('engineNumber').send_keys('11')
         browser.find_element_by_id('price').send_keys(price)
         ######生成车架号######
@@ -344,11 +344,21 @@ class Bdxt(unittest.TestCase):
         else:
             pass
         TrueVIN = VIN_number[:8] + str(VIN) + VIN_number[9:]
+        # TrueVIN = "B8LEH2CT4300L6257"
         ######生成车架号######
         browser.find_element_by_id('vinCode').send_keys(TrueVIN)
         # browser.find_element_by_id('billingDate').click()
         # browser.find_element_by_xpath("//*[@id='laydate_table']/tbody/tr[1]/td[2]").click()
-        browser.find_element_by_id('serialNum').send_keys('C1000000018')
+
+        conn = pymssql.connect(host='192.168.6.51', user='sa', password='test2017')
+        cur = conn.cursor()
+        cur.execute("SELECT BarCode FROM [sirui].[dbo].[Terminal] where Status=2 and BarCode like 'ot%'")
+        info = random.choice(cur.fetchall())
+        a = str(info)[3:-3]
+        print a
+        deviceCode = str(info)[3:-3]
+
+        browser.find_element_by_id('serialNum').send_keys(deviceCode)
         browser.find_element_by_id('loanTime').send_keys('36')
         global kh_name
         kh_name = ''.join(random.choice(string.letters) for i in range(6))
@@ -357,7 +367,7 @@ class Bdxt(unittest.TestCase):
         browser.find_element_by_id('fixedTelephone').send_keys(home_phone)
         browser.find_element_by_id('depName').click()
         time.sleep(1)
-        browser.find_element_by_partial_link_text('yqmd').click()
+        browser.find_element_by_partial_link_text(u'新享融总店').click()
         time.sleep(1)
         try:
             browser.find_element_by_id('addressSure').click()
