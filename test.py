@@ -5,47 +5,49 @@
 import base64
 import itertools
 import string
+import requests
+import random
+from datetime import date
+from datetime import timedelta
+import base64
+import hashlib
+import binascii
+from CTF import privateFun
 
-# flag = flag.flag
-# sands = int(flag[5:-1].encode("hex"), 16)
+# b = base64.b32decode("gq=")
+# print(b)
 
-flag = ""
-
-holes = [257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373]
-# holes = [263, 277, 293, 311]
-print len(holes)
-# with open("sand.txt", "w") as f:
-#     for i in range(len(holes)):
-#         sand = sands % holes[i]
-#         f.write(str(sand)+"\n")
-
-
-file1 = open("C:\\Users\\fuzhi\\Desktop\\SUCTF\\MISC\\sandgame\\sand.txt", "r")
-data = file1.read()
-datalist = data.split("\n")
-
-
-# datalist = ["203", "203", "82", "82"]
-
-
-def getglist(a, b, c, d):
-    list1 = []
-    list2 = []
-    for i in range(1000):
-        list1.append(a * i + c)
-        list2.append(b * i + d)
-        # glist = list(set(list1) & set(list2))
-        # if glist != []:
-        #     break
-    glist = list(set(list1) & set(list2))
-    yu = min(glist)
-    chushu = a * b
-    return [chushu, yu]
+# cpdic = {
+#     "a": "d", "d": "e", "g": "f", "q": "r", "h": "o", "b": "m", "u": "b", "r": "a", "t": "s", "p": "i", "k": "p",
+#     "w": "t", "z": "u", "e": "n", "x": "c", "y": "l", "l": "y", "f": "w", "m": "h", "j": "g", "i": "x", "v": "k"
+# }
+#
+# f1 = open("C:\\Users\\fuzhi\\Desktop\\Downloads\\encryption.encrypted", "r")
+# data1 = f1.read()
+# listdata1 = list(data1)
+# i = 0
+# for strindex in listdata1:
+#     if strindex in cpdic:
+#         listdata1[i] = cpdic[strindex]
+#     i += 1
+#
+# s = "".join(listdata1)
+# print s
 
 
-i = 0
-while 1:
-    print getglist(holes[i], holes[i + 1], int(datalist[i]), int(datalist[i+1]))
-    i += 2
-    if i == 22:
-        break
+def num_to_bytes(n):
+    b = hex(n)[2:-1]
+    if len(b) % 2 == 1:
+        b = '0' + b
+    else:
+        b = b
+    return b
+
+
+def num_to_bytes2(n):
+    b = hex(n)[2:-1]
+    b = '0' + b if len(b)%2 == 1 else b
+    return b
+
+print(num_to_bytes(123555))
+print(num_to_bytes2(123555))
