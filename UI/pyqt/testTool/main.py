@@ -250,7 +250,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.06.05')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.07.26')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -526,6 +526,7 @@ class OtuMonitor(MainWidget):
         self.Btn21 = QPushButton(u"里程614新")
         self.Btn22 = QPushButton(u"里程320")
         self.Btn23 = QPushButton(u"单程421")
+        self.Btn24 = QPushButton(u"共享车311")
 
         # stylesheet = "QPushButton{border-image: url('qrcode.png');}"
         # self.Btn22.setStyleSheet(stylesheet)
@@ -541,6 +542,7 @@ class OtuMonitor(MainWidget):
         self.clearBtn2.clicked.connect(lambda: self.clearinfo(2))
         self.clearBtn3.clicked.connect(lambda: self.clearinfo(3))
         self.Btn9.clicked.connect(self.sendEN)
+        self.Btn24.clicked.connect(self.send311)
         self.bindBtn.clicked.connect(self.bindBt)
         self.wg315Btn.clicked.connect(self.waiguadev)
 
@@ -571,8 +573,6 @@ class OtuMonitor(MainWidget):
         self.Btn21.clicked.connect(lambda: self.btnclickevent(self.Btn21))
         self.Btn22.clicked.connect(lambda: self.btnclickevent(self.Btn22))
         self.Btn23.clicked.connect(self.dancheng)
-        # for i in self.btnlist:
-        #     i.clicked.connect(lambda: self.btnclickevent(i))
 
         self.labelmsg = QLabel("转换内容")
         self.labelmsg.setAlignment(QtCore.Qt.AlignCenter)
@@ -664,6 +664,7 @@ class OtuMonitor(MainWidget):
         self.middlegrid.addWidget(self.Btn21, 6, 2)
         self.middlegrid.addWidget(self.Btn22, 7, 0)
         self.middlegrid.addWidget(self.Btn23, 7, 1)
+        self.middlegrid.addWidget(self.Btn24, 7, 2)
 
         self.middlegrid.addWidget(self.labelmsg, 11, 0)
         self.middlegrid.addWidget(self.entrymsg, 11, 1, 1, 2)
@@ -706,6 +707,14 @@ class OtuMonitor(MainWidget):
         """
         timeinfo = '(1*b2|7|30d,' + self.yqtool.hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
         self.textInput.insertPlainText(timeinfo)
+
+    def send311(self):
+        """发送位置
+        当前在光电园
+        """
+        time311 = self.yqtool.BSJhextime().replace(" ", "")
+        datainfo = "(1*e4|7|331," + time311 + ",1,E,10629.7228,N,2937.1144,0,0,9,2200,2222222,22222,000000,110,22,1,7454,0,212,505|)"
+        self.textInput.insertPlainText(datainfo)
 
     def bindBt(self):
         """蓝牙绑定"""
@@ -941,7 +950,6 @@ class BSJMonitor(MainWidget):
         self.checkbox8 = QCheckBox("加速度传感器")
         self.alarmdataCreatebtn = QPushButton(u"生成")
 
-
         # 心跳box
         self.heartbeatbox = QGroupBox("扩展字段")
         self.heartbeatboxGrid = QGridLayout()
@@ -1151,7 +1159,7 @@ class BSJMonitor(MainWidget):
         voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
         voltage = voltage[0:2] + " " + voltage[-2:]
         gsm = ('%x' % (int(self.entryGSM.text()))).zfill(2)
-        extendedField = "eb 23 05 01 "+mileage+" 03 02 01 1c 05 03 "+acceleration+" 03 04 "+voltage+" 02 05 "+gsm+" 03 06 ff fc 07 07 00 b4 80 b4 03 48"
+        extendedField = "eb 23 05 01 " + mileage + " 03 02 01 1c 05 03 " + acceleration + " 03 04 " + voltage + " 02 05 " + gsm + " 03 06 ff fc 07 07 00 b4 80 b4 03 48"
         return extendedField
 
     def getgpsinfo(self):
@@ -1199,7 +1207,7 @@ class BSJMonitor(MainWidget):
         gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
-        data = "78 78 47 22 " + self.yqtool.BSJhextime() + gpsinfo + " 01 cc 00 28 7d 00 1f b8 01 01 00 "+extendedField+" 00 03 80 81 0d 0a"
+        data = "78 78 47 22 " + self.yqtool.BSJhextime() + gpsinfo + " 01 cc 00 28 7d 00 1f b8 01 01 00 " + extendedField + " 00 03 80 81 0d 0a"
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
@@ -1225,7 +1233,7 @@ class BSJMonitor(MainWidget):
         gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
-        data = "78 78 49 26 " + self.yqtool.BSJhextime() + gpsinfo +" 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " "+extendedField+" 00 cb 31 52 0d 0a"
+        data = "78 78 49 26 " + self.yqtool.BSJhextime() + gpsinfo + " 08 01 CC 00 26 2C 00 0E BA " + alarmdata + " " + extendedField + " 00 cb 31 52 0d 0a"
         self.textInput.insertPlainText(data)
 
     def heartbeatdatacreate(self):
