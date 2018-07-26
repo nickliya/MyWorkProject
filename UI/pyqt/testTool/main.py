@@ -388,6 +388,13 @@ class OtuMonitor(MainWidget):
             i.deleteLater()
         self.OtuMonitor_UI()
         self.OtuMonitor_grid()
+        try:
+            self.s.shutdown(2)
+            global stopsingle
+            stopsingle = 1
+            self.scene.offlineCol.start()
+        except AttributeError:
+            pass
         self.deleteWigt = [self.leftwidget, self.middlewiget]
 
     def OtuMonitor_UI(self):
