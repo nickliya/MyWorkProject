@@ -250,7 +250,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.07.26')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.07.31')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -307,11 +307,11 @@ class TcpThread(QtCore.QThread):
                 datainfo = re.findall(r, tcpreceive)
                 str_data = str(datainfo[0])
                 print('recv:' + protocol_dic[str_data[7:10]] + str_data)
-                a = str_data[0] + '1' + str_data[1:5] + '8' + str_data[6:]
+                a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11]+'1,1|)'
                 self.s.send(a.encode())
                 self.send_signal.emit(a)
 
-                b = a[0:6] + '7|4' + a[9:12] + '1,1|)'
+                b = a[0:6] + '8|5' + a[9:12] + '|)'
                 self.s.send(b.encode())
                 self.send_signal.emit(b)
             elif tcpreceive == "":
