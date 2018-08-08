@@ -29,6 +29,7 @@ else:
     pass
 
 stopsingle = None
+waitmsg = None
 
 
 class Bianlifunction:
@@ -250,7 +251,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.07.31')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.08.07')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -274,8 +275,9 @@ class TcpThread(QtCore.QThread):
     recv_signal = QtCore.pyqtSignal(str)
     send_signal = QtCore.pyqtSignal(str)
     animate_signal = QtCore.pyqtSignal(str)
+    wait_signal = QtCore.pyqtSignal(tuple)
 
-    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, wg315Btn):
+    def __init__(self, socketcp, onBtn, heartcheck, senBtn, bindBtn, wg315Btn, entrywait):
         super().__init__()
         self.s = socketcp
         self.yqtool = Bianlifunction()
@@ -284,6 +286,7 @@ class TcpThread(QtCore.QThread):
         self.sendBtn = senBtn
         self.bindBtn = bindBtn
         self.wg315Btn = wg315Btn
+        self.entrywait = entrywait
 
     def run(self):
         """线程"""
@@ -296,8 +299,6 @@ class TcpThread(QtCore.QThread):
                     or '517' in xinfo or '518' in xinfo or '519' in xinfo or '51A' in xinfo or '51B' in xinfo \
                     or '51C' in xinfo:
                 self.recv_signal.emit(tcpreceive)
-                # self.textRecv.append(self.yqtool.timeNow() + " " + tcpreceive)
-                # self.textRecv.update()
                 protocol_dic = {
                     "511": "上锁", "512": "解锁", "513": "寻车", "514": "静音", "515": "点火",
                     "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51A": "开天窗",
@@ -308,12 +309,16 @@ class TcpThread(QtCore.QThread):
                 str_data = str(datainfo[0])
                 print('recv:' + protocol_dic[str_data[7:10]] + str_data)
                 a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11]+'1,1|)'
-                self.s.send(a.encode())
-                self.send_signal.emit(a)
+                # time.sleep(3)
+                # self.s.send(a.encode())
+                # self.send_signal.emit(a)
+                #
+                # b = a[0:6] + '8|5' + a[9:12] + '|)'
+                # self.s.send(b.encode())
+                # self.send_signal.emit(b)
+                waitime = self.entrywait.text()
+                self.wait_signal.emit((self.s, a, waitime))
 
-                b = a[0:6] + '8|5' + a[9:12] + '|)'
-                self.s.send(b.encode())
-                self.send_signal.emit(b)
             elif tcpreceive == "":
                 stopsingle = 1
                 self.s.shutdown(2)
@@ -377,6 +382,31 @@ class BSJTcpThread(QtCore.QThread):
                 break
 
 
+class WaiteandsendThread(QtCore.QThread):
+    recv_signal = QtCore.pyqtSignal(str)
+    send_signal = QtCore.pyqtSignal(str)
+    animate_signal = QtCore.pyqtSignal(str)
+
+    def __init__(self, message):
+        super().__init__()
+        self.message = message
+
+    def run(self):
+        """线程"""
+
+        print("等待" + self.message[2] + "秒发送")
+        time.sleep(int(self.message[2])/1000)
+        print("已等待" + self.message[2] + "秒，开始发送")
+
+        a = self.message[1]
+        b = a[0:6] + '8|5' + a[9:12] + '|)'
+        s = self.message[0]
+        s.send(a.encode())
+        self.send_signal.emit(a)
+        s.send(b.encode())
+        self.send_signal.emit(b)
+
+
 class OtuMonitor(MainWidget):
     def __init__(self):
         super(OtuMonitor, self).__init__()
@@ -412,6 +442,10 @@ class OtuMonitor(MainWidget):
         self.labelHardver = QLabel("硬件版本", self)
 
         self.labelOtuIMEI = QLabel(u"主机IMEI", self)
+        self.labelwait = QLabel(u"等待时间", self)
+        self.waitimer = QTimer()
+        global waitmsg
+        self.waitimer.timeout.connect(lambda: self.waitimerfun(waitmsg))
         self.labelBTIMEI = QLabel("蓝牙IMEI", self)
         self.labelInput = QLabel("自定义输入界面", self)
         self.labelSendHistory = QLabel("发送历史", self)
@@ -421,6 +455,8 @@ class OtuMonitor(MainWidget):
         self.entryPort.setMaximumWidth(50)
         self.entryIP = QLineEdit()
         self.entryOtuIMEI = QLineEdit()
+        self.entrywait = QLineEdit()
+        self.entrywait.setText('0')
         self.entryBTIMEI = QLineEdit()
         self.entryHardver = QLineEdit()
         self.entrywaiguadev = QLineEdit()
@@ -621,7 +657,10 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.seleBuick, 0, 8)
         self.leftgrid.addWidget(self.defalBtn, 0, 9)
         self.leftgrid.addWidget(self.labelOtuIMEI, 1, 0)
-        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 8)
+
+        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 5)
+        self.leftgrid.addWidget(self.labelwait, 1, 6)
+        self.leftgrid.addWidget(self.entrywait, 1, 7, 1, 2)
         self.leftgrid.addWidget(self.onBtn, 1, 9)
 
         self.leftgrid.addWidget(self.labelBTIMEI, 2, 0)
@@ -754,6 +793,31 @@ class OtuMonitor(MainWidget):
         self.textRecv.setTextColor(QColor("#FFFFFF"))
         self.textRecv.insertPlainText(message)
 
+    def waitimerfun(self, message):
+        """等待定时器的方法，延迟发送msg"""
+        a = message[1]
+        b = a[0:6] + '8|5' + a[9:12] + '|)'
+        s = message[0]
+        s.send(a.encode())
+        self.fillsendmsg(a)
+        s.send(b.encode())
+        self.fillsendmsg(b)
+        self.waitimer.stop()
+
+    def waitandsend(self, message):
+        """等待信号，启动等待发送定时器"""
+        # print(message)
+        global waitmsg
+        waitmsg = message
+        # self.waitimer.start(int(message[2]))
+
+        self.tcpth2 = WaiteandsendThread(message)
+        self.tcpth2.recv_signal.connect(self.fillrecvmsg)
+        self.tcpth2.send_signal.connect(self.fillsendmsg)
+        # self.tcpth.animate_signal.connect(self.scene.threadAnimate)
+        # self.tcpth.wait_signal.connect(self.waitandsend)
+        self.tcpth2.start()
+
     def go_online(self):
         """上线"""
         if self.onBtn.text() == "上线":
@@ -801,10 +865,11 @@ class OtuMonitor(MainWidget):
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
-            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.wg315Btn)
+            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.wg315Btn, self.entrywait)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
             self.tcpth.animate_signal.connect(self.scene.threadAnimate)
+            self.tcpth.wait_signal.connect(self.waitandsend)
             self.tcpth.start()
 
             self.onBtn.setText("离线")
@@ -814,6 +879,7 @@ class OtuMonitor(MainWidget):
             self.wg315Btn.setDisabled(False)
 
         elif self.onBtn.text() == "离线":
+            self.waitimer.stop()
             self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
