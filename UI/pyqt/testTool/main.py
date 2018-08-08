@@ -308,16 +308,17 @@ class TcpThread(QtCore.QThread):
                 datainfo = re.findall(r, tcpreceive)
                 str_data = str(datainfo[0])
                 print('recv:' + protocol_dic[str_data[7:10]] + str_data)
-                a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11]+'1,1|)'
-                # time.sleep(3)
-                # self.s.send(a.encode())
-                # self.send_signal.emit(a)
-                #
-                # b = a[0:6] + '8|5' + a[9:12] + '|)'
-                # self.s.send(b.encode())
-                # self.send_signal.emit(b)
+                a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + '1,1|)'
                 waitime = self.entrywait.text()
-                self.wait_signal.emit((self.s, a, waitime))
+                if waitime == "0":
+                    self.s.send(a.encode())
+                    self.send_signal.emit(a)
+
+                    b = a[0:6] + '8|5' + a[9:12] + '|)'
+                    self.s.send(b.encode())
+                    self.send_signal.emit(b)
+                else:
+                    self.wait_signal.emit((self.s, a, waitime))
 
             elif tcpreceive == "":
                 stopsingle = 1
@@ -393,18 +394,23 @@ class WaiteandsendThread(QtCore.QThread):
 
     def run(self):
         """线程"""
+        try:
+            print("等待" + self.message[2] + "毫秒发送")
+            # time.sleep(int(self.message[2]) / 1000)
+            self.sleep(int(self.message[2]) / 1000)
+            print("已等待" + self.message[2] + "毫秒，开始发送")
 
-        print("等待" + self.message[2] + "秒发送")
-        time.sleep(int(self.message[2])/1000)
-        print("已等待" + self.message[2] + "秒，开始发送")
+            a = self.message[1]
+            b = a[0:6] + '8|5' + a[9:12] + '|)'
+            s = self.message[0]
 
-        a = self.message[1]
-        b = a[0:6] + '8|5' + a[9:12] + '|)'
-        s = self.message[0]
-        s.send(a.encode())
-        self.send_signal.emit(a)
-        s.send(b.encode())
-        self.send_signal.emit(b)
+            s.send(a.encode())
+            self.send_signal.emit(a)
+            s.send(b.encode())
+            self.send_signal.emit(b)
+        except Exception as msg:
+            errorinfo = Exception, ":", msg
+            print(errorinfo)
 
 
 class OtuMonitor(MainWidget):
@@ -806,16 +812,9 @@ class OtuMonitor(MainWidget):
 
     def waitandsend(self, message):
         """等待信号，启动等待发送定时器"""
-        # print(message)
-        global waitmsg
-        waitmsg = message
-        # self.waitimer.start(int(message[2]))
-
         self.tcpth2 = WaiteandsendThread(message)
         self.tcpth2.recv_signal.connect(self.fillrecvmsg)
         self.tcpth2.send_signal.connect(self.fillsendmsg)
-        # self.tcpth.animate_signal.connect(self.scene.threadAnimate)
-        # self.tcpth.wait_signal.connect(self.waitandsend)
         self.tcpth2.start()
 
     def go_online(self):
@@ -865,7 +864,8 @@ class OtuMonitor(MainWidget):
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
-            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.wg315Btn, self.entrywait)
+            self.tcpth = TcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn, self.bindBtn, self.wg315Btn,
+                                   self.entrywait)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
             self.tcpth.animate_signal.connect(self.scene.threadAnimate)
