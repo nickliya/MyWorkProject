@@ -20,7 +20,7 @@ cgitb.enable(format='text')  # 解决pyqt5异常只要进入事件循环,程序�
 class Ball(QObject):
     def __init__(self):
         super().__init__()
-        pixmap = QPixmap("../star.png")
+        pixmap = QPixmap("star.png")
         scaledPixmap = pixmap.scaled(50, 55)
         self.animation()
 

@@ -29,3 +29,6 @@ def getvin():
         TrueVIN = VIN_number[:8] + str(VIN) + VIN_number[9:]
         # print (str(VIN) + ':' + str(TrueVIN))
         return str(TrueVIN)
+
+
+print getvin()

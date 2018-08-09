@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.core import serializers
 from django.forms.models import model_to_dict
-from dwebsocket.decorators import accept_websocket, require_websocket
 from Yq_Djago import models
 import json
 import MySQLdb
