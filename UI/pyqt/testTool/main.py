@@ -399,7 +399,6 @@ class WaiteandsendThread(QtCore.QThread):
             # time.sleep(int(self.message[2]) / 1000)
             self.sleep(int(self.message[2]) / 1000)
             print("已等待" + self.message[2] + "毫秒，开始发送")
-
             a = self.message[1]
             b = a[0:6] + '8|5' + a[9:12] + '|)'
             s = self.message[0]
@@ -408,6 +407,8 @@ class WaiteandsendThread(QtCore.QThread):
             self.send_signal.emit(a)
             s.send(b.encode())
             self.send_signal.emit(b)
+            self.quit()
+            self.exit()
         except Exception as msg:
             errorinfo = Exception, ":", msg
             print(errorinfo)
@@ -449,9 +450,9 @@ class OtuMonitor(MainWidget):
 
         self.labelOtuIMEI = QLabel(u"主机IMEI", self)
         self.labelwait = QLabel(u"等待时间", self)
-        self.waitimer = QTimer()
-        global waitmsg
-        self.waitimer.timeout.connect(lambda: self.waitimerfun(waitmsg))
+        # self.waitimer = QTimer()
+        # global waitmsg
+        # self.waitimer.timeout.connect(lambda: self.waitimerfun(waitmsg))
         self.labelBTIMEI = QLabel("蓝牙IMEI", self)
         self.labelInput = QLabel("自定义输入界面", self)
         self.labelSendHistory = QLabel("发送历史", self)
@@ -799,23 +800,13 @@ class OtuMonitor(MainWidget):
         self.textRecv.setTextColor(QColor("#FFFFFF"))
         self.textRecv.insertPlainText(message)
 
-    def waitimerfun(self, message):
-        """等待定时器的方法，延迟发送msg"""
-        a = message[1]
-        b = a[0:6] + '8|5' + a[9:12] + '|)'
-        s = message[0]
-        s.send(a.encode())
-        self.fillsendmsg(a)
-        s.send(b.encode())
-        self.fillsendmsg(b)
-        self.waitimer.stop()
-
     def waitandsend(self, message):
         """等待信号，启动等待发送定时器"""
         self.tcpth2 = WaiteandsendThread(message)
         self.tcpth2.recv_signal.connect(self.fillrecvmsg)
         self.tcpth2.send_signal.connect(self.fillsendmsg)
         self.tcpth2.start()
+
 
     def go_online(self):
         """上线"""
@@ -879,7 +870,6 @@ class OtuMonitor(MainWidget):
             self.wg315Btn.setDisabled(False)
 
         elif self.onBtn.text() == "离线":
-            self.waitimer.stop()
             self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
