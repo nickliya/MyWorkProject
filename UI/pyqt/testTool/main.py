@@ -807,7 +807,6 @@ class OtuMonitor(MainWidget):
         self.tcpth2.send_signal.connect(self.fillsendmsg)
         self.tcpth2.start()
 
-
     def go_online(self):
         """上线"""
         if self.onBtn.text() == "上线":

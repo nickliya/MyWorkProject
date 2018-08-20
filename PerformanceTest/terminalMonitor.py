@@ -41,23 +41,26 @@ def logprint(threadname, imei, msg):
 
 def sendmsgfun(s, waitime, a, imei):
     global sendloger
-    time.sleep(waitime / 1000)
+    if waitime == 9999:
+        return False
+    time.sleep(float(waitime) / float(1000))
     s.send(a.encode())
-    sendloger.debug((threading.current_thread().name, imei, 'send:' + a))
+    sendloger.debug((threading.current_thread().name, imei, 'send:' + a,))
     b = a[0:6] + '8|5' + a[9:12] + '|)'
     s.send(b.encode())
-    sendloger.debug((threading.current_thread().name, imei, 'send:' + b))
+    sendloger.debug(threading.current_thread().name + " " + imei + ' send:' + b + " 已等待" + str(float(waitime) / float(1000)) + "秒")
 
 
 def runSocket(executor, imei, waitime):
-    global recvloger, sendloger,socketlist
+    global recvloger, sendloger, socketlist
     logprint(threading.current_thread().name, imei, "启动")
 
     # 创建socket连接
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socketlist.append(s)
     try:
-        s.connect(("192.168.6.204", 2103))
+        s.connect(("192.168.6.204", 2103))  # 凹凸预发布
+        # s.connect(("192.168.6.211", 2103))  # 联动云
     except Exception as msg:
         time.sleep(1)
         errorinfo = Exception, ":", msg
@@ -115,20 +118,32 @@ if __name__ == '__main__':
     start_time = time.time()
     sendloger = myloger("send.log")
     recvloger = myloger("recv.log")
-    threadPoolMain = ThreadPoolExecutor(10000)  # 创建主线程池
-    threadPoolWait = ThreadPoolExecutor(10000)  # 创建异步等待的线程池
+    threadPoolMain = ThreadPoolExecutor(3000)  # 创建主线程池
+    threadPoolWait = ThreadPoolExecutor(3000)  # 创建异步等待的线程池
     print '这是主线程：', threading.current_thread().name
     thread_list = []
 
     file1 = open("C:\\Users\\fuzhi\\Desktop\\aotuTerminal.txt", "r")
     data = file1.readlines()
-    for i in range(2):
+    for i in range(1000):
         datainfo = data[i]
         datalist = datainfo.split(",")
         imei = datalist[1]
-        t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2000)
-        # t = threading.Thread(target=runSocket, args=(threadPoolWait, imei, 0), name="[线程"+imei+"]")
-        # thread_list.append(t)
+        t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 0)
+        # if i < 200:
+        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1000)
+        # elif i < 400:
+        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1500)
+        # elif i < 600:
+        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2000)
+        # elif i < 800:
+        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2500)
+        # elif i < 1000:
+        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 9999)
+        # else:
+        #     print "ok"
+        #     pass
+
     # t = threadPoolMain.submit(runSocket, threadPoolWait, "868729039450676", 2000)
 
     time.sleep(3)
@@ -138,14 +153,3 @@ if __name__ == '__main__':
             s.shutdown(2)
             s.close()
     print("已结束所有线程")
-
-    # t = threading.Thread(target=runSocket, args=(executor, "864244025786384", 3000), name="[线程864244025786384]")
-    # thread_list.append(t)
-    # t = threading.Thread(target=runSocket, args=(executor, "811682322737154", 3000), name="[线程811682322737154]")
-    # thread_list.append(t)
-    # for t in thread_list:
-    #     t.setDaemon(True)
-    #     t.start()
-    #
-    # for t in thread_list:
-    #     t.join()
