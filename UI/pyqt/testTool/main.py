@@ -251,7 +251,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.08.07')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.08.20')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -269,6 +269,13 @@ class MainWidget(QMainWindow):
         # self.mainwidget.setObjectName("mainwidget")
         self.setCentralWidget(self.mainwidget)
         self.maingrid.setRowStretch(0, 0)
+
+
+class WorkerSignals(QObject):
+    """工作信号"""
+    recv_signal = QtCore.pyqtSignal(str)
+    send_signal = QtCore.pyqtSignal(str)
+    animate_signal = QtCore.pyqtSignal(str)
 
 
 class TcpThread(QtCore.QThread):
@@ -383,32 +390,29 @@ class BSJTcpThread(QtCore.QThread):
                 break
 
 
-class WaiteandsendThread(QtCore.QThread):
-    recv_signal = QtCore.pyqtSignal(str)
-    send_signal = QtCore.pyqtSignal(str)
-    animate_signal = QtCore.pyqtSignal(str)
-
+class WaiteandsendThread(QtCore.QRunnable):
     def __init__(self, message):
         super().__init__()
         self.message = message
+        self.signals = WorkerSignals()
 
     def run(self):
         """线程"""
         try:
             print("等待" + self.message[2] + "毫秒发送")
-            # time.sleep(int(self.message[2]) / 1000)
-            self.sleep(int(self.message[2]) / 1000)
+            time.sleep(int(self.message[2]) / 1000)
+            # self.sleep(int(self.message[2]) / 1000)
             print("已等待" + self.message[2] + "毫秒，开始发送")
             a = self.message[1]
             b = a[0:6] + '8|5' + a[9:12] + '|)'
             s = self.message[0]
 
             s.send(a.encode())
-            self.send_signal.emit(a)
+            # self.send_signal.emit(a)
+            self.signals.recv_signal.emit(a)
             s.send(b.encode())
-            self.send_signal.emit(b)
-            self.quit()
-            self.exit()
+            self.signals.send_signal.emit(b)
+
         except Exception as msg:
             errorinfo = Exception, ":", msg
             print(errorinfo)
@@ -419,6 +423,8 @@ class OtuMonitor(MainWidget):
         super(OtuMonitor, self).__init__()
         self.sqlserver = Sqlfunticon()
         self.num = 0
+        self.threadpool = QThreadPool.globalInstance()
+        self.threadpool.setMaxThreadCount(500)
 
     def otuSplice(self):
         for i in self.deleteWigt:
@@ -803,9 +809,10 @@ class OtuMonitor(MainWidget):
     def waitandsend(self, message):
         """等待信号，启动等待发送定时器"""
         self.tcpth2 = WaiteandsendThread(message)
-        self.tcpth2.recv_signal.connect(self.fillrecvmsg)
-        self.tcpth2.send_signal.connect(self.fillsendmsg)
-        self.tcpth2.start()
+        self.tcpth2.signals.recv_signal.connect(self.fillrecvmsg)
+        self.tcpth2.signals.send_signal.connect(self.fillsendmsg)
+
+        self.threadpool.start(self.tcpth2)
 
     def go_online(self):
         """上线"""
