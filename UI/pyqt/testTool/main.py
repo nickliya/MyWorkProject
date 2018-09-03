@@ -251,7 +251,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1100, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.08.20')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.09.03')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -315,7 +315,7 @@ class TcpThread(QtCore.QThread):
                 datainfo = re.findall(r, tcpreceive)
                 str_data = str(datainfo[0])
                 print('recv:' + protocol_dic[str_data[7:10]] + str_data)
-                a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + '1,1|)'
+                a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + '2,1|)'
                 waitime = self.entrywait.text()
                 if waitime == "0":
                     self.s.send(a.encode())
@@ -326,7 +326,13 @@ class TcpThread(QtCore.QThread):
                     self.send_signal.emit(b)
                 else:
                     self.wait_signal.emit((self.s, a, waitime))
-
+            elif "281" in xinfo or "282" in xinfo:
+                self.recv_signal.emit(tcpreceive)
+                str_data2 = tcpreceive[:5] + "4" + tcpreceive[6:]
+                str_data = str_data2[:1] + "1" + str_data2[1:]
+                print('recv:' + str_data)
+                self.s.send(str_data.encode())
+                self.send_signal.emit(str_data)
             elif tcpreceive == "":
                 stopsingle = 1
                 self.s.shutdown(2)
@@ -535,7 +541,7 @@ class OtuMonitor(MainWidget):
             "车窗": "(1*88|7|317,1,11111|)",
             "车门": "(1*33|7|304,1,11111|)",
             "OBD": "(1*fa|7|30e,1,2,1,3333,1,0,2|)",
-            "ACC": "(1*12|7|301,2,1111)",
+            "ON挡": "(1*12|7|301,2)",
             "余油614": "(1*ea|5|614,3,7#b312,1,32,32#|)",
             "余电614": "(1*ea|5|614,3,7#b313,1,32,32#|)",
             "余电31F": "(1*88|7|31F,1,32,0,0|)",
@@ -571,7 +577,8 @@ class OtuMonitor(MainWidget):
         # self.Btn12.setStatusTip("1上锁2开锁(305，门锁状态，左前门，做后面，后前门，右后门)")
         self.Btn13 = QPushButton(u"OBD")
         self.Btn13.setStatusTip("(30e，诊断连接状态，严重故障状态，严重故障数量，故障码列表，诊断类型1CAN2KIN，诊断类型附加字段，诊断发现其他设备接入冲突)")
-        self.Btn14 = QPushButton(u"ACC")
+        self.Btn14 = QPushButton(u"ON挡")
+        self.Btn14.setStatusTip("1开2关")
 
         self.Btn15 = QPushButton(u"余油614")
         self.Btn16 = QPushButton(u"余电614")
@@ -582,7 +589,7 @@ class OtuMonitor(MainWidget):
         self.Btn21 = QPushButton(u"里程614新")
         self.Btn22 = QPushButton(u"里程320")
         self.Btn23 = QPushButton(u"单程421")
-        self.Btn24 = QPushButton(u"共享车311")
+        self.Btn24 = QPushButton(u"共享车331")
 
         # stylesheet = "QPushButton{border-image: url('qrcode.png');}"
         # self.Btn22.setStyleSheet(stylesheet)
@@ -598,7 +605,7 @@ class OtuMonitor(MainWidget):
         self.clearBtn2.clicked.connect(lambda: self.clearinfo(2))
         self.clearBtn3.clicked.connect(lambda: self.clearinfo(3))
         self.Btn9.clicked.connect(self.sendEN)
-        self.Btn24.clicked.connect(self.send311)
+        self.Btn24.clicked.connect(self.send331)
         self.bindBtn.clicked.connect(self.bindBt)
         self.wg315Btn.clicked.connect(self.waiguadev)
 
@@ -767,12 +774,12 @@ class OtuMonitor(MainWidget):
         timeinfo = '(1*b2|7|30d,' + self.yqtool.hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
         self.textInput.insertPlainText(timeinfo)
 
-    def send311(self):
+    def send331(self):
         """发送位置
         当前在光电园
         """
-        time311 = self.yqtool.BSJhextime().replace(" ", "")
-        datainfo = "(1*e4|7|331," + time311 + ",1,E,10629.7228,N,2937.1144,0,0,9,2200,2222222,22222,000000,110,22,1,7454,0,212,505|)"
+        time331 = self.yqtool.BSJhextime().replace(" ", "")
+        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9,2200,2222222,22222,000000,110,22,1,7454,0,212,505|)"
         self.textInput.insertPlainText(datainfo)
 
     def bindBt(self):
