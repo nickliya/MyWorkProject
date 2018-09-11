@@ -302,14 +302,16 @@ class TcpThread(QtCore.QThread):
         while 1:
             tcpreceive = self.s.recv(1024).decode()
             xinfo = re.findall(r'\|(\w\w\w),', tcpreceive)  # 检测是否为控制协议
+
+            # 适配控制协议,如果存在下列编号则自动回复
             if "511" in xinfo or "512" in xinfo or "513" in xinfo or '514' in xinfo or '515' in xinfo or '516' in xinfo \
-                    or '517' in xinfo or '518' in xinfo or '519' in xinfo or '51A' in xinfo or '51B' in xinfo \
-                    or '51C' in xinfo:
+                    or '517' in xinfo or '518' in xinfo or '519' in xinfo or '51a' in xinfo or '51b' in xinfo \
+                    or '51c' in xinfo:
                 self.recv_signal.emit(tcpreceive)
                 protocol_dic = {
                     "511": "上锁", "512": "解锁", "513": "寻车", "514": "静音", "515": "点火",
-                    "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51A": "开天窗",
-                    "51B": "通油", "51C": "断油",
+                    "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51a": "开天窗",
+                    "51b": "通油", "51c": "断油",
                 }
                 r = r'\(\*..\|7\|\d\d\w,\w*?,\w*?\|\)'
                 datainfo = re.findall(r, tcpreceive)
@@ -326,6 +328,7 @@ class TcpThread(QtCore.QThread):
                     self.send_signal.emit(b)
                 else:
                     self.wait_signal.emit((self.s, a, waitime))
+            # 适配蓝牙设置协议,如果存在下面编码则自动回复
             elif "281" in xinfo or "282" in xinfo:
                 self.recv_signal.emit(tcpreceive)
                 str_data2 = tcpreceive[:5] + "4" + tcpreceive[6:]
@@ -333,11 +336,12 @@ class TcpThread(QtCore.QThread):
                 print('recv:' + str_data)
                 self.s.send(str_data.encode())
                 self.send_signal.emit(str_data)
+            # 如果回复消息未空,则判定为断线离线
             elif tcpreceive == "":
                 stopsingle = 1
                 self.s.shutdown(2)
                 self.s.close()
-                self.onBtn.setText("上线")
+                self.onBtn.setText("连接")
                 self.animate_signal.emit("1")
                 self.heartcheck.setChecked(False)
                 self.heartcheck.setVisible(False)
@@ -501,7 +505,7 @@ class OtuMonitor(MainWidget):
         #     self.entryIP.insert(historyinfolist[1])
 
         self.defalBtn = QPushButton(u"默认")
-        self.onBtn = QPushButton(u"上线")
+        self.onBtn = QPushButton(u"连接")
         self.bindBtn = QPushButton(u"绑定")
         self.bindBtn.setDisabled(True)
         self.sendBtn = QPushButton(u"发送")
@@ -511,6 +515,8 @@ class OtuMonitor(MainWidget):
         self.clearBtn3 = QPushButton(u"清空")
         self.wg315Btn = QPushButton(u"315")
         self.wg315Btn.setDisabled(True)
+        self.loginBtn = QPushButton(u"登录")
+        self.searchAddrBtn = QPushButton(u"寻址")
 
         self.seleOtu = QRadioButton(u"otu")
         self.seleAudi = QRadioButton(u"audi")
@@ -608,6 +614,8 @@ class OtuMonitor(MainWidget):
         self.Btn24.clicked.connect(self.send331)
         self.bindBtn.clicked.connect(self.bindBt)
         self.wg315Btn.clicked.connect(self.waiguadev)
+        self.loginBtn.clicked.connect(self.otulogindataCreate)
+        self.searchAddrBtn.clicked.connect(self.searchAddr)
 
         self.heartcheck.stateChanged.connect(self.sendHeart)
         self.otutimer = QTimer(self)  # 初始化一个定时器
@@ -676,12 +684,14 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.seleAudi, 0, 7)
         self.leftgrid.addWidget(self.seleBuick, 0, 8)
         self.leftgrid.addWidget(self.defalBtn, 0, 9)
-        self.leftgrid.addWidget(self.labelOtuIMEI, 1, 0)
 
-        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 5)
-        self.leftgrid.addWidget(self.labelwait, 1, 6)
-        self.leftgrid.addWidget(self.entrywait, 1, 7, 1, 2)
-        self.leftgrid.addWidget(self.onBtn, 1, 9)
+        self.leftgrid.addWidget(self.labelOtuIMEI, 1, 0)
+        self.leftgrid.addWidget(self.entryOtuIMEI, 1, 1, 1, 3)
+        self.leftgrid.addWidget(self.labelwait, 1, 4)
+        self.leftgrid.addWidget(self.entrywait, 1, 5, 1, 1)
+        self.leftgrid.addWidget(self.onBtn, 1, 7)
+        self.leftgrid.addWidget(self.searchAddrBtn, 1, 8)
+        self.leftgrid.addWidget(self.loginBtn, 1, 9)
 
         self.leftgrid.addWidget(self.labelBTIMEI, 2, 0)
         self.leftgrid.addWidget(self.entryBTIMEI, 2, 1, 1, 3)
@@ -744,7 +754,7 @@ class OtuMonitor(MainWidget):
         """默认按钮"""
         self.entryPort.setText("2103")
         self.entryIP.setText("192.168.6.52")
-        self.entryHardver.setText("01022300")
+        self.entryHardver.setText("01062300")
 
     def clearinfo(self, clearindex):
         """清 空"""
@@ -791,7 +801,10 @@ class OtuMonitor(MainWidget):
 
         msg = '(1*f5|7|315,8_btu.CC2640.0_0113.release.0_BT_M_B1b.0.00_mac' + str(mac) + '_300,|)'
         self.s.send(msg.encode())
-        self.textSend.append(self.yqtool.timeNow() + " " + msg)
+        self.textSend.setTextColor(QColor("#FF3030"))
+        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.setTextColor(QColor("#FFFFFF"))
+        self.textSend.insertPlainText(msg)
 
     def waiguadev(self):
         """315外挂设备"""
@@ -821,25 +834,57 @@ class OtuMonitor(MainWidget):
 
         self.threadpool.start(self.tcpth2)
 
+    def otulogindataCreate(self):
+        """等待信号，启动等待发送定时器"""
+        otu_IMEI = self.entryOtuIMEI.text()
+        hardver = self.entryHardver.text()
+        r_blank = r'\d*\d'
+        IMEI_NUM = re.findall(r_blank, otu_IMEI)
+        if not IMEI_NUM:
+            self.textRecv.append("未输入IEMI")
+            return False
+
+        if self.seleOtu.isChecked():
+            loginType = "ost"
+        elif self.seleAudi.isChecked():
+            loginType = "audi"
+        else:
+            loginType = "buick"
+
+        loginMsg = '(1*7c|a3|106,201|101,' + str(
+            IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',' + str(
+            hardver) + '|105,a1,18|622,a1c2|)'
+        self.textInput.setText(loginMsg)
+
+    def searchAddr(self):
+        """等待信号，启动等待发送定时器"""
+        otu_IMEI = self.entryOtuIMEI.text()
+        hardver = self.entryHardver.text()
+        r_blank = r'\d*\d'
+        IMEI_NUM = re.findall(r_blank, otu_IMEI)
+        if not IMEI_NUM:
+            self.textRecv.append("未输入IEMI")
+            return False
+
+        if self.seleOtu.isChecked():
+            loginType = "ost"
+        elif self.seleAudi.isChecked():
+            loginType = "audi"
+        else:
+            loginType = "buick"
+
+        loginMsg = '(1*7c|a1|106,201|101,' + str(
+            IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',' + str(
+            hardver) + '|105,a1,18|112,1|622,a1c2|)'
+        self.textInput.setText(loginMsg)
+
     def go_online(self):
         """上线"""
-        if self.onBtn.text() == "上线":
+        if self.onBtn.text() == "连接":
             otu_IMEI = self.entryOtuIMEI.text()
+            hardver = self.entryHardver.text()
             tcpadress = self.entryIP.text()
             tcpport = self.entryPort.text()
-            hardver = self.entryHardver.text()
-            r_blank = r'\d*\d'
-            IMEI_NUM = re.findall(r_blank, otu_IMEI)
-            if not IMEI_NUM:
-                self.textRecv.append("未输入IEMI")
-                return False
-
-            if self.seleOtu.isChecked():
-                loginType = "ost"
-            elif self.seleAudi.isChecked():
-                loginType = "audi"
-            else:
-                loginType = "buick"
 
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
@@ -852,17 +897,15 @@ class OtuMonitor(MainWidget):
 
             self.scene.onlineCol.start()  # 上线动画
 
-            # s.send('(1*7c|a3|106,201|101,' + str(
-            #     IMEI_NUM[0]) + '|102,460079241205511|103,898600D23113837|104,otu.ost,01022300|105,a1,18|622,a1c2|)')
-            loginMsg = '(1*7c|a3|106,201|101,' + str(
-                IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',' + str(
-                hardver) + '|105,a1,18|622,a1c2|)'
-
-            self.s.send(loginMsg.encode())  # 商用去掉103
-            self.textSend.setTextColor(QColor("#FF3030"))
-            self.textSend.append(self.yqtool.timeNow() + " ")
-            self.textSend.setTextColor(QColor("#FFFFFF"))
-            self.textSend.insertPlainText(loginMsg)
+            # loginMsg = '(1*7c|a3|106,201|101,' + str(
+            #     IMEI_NUM[0]) + '|102,460079241205511|104,otu.' + loginType + ',' + str(
+            #     hardver) + '|105,a1,18|622,a1c2|)'
+            #
+            # self.s.send(loginMsg.encode())  # 商用去掉103
+            # self.textSend.setTextColor(QColor("#FF3030"))
+            # self.textSend.append(self.yqtool.timeNow() + " ")
+            # self.textSend.setTextColor(QColor("#FFFFFF"))
+            # self.textSend.insertPlainText(loginMsg)
 
             historydata = open('D:\Tcptemp\data.txt', "w")  # 生成缓存文件data
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
