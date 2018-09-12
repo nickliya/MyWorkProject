@@ -597,8 +597,36 @@ class OtuMonitor(MainWidget):
         self.Btn23 = QPushButton(u"单程421")
         self.Btn24 = QPushButton(u"共享车331")
 
-        # stylesheet = "QPushButton{border-image: url('qrcode.png');}"
-        # self.Btn22.setStyleSheet(stylesheet)
+        # 331定制box
+        self.aotubox = QGroupBox("331协议定制,√为开,门锁除外")
+        self.aotuboxGrid = QGridLayout()
+        self.aotubox.setLayout(self.aotuboxGrid)
+        self.aotucheckbox1 = QCheckBox("ACC")
+        self.aotucheckbox2 = QCheckBox("总门边")
+        self.aotucheckbox3 = QCheckBox("左前门")
+        self.aotucheckbox4 = QCheckBox("右前门")
+        self.aotucheckbox5 = QCheckBox("左后门")
+        self.aotucheckbox6 = QCheckBox("右后门")
+        self.aotucheckbox7 = QCheckBox("后备箱")
+        self.aotucheckbox8 = QCheckBox("前盖")
+        self.aotucheckbox9 = QCheckBox("总门锁")
+        self.aotucheckbox10 = QCheckBox("左前锁")
+        self.aotucheckbox11 = QCheckBox("右前锁")
+        self.aotucheckbox12 = QCheckBox("左后锁")
+        self.aotucheckbox13 = QCheckBox("右后锁")
+        self.aotucheckbox14 = QCheckBox("总门窗")
+        self.aotucheckbox15 = QCheckBox("左前窗")
+        self.aotucheckbox16 = QCheckBox("右前窗")
+        self.aotucheckbox17 = QCheckBox("左后窗")
+        self.aotucheckbox18 = QCheckBox("右后窗")
+        self.aotucheckbox19 = QCheckBox("天窗")
+        self.aotucheckbox20 = QCheckBox("总灯")
+        self.aotucheckbox21 = QCheckBox("大灯")
+        self.aotucheckbox22 = QCheckBox("小灯")
+        self.aotucheckbox23 = QCheckBox("设防/撤防")
+        self.aotucheckbox24 = QCheckBox("告警")
+        self.aotualarmdataCreatebtn = QPushButton(u"生成")
+        self.aotualarmdataCreatebtn.clicked.connect(self.aotudatacreate)
 
         self.btnlist = [self.Btn4, self.Btn5, self.Btn6, self.Btn7, self.Btn8,
                         self.Btn9, self.Btn10, self.Btn11, self.Btn12, self.Btn13, self.Btn14, self.Btn15, self.Btn16,
@@ -663,7 +691,8 @@ class OtuMonitor(MainWidget):
 
     def OtuMonitor_grid(self):
         self.maingrid.setColumnStretch(0, 7)
-        self.maingrid.setColumnStretch(1, 2)
+        self.maingrid.setColumnStretch(1, 3)
+
         # 左边窗体
         self.leftwidget = QWidget()
         self.leftgrid = QGridLayout()
@@ -700,7 +729,7 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.wg315Btn, 2, 9)
 
         self.leftgrid.addWidget(self.labelInput, 3, 0, 1, 2)
-        self.leftgrid.addWidget(self.heartcheck, 3, 3, QtCore.Qt.AlignCenter)
+        self.leftgrid.addWidget(self.heartcheck, 3, 2, 1, 3, QtCore.Qt.AlignCenter)
         self.leftgrid.addWidget(self.clearBtn, 3, 8)
         self.leftgrid.addWidget(self.sendBtn, 3, 9)
         self.leftgrid.addWidget(self.textInput, 4, 0, 1, 10)
@@ -710,6 +739,7 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 4)
         self.leftgrid.addWidget(self.clearBtn3, 7, 9)
         self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 10)
+        # self.leftgrid.addWidget(self.aotubox, 9, 0, 1, 10)
 
         # 中间窗体
         self.middlewiget = QWidget()
@@ -720,41 +750,74 @@ class OtuMonitor(MainWidget):
         self.middlegrid.addWidget(self.Btn1, 0, 0)
         self.middlegrid.addWidget(self.Btn2, 0, 1)
         self.middlegrid.addWidget(self.Btn3, 0, 2)
-        self.middlegrid.addWidget(self.Btn4, 1, 0)
-        self.middlegrid.addWidget(self.Btn5, 1, 1)
-        self.middlegrid.addWidget(self.Btn6, 1, 2)
+        self.middlegrid.addWidget(self.Btn4, 0, 3)
+        self.middlegrid.addWidget(self.Btn5, 0, 4)
+        self.middlegrid.addWidget(self.Btn6, 0, 5)
         self.middlegrid.addWidget(self.Btn7, 2, 0)
         self.middlegrid.addWidget(self.Btn8, 2, 1)
         self.middlegrid.addWidget(self.Btn9, 2, 2)
-        self.middlegrid.addWidget(self.Btn10, 3, 0)
-        self.middlegrid.addWidget(self.Btn11, 3, 1)
-        self.middlegrid.addWidget(self.Btn12, 3, 2)
-        self.middlegrid.addWidget(self.Btn13, 4, 0)
-        self.middlegrid.addWidget(self.Btn14, 4, 1)
-        self.middlegrid.addWidget(self.Btn15, 4, 2)
-        self.middlegrid.addWidget(self.Btn16, 5, 0)
-        self.middlegrid.addWidget(self.Btn17, 5, 1)
-        self.middlegrid.addWidget(self.Btn18, 5, 2)
-        self.middlegrid.addWidget(self.Btn19, 6, 0)
-        self.middlegrid.addWidget(self.Btn20, 6, 1)
-        self.middlegrid.addWidget(self.Btn21, 6, 2)
-        self.middlegrid.addWidget(self.Btn22, 7, 0)
-        self.middlegrid.addWidget(self.Btn23, 7, 1)
-        self.middlegrid.addWidget(self.Btn24, 7, 2)
+        self.middlegrid.addWidget(self.Btn10, 2, 3)
+        self.middlegrid.addWidget(self.Btn11, 2, 4)
+        self.middlegrid.addWidget(self.Btn12, 2, 5)
+        self.middlegrid.addWidget(self.Btn13, 3, 0)
+        self.middlegrid.addWidget(self.Btn14, 3, 1)
+        self.middlegrid.addWidget(self.Btn15, 3, 2)
+        self.middlegrid.addWidget(self.Btn16, 3, 3)
+        self.middlegrid.addWidget(self.Btn17, 3, 4)
+        self.middlegrid.addWidget(self.Btn18, 3, 5)
+        self.middlegrid.addWidget(self.Btn19, 4, 0)
+        self.middlegrid.addWidget(self.Btn20, 4, 1)
+        self.middlegrid.addWidget(self.Btn21, 4, 2)
+        self.middlegrid.addWidget(self.Btn22, 4, 3)
+        self.middlegrid.addWidget(self.Btn23, 4, 4)
+        self.middlegrid.addWidget(self.Btn24, 4, 5)
 
-        self.middlegrid.addWidget(self.labelmsg, 11, 0)
-        self.middlegrid.addWidget(self.entrymsg, 11, 1, 1, 2)
-        self.middlegrid.addWidget(self.btnCreatqrcode, 12, 0, 1, 3, QtCore.Qt.AlignLeft)
-        self.middlegrid.addWidget(self.btnCreatqrcode2, 12, 0, 1, 3, QtCore.Qt.AlignRight)
-        self.middlegrid.addWidget(self.labelqrode, 13, 0, 1, 3, QtCore.Qt.AlignCenter)
+        self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
 
-        # self.middlegrid.addWidget(self.btnCreatqrcode3, 12, 2)
+        self.middlegrid.addWidget(self.labelmsg, 6, 0)
+        self.middlegrid.addWidget(self.entrymsg, 6, 1, 1, 5)
+        self.middlegrid.addWidget(self.btnCreatqrcode, 7, 0, 1, 6, QtCore.Qt.AlignLeft)
+        self.middlegrid.addWidget(self.btnCreatqrcode2, 7, 0, 1, 6, QtCore.Qt.AlignRight)
+        self.middlegrid.addWidget(self.labelqrode, 8, 0, 1, 6, QtCore.Qt.AlignCenter)
+
+        # 右边窗体
+        # self.rightwidget = QWidget()
+        # self.rightgrid = QGridLayout()
+        # self.rightwidget.setLayout(self.rightgrid)
+        # self.maingrid.addWidget(self.rightwidget, 0, 2)
+
+        # self.rightgrid.addWidget(self.aotubox, 0, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox1, 0, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox2, 1, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox3, 1, 1)
+        self.aotuboxGrid.addWidget(self.aotucheckbox4, 1, 2)
+        self.aotuboxGrid.addWidget(self.aotucheckbox5, 1, 3)
+        self.aotuboxGrid.addWidget(self.aotucheckbox6, 1, 4)
+        self.aotuboxGrid.addWidget(self.aotucheckbox7, 0, 1)
+        self.aotuboxGrid.addWidget(self.aotucheckbox8, 0, 2)
+        self.aotuboxGrid.addWidget(self.aotucheckbox9, 2, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox10, 2, 1)
+        self.aotuboxGrid.addWidget(self.aotucheckbox11, 2, 2)
+        self.aotuboxGrid.addWidget(self.aotucheckbox12, 2, 3)
+        self.aotuboxGrid.addWidget(self.aotucheckbox13, 2, 4)
+        self.aotuboxGrid.addWidget(self.aotucheckbox14, 3, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox15, 3, 1)
+        self.aotuboxGrid.addWidget(self.aotucheckbox16, 3, 2)
+        self.aotuboxGrid.addWidget(self.aotucheckbox17, 3, 3)
+        self.aotuboxGrid.addWidget(self.aotucheckbox18, 3, 4)
+        self.aotuboxGrid.addWidget(self.aotucheckbox19, 0, 3)
+        self.aotuboxGrid.addWidget(self.aotucheckbox20, 4, 0)
+        self.aotuboxGrid.addWidget(self.aotucheckbox21, 4, 1)
+        self.aotuboxGrid.addWidget(self.aotucheckbox22, 4, 2)
+        self.aotuboxGrid.addWidget(self.aotucheckbox23, 4, 3)
+        self.aotuboxGrid.addWidget(self.aotucheckbox24, 4, 4)
+        self.aotuboxGrid.addWidget(self.aotualarmdataCreatebtn, 0, 4)
 
     def siruisetDefalut(self):
         """默认按钮"""
         self.entryPort.setText("2103")
         self.entryIP.setText("192.168.6.52")
-        self.entryHardver.setText("01062300")
+        self.entryHardver.setText("02062300")
 
     def clearinfo(self, clearindex):
         """清 空"""
@@ -992,6 +1055,48 @@ class OtuMonitor(MainWidget):
         img.save('D:\Tcptemp\qrcode.png')
 
         self.labelqrode.setPixmap(QtGui.QPixmap("D:\Tcptemp\qrcode.png"))
+
+    def aotudatacreate(self):
+        def checkindex(checkbox):
+            if checkbox.isChecked():
+                return "1"
+            else:
+                return "2"
+
+        check1 = checkindex(self.aotucheckbox1)
+        check2 = checkindex(self.aotucheckbox2)
+        check3 = checkindex(self.aotucheckbox3)
+        check4 = checkindex(self.aotucheckbox4)
+        check5 = checkindex(self.aotucheckbox5)
+        check6 = checkindex(self.aotucheckbox6)
+        check7 = checkindex(self.aotucheckbox7)
+        check8 = checkindex(self.aotucheckbox8)
+        check9 = checkindex(self.aotucheckbox9)
+        check10 = checkindex(self.aotucheckbox10)
+        check11 = checkindex(self.aotucheckbox11)
+        check12 = checkindex(self.aotucheckbox12)
+        check13 = checkindex(self.aotucheckbox13)
+        check14 = checkindex(self.aotucheckbox14)
+        check15 = checkindex(self.aotucheckbox15)
+        check16 = checkindex(self.aotucheckbox16)
+        check17 = checkindex(self.aotucheckbox17)
+        check18 = checkindex(self.aotucheckbox18)
+        check19 = checkindex(self.aotucheckbox19)
+        check20 = checkindex(self.aotucheckbox20)
+        check21 = checkindex(self.aotucheckbox21)
+        check22 = checkindex(self.aotucheckbox22)
+        check23 = checkindex(self.aotucheckbox23)
+        check24 = checkindex(self.aotucheckbox24)
+
+        onStatus = str(check1)
+        doorStatus = str(check2) + str(check3) + str(check4) + str(check5) + str(check6) + str(check7) + str(check8)
+        doorLockStatus = str(check9) + str(check10) + str(check11) + str(check12) + str(check13)
+        doorWindowStatus = str(check14) + str(check15) + str(check16) + str(check17) + str(check18) + str(check19)
+        lightStatus = str(check20) + str(check21) + str(check22)
+        shefangStatus = str(check23) + str(check24)
+        time331 = self.yqtool.BSJhextime().replace(" ", "")
+        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1,7454,0,212,505|)"
+        self.textInput.insertPlainText(datainfo)
 
 
 class BSJMonitor(MainWidget):
