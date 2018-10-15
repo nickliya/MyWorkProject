@@ -39,7 +39,7 @@ class Bianlifunction:
     def timeNow():
         now_stamp = time.time()
         local_time = datetime.datetime.fromtimestamp(now_stamp)
-        return local_time.strftime("%H:%M:%S")
+        return local_time.strftime("%H:%M:%S.%f")
 
     @staticmethod
     def BSJhextime():
@@ -249,9 +249,9 @@ class MainWidget(QMainWindow):
         fileMenu.addAction(menuAction5)
 
     def initUI(self):
-        self.resize(1100, 680)
+        self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.09.03')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.10.15')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -329,13 +329,28 @@ class TcpThread(QtCore.QThread):
                 else:
                     self.wait_signal.emit((self.s, a, waitime))
             # 适配蓝牙设置协议,如果存在下面编码则自动回复
-            elif "281" in xinfo or "282" in xinfo:
+            elif "281" in xinfo or "282" in xinfo or "26d" in xinfo:
                 self.recv_signal.emit(tcpreceive)
                 str_data2 = tcpreceive[:5] + "4" + tcpreceive[6:]
                 str_data = str_data2[:1] + "1" + str_data2[1:]
                 print('recv:' + str_data)
                 self.s.send(str_data.encode())
                 self.send_signal.emit(str_data)
+            # 适配设备配置，如果存在下面编码则自动回复
+            elif "217" in xinfo or "20a" in xinfo or "26a" in xinfo or "26b" in xinfo:
+                self.recv_signal.emit(tcpreceive)
+                str_data = tcpreceive
+                # print('recv:' + protocol_dic[str_data[7:10]] + str_data)
+                a = str_data[0] + '1' + str_data[1:5] + "4" + str_data[6:11] + '1,1|)'
+                self.s.send(a.encode())
+                self.send_signal.emit(a)
+            elif "26e" in xinfo or "230" in xinfo:
+                self.recv_signal.emit(tcpreceive)
+                str_data = tcpreceive
+                # print('recv:' + protocol_dic[str_data[7:10]] + str_data)
+                a = str_data[0] + '1' + str_data[1:5] + "4" + str_data[6:]
+                self.s.send(a.encode())
+                self.send_signal.emit(a)
             # 如果回复消息未空,则判定为断线离线
             elif tcpreceive == "":
                 stopsingle = 1
@@ -426,6 +441,34 @@ class WaiteandsendThread(QtCore.QRunnable):
         except Exception as msg:
             errorinfo = Exception, ":", msg
             print(errorinfo)
+
+
+# class GpsUploadThread(QtCore.QRunnable):
+#     def __init__(self, data, tcp):
+#         super().__init__()
+#         self.message = data
+#         self.s = tcp
+#         self.signals = WorkerSignals()
+#         self.yqtool = Bianlifunction()
+#
+#     def run(self):
+#         """线程"""
+#         try:
+#             waitetime = self.message[0].split(",")[1]
+#             for i in self.message:
+#                 datalist = i.split(",")
+#                 sleeptime = float(int(datalist[1]) - int(waitetime)) / 1000
+#                 time.sleep(sleeptime)
+#                 time331 = self.yqtool.BSJhextime().replace(" ", "")
+#                 a = "(1*e4|7|331," + time331 + ",1,E," + str(float(datalist[3]) * 100) + ",N," + str(
+#                     float(datalist[2]) * 100) + ",0,0,9,2200,2222222,22222,222222,222,22,1,7454,0,212,505,1,1,1,0,0|)"
+#                 self.s.send(a.encode())
+#                 self.signals.send_signal.emit(a)
+#                 waitetime = datalist[1]
+#
+#         except Exception as msg:
+#             errorinfo = Exception, ":", msg
+#             print(errorinfo)
 
 
 class OtuMonitor(MainWidget):
@@ -527,6 +570,7 @@ class OtuMonitor(MainWidget):
         self.heartcheck.setVisible(False)
 
         self.textInput = QTextEdit()
+        self.textInput.setAlignment(QtCore.Qt.AlignLeft)
         self.textSend = QTextBrowser()
         # self.textSend.setReadOnly(False) # 设置不可编辑
         self.textRecv = QTextBrowser()
@@ -556,6 +600,8 @@ class OtuMonitor(MainWidget):
             "里程313": "(1*10|7|313,1,10,1,552.0.0.0f39202a00,|)",
             "里程320": "(1*10|7|320,1,9C4|)",
             "里程614新": "(1*c1|5|614,3,7#b318,9C4#|)",
+            "设防333": "(1*c1|7|333,1|)",
+
         }
 
         self.Btn1 = QPushButton(u"能力")
@@ -595,10 +641,10 @@ class OtuMonitor(MainWidget):
         self.Btn21 = QPushButton(u"里程614新")
         self.Btn22 = QPushButton(u"里程320")
         self.Btn23 = QPushButton(u"单程421")
-        self.Btn24 = QPushButton(u"共享车331")
+        self.Btn24 = QPushButton(u"设防333")
 
         # 331定制box
-        self.aotubox = QGroupBox("331协议定制,√为开,门锁除外")
+        self.aotubox = QGroupBox("331协议定制,√为开,门锁相反")
         self.aotuboxGrid = QGridLayout()
         self.aotubox.setLayout(self.aotuboxGrid)
         self.aotucheckbox1 = QCheckBox("ACC")
@@ -627,6 +673,23 @@ class OtuMonitor(MainWidget):
         self.aotucheckbox24 = QCheckBox("告警")
         self.aotualarmdataCreatebtn = QPushButton(u"生成")
         self.aotualarmdataCreatebtn.clicked.connect(self.aotudatacreate)
+        self.label331ExcessOil = QLabel("余油")
+        self.label331ExcessVoltage = QLabel("余电")
+        self.label331EnduranceMileage = QLabel("续航里程")
+        self.label331AccumulatedMileage = QLabel("累积里程")
+        self.label331BatteryVoltage = QLabel("电瓶电压")
+
+        self.label331ExcessOil_input = QLineEdit()
+        self.label331ExcessVoltage_input = QLineEdit()
+        self.label331EnduranceMileage_input = QLineEdit()
+        self.label331AccumulatedMileage_input = QLineEdit()
+        self.label331BatteryVoltage_input = QLineEdit()
+
+        self.label331ExcessOil_input.setText("50")
+        self.label331ExcessVoltage_input.setText("70")
+        self.label331EnduranceMileage_input.setText("90")
+        self.label331AccumulatedMileage_input.setText("23456")
+        self.label331BatteryVoltage_input.setText("1125")
 
         self.btnlist = [self.Btn4, self.Btn5, self.Btn6, self.Btn7, self.Btn8,
                         self.Btn9, self.Btn10, self.Btn11, self.Btn12, self.Btn13, self.Btn14, self.Btn15, self.Btn16,
@@ -638,8 +701,7 @@ class OtuMonitor(MainWidget):
         self.clearBtn.clicked.connect(lambda: self.clearinfo(1))
         self.clearBtn2.clicked.connect(lambda: self.clearinfo(2))
         self.clearBtn3.clicked.connect(lambda: self.clearinfo(3))
-        self.Btn9.clicked.connect(self.sendEN)
-        self.Btn24.clicked.connect(self.send331)
+
         self.bindBtn.clicked.connect(self.bindBt)
         self.wg315Btn.clicked.connect(self.waiguadev)
         self.loginBtn.clicked.connect(self.otulogindataCreate)
@@ -671,11 +733,15 @@ class OtuMonitor(MainWidget):
         self.Btn20.clicked.connect(lambda: self.btnclickevent(self.Btn20))
         self.Btn21.clicked.connect(lambda: self.btnclickevent(self.Btn21))
         self.Btn22.clicked.connect(lambda: self.btnclickevent(self.Btn22))
+        self.Btn24.clicked.connect(lambda: self.btnclickevent(self.Btn24))
         self.Btn23.clicked.connect(self.dancheng)
+        self.Btn9.clicked.connect(self.sendEN)
 
         self.labelmsg = QLabel("转换内容")
         self.labelmsg.setAlignment(QtCore.Qt.AlignCenter)
+
         self.entrymsg = QLineEdit()
+        self.entrymsg.setMinimumWidth(160)
         self.btnCreatqrcode = QPushButton("生成普通二维码")
         self.btnCreatqrcode.setStatusTip("请检查空格，空格也会作为内容一部分转成二维码")
 
@@ -689,9 +755,14 @@ class OtuMonitor(MainWidget):
         self.labelqrode = QLabel("")
         self.labelqrode.setObjectName("qrlabel")
 
+        # self.gpsUpload = QPushButton(u"附件GPS上报")
+        # self.gpsUpload.setStatusTip("附件放至D:\Tcptemp")
+        # self.gpsUpload.clicked.connect(self.gpsUploadfun)
+
     def OtuMonitor_grid(self):
-        self.maingrid.setColumnStretch(0, 7)
-        self.maingrid.setColumnStretch(1, 3)
+        self.maingrid.setColumnStretch(0, 6)
+        self.maingrid.setColumnStretch(1, 2)
+        self.maingrid.setColumnStretch(2, 2)
 
         # 左边窗体
         self.leftwidget = QWidget()
@@ -739,6 +810,7 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 4)
         self.leftgrid.addWidget(self.clearBtn3, 7, 9)
         self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 10)
+        # self.leftgrid.addWidget(self.gpsUpload, 3, 6, 1, 2)
         # self.leftgrid.addWidget(self.aotubox, 9, 0, 1, 10)
 
         # 中间窗体
@@ -774,19 +846,24 @@ class OtuMonitor(MainWidget):
 
         self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
 
-        self.middlegrid.addWidget(self.labelmsg, 6, 0)
-        self.middlegrid.addWidget(self.entrymsg, 6, 1, 1, 5)
-        self.middlegrid.addWidget(self.btnCreatqrcode, 7, 0, 1, 6, QtCore.Qt.AlignLeft)
-        self.middlegrid.addWidget(self.btnCreatqrcode2, 7, 0, 1, 6, QtCore.Qt.AlignRight)
-        self.middlegrid.addWidget(self.labelqrode, 8, 0, 1, 6, QtCore.Qt.AlignCenter)
+        # self.middlegrid.addWidget(self.labelmsg, 6, 0)
+        # self.middlegrid.addWidget(self.entrymsg, 6, 1, 1, 5)
+        # self.middlegrid.addWidget(self.btnCreatqrcode, 7, 0, 1, 6, QtCore.Qt.AlignLeft)
+        # self.middlegrid.addWidget(self.btnCreatqrcode2, 7, 0, 1, 6, QtCore.Qt.AlignRight)
+        # self.middlegrid.addWidget(self.labelqrode, 8, 0, 1, 6, QtCore.Qt.AlignCenter)
 
         # 右边窗体
-        # self.rightwidget = QWidget()
-        # self.rightgrid = QGridLayout()
-        # self.rightwidget.setLayout(self.rightgrid)
-        # self.maingrid.addWidget(self.rightwidget, 0, 2)
+        self.rightwidget = QWidget()
+        self.rightgrid = QGridLayout()
+        self.rightwidget.setLayout(self.rightgrid)
+        self.maingrid.addWidget(self.rightwidget, 0, 2)
 
-        # self.rightgrid.addWidget(self.aotubox, 0, 0)
+        self.rightgrid.addWidget(self.labelmsg, 0, 0)
+        self.rightgrid.addWidget(self.entrymsg, 0, 1)
+        self.rightgrid.addWidget(self.btnCreatqrcode, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
+        self.rightgrid.addWidget(self.btnCreatqrcode2, 1, 0, 1, 2, QtCore.Qt.AlignRight)
+        self.rightgrid.addWidget(self.labelqrode, 2, 0, 1, 2, QtCore.Qt.AlignCenter)
+
         self.aotuboxGrid.addWidget(self.aotucheckbox1, 0, 0)
         self.aotuboxGrid.addWidget(self.aotucheckbox2, 1, 0)
         self.aotuboxGrid.addWidget(self.aotucheckbox3, 1, 1)
@@ -812,6 +889,16 @@ class OtuMonitor(MainWidget):
         self.aotuboxGrid.addWidget(self.aotucheckbox23, 4, 3)
         self.aotuboxGrid.addWidget(self.aotucheckbox24, 4, 4)
         self.aotuboxGrid.addWidget(self.aotualarmdataCreatebtn, 0, 4)
+        self.aotuboxGrid.addWidget(self.label331ExcessOil, 5, 0)
+        self.aotuboxGrid.addWidget(self.label331ExcessOil_input, 5, 1)
+        self.aotuboxGrid.addWidget(self.label331ExcessVoltage, 5, 2)
+        self.aotuboxGrid.addWidget(self.label331ExcessVoltage_input, 5, 3)
+        self.aotuboxGrid.addWidget(self.label331AccumulatedMileage, 6, 0)
+        self.aotuboxGrid.addWidget(self.label331AccumulatedMileage_input, 6, 1)
+        self.aotuboxGrid.addWidget(self.label331EnduranceMileage, 6, 2)
+        self.aotuboxGrid.addWidget(self.label331EnduranceMileage_input, 6, 3)
+        self.aotuboxGrid.addWidget(self.label331BatteryVoltage, 7, 0)
+        self.aotuboxGrid.addWidget(self.label331BatteryVoltage_input, 7, 1)
 
     def siruisetDefalut(self):
         """默认按钮"""
@@ -847,13 +934,13 @@ class OtuMonitor(MainWidget):
         timeinfo = '(1*b2|7|30d,' + self.yqtool.hextime() + ',E,10629.7228,N,2937.1144,0,10,c,1,1,-1,79|)'
         self.textInput.insertPlainText(timeinfo)
 
-    def send331(self):
-        """发送位置
-        当前在光电园
-        """
-        time331 = self.yqtool.BSJhextime().replace(" ", "")
-        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9,2200,2222222,22222,000000,110,22,1,7454,0,212,505|)"
-        self.textInput.insertPlainText(datainfo)
+    # def send331(self):
+    #     """发送位置
+    #     当前在光电园
+    #     """
+    #     time331 = self.yqtool.BSJhextime().replace(" ", "")
+    #     datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9,2200,2222222,22222,000000,110,22,1,7454,0,212,505|)"
+    #     self.textInput.insertPlainText(datainfo)
 
     def bindBt(self):
         """蓝牙绑定"""
@@ -982,13 +1069,13 @@ class OtuMonitor(MainWidget):
             self.tcpth.wait_signal.connect(self.waitandsend)
             self.tcpth.start()
 
-            self.onBtn.setText("离线")
+            self.onBtn.setText("断开")
             self.heartcheck.setVisible(True)
             self.sendBtn.setDisabled(False)
             self.bindBtn.setDisabled(False)
             self.wg315Btn.setDisabled(False)
 
-        elif self.onBtn.text() == "离线":
+        elif self.onBtn.text() == "断开":
             self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
@@ -1095,8 +1182,26 @@ class OtuMonitor(MainWidget):
         lightStatus = str(check20) + str(check21) + str(check22)
         shefangStatus = str(check23) + str(check24)
         time331 = self.yqtool.BSJhextime().replace(" ", "")
-        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1,7454,0,212,505|)"
+
+        AccumulatedMileage = hex(int(self.label331AccumulatedMileage_input.text()))[2:]  # "累积里程"
+        BatteryVoltage = hex(int(self.label331BatteryVoltage_input.text()))[2:]  # 电瓶电压
+        EnduranceMileage = hex(int(self.label331EnduranceMileage_input.text()))[2:]  # 续航里程
+        ExcessVoltage = hex(int(self.label331ExcessVoltage_input.text()))[2:]  # 余电
+        ExcessOil = hex(int(self.label331ExcessOil_input.text()))[2:]  # 余油
+
+        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1," + AccumulatedMileage + ","+EnduranceMileage+","+ExcessOil+","+BatteryVoltage+",1,1,1,"+ExcessVoltage+",0|)"
         self.textInput.insertPlainText(datainfo)
+
+    # def gpsUploadfun(self):
+    #     file1 = open("D:\\Tcptemp\\gpslocation", "r")
+    #     data = file1.readlines()
+    #     file1.close()
+    #
+    #     self.tcpth3 = GpsUploadThread(data, self.s)
+    #     self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
+    #     self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
+    #     #
+    #     self.threadpool.start(self.tcpth3)
 
 
 class BSJMonitor(MainWidget):
@@ -1241,6 +1346,7 @@ class BSJMonitor(MainWidget):
         self.heartcheck.setVisible(False)
 
         self.textInput = QTextEdit()
+        self.textInput.setAlignment(QtCore.Qt.AlignLeft)
         self.textSend = QTextBrowser()
         # self.textSend.setReadOnly(False) # 设置不可编辑
         self.textRecv = QTextBrowser()
@@ -1552,11 +1658,11 @@ class BSJMonitor(MainWidget):
             self.tcpth.animate_signal.connect(self.scene.threadAnimate)
             self.tcpth.start()
 
-            self.onBtn.setText("离线")
+            self.onBtn.setText("断开")
             self.heartcheck.setVisible(True)
             self.sendBtn.setDisabled(False)
 
-        elif self.onBtn.text() == "离线":
+        elif self.onBtn.text() == "断开":
             self.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
