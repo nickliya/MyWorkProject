@@ -7,70 +7,56 @@ from mainfun import *
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 import unittest
+import json
 
 br = Mainfun()
 pubfun = SupportFun()
 
 
-# class ParametrizedTestCase(unittest.TestCase):
-#     """ TestCase classes that want to be parametrized should
-#         inherit from this class.
-#     """
-#     def __init__(self, methodName='runTest', param=None):
-#         super(ParametrizedTestCase, self).__init__(methodName)
-#         self.param = param
-#     @staticmethod
-#     def parametrize(testcase_klass, param=None):
-#         """ Create a suite containing all tests taken from the given
-#             subclass, passing them the parameter 'param'.
-#         """
-#         testloader = unittest.TestLoader()
-#         testnames = testloader.getTestCaseNames(testcase_klass)
-#         suite = unittest.TestSuite()
-#         for name in testnames:
-#             suite.addTest(testcase_klass(name, param=param))
-#         return suite
-
-
 class Clgl(unittest.TestCase):
     """车辆管理"""
-    # def setUpClass(self):
-    #     print "classkaishi"
+    @classmethod
+    def setUpClass(cls):
+        jsonfile = open("jsondata/clgl.js", "r")
+        cls.jsoninfo = json.load(jsonfile)
+
+    # def setUp(self):
+    #     print("kaishi")
     #
-    # def tearDownClass(self):
-    #     print "classjieshu"
+    # def tearDown(self):
+    #     print("jieshu")
 
-    def setUp(self):
-        print("kaishi")
-
-    def tearDown(self):
-        print("jieshu")
+    @staticmethod
+    def goto():
+        """进入车辆管理"""
+        time.sleep(2)
+        br.browser.find_element_by_id('/car').click()
+        time.sleep(1)
+        br.browser.find_element_by_id('monitor').click()
 
     def case1(self):
-        """tthisjid发sa"""
-        testcase_name = "dsa"
-        # time.sleep(2)
-        # br.browser.find_element_by_id('/car').click()
-        # time.sleep(1)
-        # br.browser.find_element_by_id('monitor').click()
-        # WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "tableAdd")))
-        # br.browser.find_element_by_id('keyword').send_keys("DAUT8L7R4322H0809")
-        # br.browser.find_element_by_id('tableSearch').click()
-        #
-        # time.sleep(1)
-        # br.browser.find_element_by_id('edit-DAUT8L7R4322H0809').click()
-        #
-        # time.sleep(1)
-        # br.browser.find_element_by_id('vin').send_keys()
-        # br.browser.find_element_by_id('plateNum').send_keys()
-        #
+        """编辑车辆"""
+        self.goto()
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case1"]["oldVin"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('edit-'+self.jsoninfo["case1"]["oldVin"]).click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('vin').clear()
+        br.browser.find_element_by_id('vin').send_keys(self.jsoninfo["case1"]["newVin"])
+        br.browser.find_element_by_id('plateNum').clear()
+        br.browser.find_element_by_id('plateNum').send_keys(self.jsoninfo["case1"]["newplateNum"])
+
         # br.browser.find_element_by_id("submit").click()
         print "1"
         self.assertIs(1, 1, "参数错误")
+        return "123"
 
-    @staticmethod
-    def case2():
-        """删除车辆得准备一个没有关联，能删除的车辆"""
+    def case2(self):
+        """删除车辆,没有关联"""
+        self.goto()
         print "2"
 
 

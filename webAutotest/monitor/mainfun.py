@@ -14,23 +14,23 @@ import base64
 
 class Mainfun:
     def __init__(self):
-        # chromepath = 'C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe'
-        # self.browser = webdriver.Chrome(chromepath)
-        # self.browser.get('http://192.168.6.232:8081')
-        # self.browser.maximize_window()
-        # self.browser.implicitly_wait(7)
-        #
-        # WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        #
-        # self.browser.find_element_by_id('username').send_keys('admin')
-        # self.browser.find_element_by_id('password').send_keys('123456')
-        #
-        # WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        # temp_img = '1.png'
-        # code = self.getcode(temp_img)
-        # self.browser.find_element_by_id("captcha").send_keys(code)
-        # time.sleep(1)
-        # self.browser.find_element_by_id('submit').click()
+        chromepath = 'C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe'
+        self.browser = webdriver.Chrome(chromepath)
+        self.browser.get('http://192.168.6.232:8081')
+        self.browser.maximize_window()
+        self.browser.implicitly_wait(7)
+
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+
+        self.browser.find_element_by_id('username').send_keys('admin')
+        self.browser.find_element_by_id('password').send_keys('123456')
+
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+        temp_img = '1.png'
+        code = self.getcode(temp_img)
+        self.browser.find_element_by_id("captcha").send_keys(code)
+        time.sleep(1)
+        self.browser.find_element_by_id('submit').click()
         print("已点击登录")
 
         time.sleep(1)
@@ -48,12 +48,11 @@ class Mainfun:
             image = Image.open(imgurl)
             vcode = pytesseract.image_to_string(image)
             print(vcode)
-            indexlist = ["0", "O", "|", "]", "2"]
             if len(vcode) == 4 and "0" not in vcode and "O" not in vcode and "|" not in vcode and "]" not in vcode and "2" not in vcode:
-                print("ok")
+                print("recognize ok")
                 break
             else:
-                print("no")
+                print("difficult code, change the next")
                 self.browser.find_element_by_class_name('authcodeImg').click()
                 time.sleep(1)
         return vcode
