@@ -1,0 +1,10 @@
+{
+    "case1": {
+        "oldVin": "NV0VTLKY97FT89293",
+        "newVin": "47786TDTX5MR97321",
+        "newplateNum":"渝AKB048"
+    },
+    "case2":{
+        "vin":"NV0VTLKY97FT89293"
+    }
+}
