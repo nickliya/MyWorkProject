@@ -1,0 +1,6 @@
+{
+    "chromepath": "C:/Program Files (x86)/Google/Chrome/Application/chromedriver.exe",
+    "datapath": "--user-data-dir=C:/Users/fuzhi/AppData/Local/Google/Chrome/User Data/Default",
+    "monitorUrl":"http://192.168.6.232:8081",
+    "shopUrl":"http://192.168.6.232:8080"
+}

@@ -9,7 +9,6 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-
 br = Mainfun()
 pubfun = SupportFun()
 
@@ -123,7 +122,7 @@ class Sbgl(unittest.TestCase):
         br.browser.find_element_by_id('tableSearch').click()
 
         time.sleep(1)
-        result = br.browser.find_element_by_id('edit-'+self.jsoninfo["case1"]["productCode"]).is_enabled()
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case1"]["productCode"]).is_enabled()
         self.assertTrue(result, u"新建失败")
 
     def case2(self):
@@ -134,7 +133,7 @@ class Sbgl(unittest.TestCase):
         br.browser.find_element_by_id('tableSearch').click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('edit-'+self.jsoninfo["case2"]["productCode"]).click()
+        br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["productCode"]).click()
 
         time.sleep(1)
         br.browser.find_element_by_id('cfgName').send_keys(self.jsoninfo["case2"]["cfgName"])
@@ -144,7 +143,7 @@ class Sbgl(unittest.TestCase):
         br.browser.find_element_by_id('submit').click()
 
         time.sleep(1)
-        result = br.browser.find_element_by_id('edit-'+self.jsoninfo["case2"]["productCode"]).is_enabled()
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["productCode"]).is_enabled()
         self.assertTrue(result, u"编辑失败")
 
     def case3(self):
@@ -167,57 +166,290 @@ class Sbgl(unittest.TestCase):
         self.assertFalse(result, u"删除失败")
 
 
-class Rygl(unittest.TestCase):
-    u"""账号管理"""
+class Shgl(unittest.TestCase):
+    u"""商户管理"""
 
-    # def setUp(self):
-    # br.browser._switch_to.frame('iframepage')
-    # br.browser._switch_to.frame('leftframe')
+    @classmethod
+    def setUpClass(cls):
+        jsonfile = open("jsondata/shgl.json", "r")
+        cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
         br.browser.refresh()
 
     @staticmethod
-    def case1():
-        u"""新注册账号"""
+    def goto():
+        """进入配置管理"""
+        time.sleep(2)
+        br.browser.find_element_by_id('/customer').click()
+        time.sleep(1)
+        br.browser.find_element_by_id('merchants').click()
+
+    def case1(self):
+        u"""商户新增"""
+        self.goto()
+        time.sleep(1)
+        br.browser.find_element_by_id('tableAdd').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case1"]["orgName"])
+        br.browser.find_element_by_id('manageUser').send_keys(self.jsoninfo["case1"]["manageUser"])
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case1"]["password"])
+        br.browser.find_element_by_id('contactUser').send_keys(self.jsoninfo["case1"]["contactUser"])
+        br.browser.find_element_by_id('contactPhone').send_keys(self.jsoninfo["case1"]["contactPhone"])
+        br.browser.find_element_by_id('contactAddress').send_keys(self.jsoninfo["case1"]["contactAddress"])
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(2)
+        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case1"]["manageUser"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case1"]["manageUser"]).is_enabled()
+        self.assertTrue(result, u"新建失败")
+
+    def case2(self):
+        u"""商户编辑"""
+        self.goto()
+        time.sleep(1)
+        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case2"]["orgName"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["orgName"]).click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('orgName').clear()
+        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case2"]["orgName"])
+        br.browser.find_element_by_id('password').clear()
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case2"]["password"])
+        br.browser.find_element_by_id('contactUser').clear()
+        br.browser.find_element_by_id('contactUser').send_keys(self.jsoninfo["case2"]["contactUser"])
+        br.browser.find_element_by_id('contactPhone').clear()
+        br.browser.find_element_by_id('contactPhone').send_keys(self.jsoninfo["case2"]["contactPhone"])
+        br.browser.find_element_by_id('contactAddress').clear()
+        br.browser.find_element_by_id('contactAddress').send_keys(self.jsoninfo["case2"]["contactAddress"])
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(1)
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["orgName"]).is_enabled()
+        self.assertTrue(result, u"编辑失败")
+
+    def case3(self):
+        u"""商户冻结"""
+        self.goto()
+        time.sleep(1)
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "keyword")))
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case3"]["manageUser"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('freeze-' + self.jsoninfo["case3"]["manageUser"]).click()
+        br.browser.find_element_by_id('confirm').click()
+
+        # 断言
+        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+        br.browser.execute_script(newwindow)
+
+        # 切换到新的窗口
+        handles = br.browser.window_handles
+        br.browser.switch_to_window(handles[-1])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case3"]["manageUser"])
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case3"]["passwd"])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+        temp_img = '1.png'
+        code = br.getcode(temp_img)
+        br.browser.find_element_by_id("captcha").send_keys(code)
+        time.sleep(1)
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(5)
+        try:
+            username = br.browser.find_element_by_class_name("name").text
+            self.assertNotEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
+        except:
+            pass
+
+        br.browser.close()
+        br.browser.switch_to_window(handles[0])
+
+    def case4(self):
+        u"""商户解冻"""
+        self.goto()
+        time.sleep(1)
+        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case4"]["manageUser"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('freeze-' + self.jsoninfo["case4"]["manageUser"]).click()
+
+        # 断言
+        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+        br.browser.execute_script(newwindow)
+
+        # 切换到新的窗口
+        handles = br.browser.window_handles
+        br.browser.switch_to_window(handles[-1])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case4"]["manageUser"])
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case4"]["passwd"])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+        temp_img = '1.png'
+        code = br.getcode(temp_img)
+        br.browser.find_element_by_id("captcha").send_keys(code)
+        time.sleep(1)
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(5)
+        username = br.browser.find_element_by_class_name("name").text
+        self.assertEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
+
+        br.browser.close()
+        br.browser.switch_to_window(handles[0])
+
+
+class Xxgl(unittest.TestCase):
+    u"""消息管理"""
+
+    @classmethod
+    def setUpClass(cls):
+        jsonfile = open("jsondata/shgl.json", "r")
+        cls.jsoninfo = json.load(jsonfile)
+
+    def tearDown(self):
+        br.browser.refresh()
+
+    @staticmethod
+    def goto():
+        """进入配置管理"""
+        time.sleep(2)
+        br.browser.find_element_by_id('/message').click()
+        time.sleep(1)
+        br.browser.find_element_by_id('notice').click()
+
+    def case1(self):
+        u"""公告新增"""
+        self.goto()
+        time.sleep(1)
+        br.browser.find_element_by_id('tableAdd').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case1"]["orgName"])
+        br.browser.find_element_by_id('manageUser').send_keys(self.jsoninfo["case1"]["manageUser"])
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case1"]["password"])
+        br.browser.find_element_by_id('contactUser').send_keys(self.jsoninfo["case1"]["contactUser"])
+        br.browser.find_element_by_id('contactPhone').send_keys(self.jsoninfo["case1"]["contactPhone"])
+        br.browser.find_element_by_id('contactAddress').send_keys(self.jsoninfo["case1"]["contactAddress"])
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(2)
+        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case1"]["manageUser"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case1"]["manageUser"]).is_enabled()
+        self.assertTrue(result, u"新建失败")
+
+    def case2(self):
+        u"""公告删除"""
+        self.goto()
+        time.sleep(1)
+        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case2"]["orgName"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["orgName"]).click()
+        br.browser.find_element_by_id("confirm").click()
+
+        time.sleep(1)
+        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["orgName"]).is_enabled()
+        self.assertTrue(result, u"编辑失败")
+
+
+class Qxgl(unittest.TestCase):
+    u"""权限管理"""
+
+    @classmethod
+    def setUpClass(cls):
+        jsonfile = open("jsondata/qxgl.json", "r")
+        cls.jsoninfo = json.load(jsonfile)
+
+    def tearDown(self):
+        br.browser.refresh()
+
+    @staticmethod
+    def goto_cygl():
         time.sleep(2)
         br.browser.find_element_by_id('/permission').click()
         time.sleep(1)
         br.browser.find_element_by_id('members').click()
+
+    def case1(self):
+        u"""成员新增"""
+        self.goto_cygl()
         WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "tableAdd")))
         br.browser.find_element_by_id('tableAdd').click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('realName').send_keys(u"自动化测试")
+        br.browser.find_element_by_id('realName').send_keys(self.jsoninfo["member"]["case1"]["realName"])
         br.browser.find_element_by_id('roleIdList').click()
         time.sleep(1)
         br.browser.find_element_by_xpath("/html/body/div[5]/div[1]/div[1]/ul/li[1]").click()
-        br.browser.find_element_by_id("userName").send_keys("15025466668")
-        br.browser.find_element_by_id("password").send_keys("123456")
+        br.browser.find_element_by_id("userName").send_keys(self.jsoninfo["member"]["case1"]["userName"])
+        br.browser.find_element_by_id("password").send_keys(self.jsoninfo["member"]["case1"]["password"])
         br.browser.find_element_by_id("submit").click()
 
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "keyword")))
-        br.browser.find_element_by_id('keyword').send_keys('15025466668')
-        br.browser.find_element_by_id('tableSearch').click()
-        data = br.browser.find_element_by_xpath(
-            '//*[@id="app"]/div[2]/div[2]/div[3]/div/div/div[1]/div[2]/div[2]/div[3]/table/tbody/tr/td[1]/div/p')
-        t = data.text
-        print t
+        # 断言
+        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+        br.browser.execute_script(newwindow)
 
-    @staticmethod
-    def case2():
-        u"""新注册账号"""
-        time.sleep(2)
-        br.browser.find_element_by_id('/equipment').click()
+        # 切换到新的窗口
+        handles = br.browser.window_handles
+        br.browser.switch_to_window(handles[-1])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case1"]["userName"])
+        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case1"]["password"])
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+        temp_img = '1.png'
+        code = br.getcode(temp_img)
+        br.browser.find_element_by_id("captcha").send_keys(code)
         time.sleep(1)
-        br.browser.find_element_by_id('device').click()
-        br.browser.find_element_by_id('keyword').send_keys("864244025785154")
+        br.browser.find_element_by_id('submit').click()
+
+        time.sleep(5)
+        username = br.browser.find_element_by_class_name("name").text
+        self.assertEqual(self.jsoninfo["member"]["case1"]["userName"], username, "登录不成功")
+
+        br.browser.close()
+        br.browser.switch_to_window(handles[0])
+
+    def case2(self):
+        u"""成员编辑-修改成员姓名"""
+        self.goto_cygl()
+
+        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "keyword")))
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["member"]["case2"]["userName"])
         br.browser.find_element_by_id('tableSearch').click()
-        time.sleep(1)
-        br.browser.find_element_by_id('bind-864244025785154').click()
-        time.sleep(1)
-        br.browser.find_element_by_name('file').click()
-        print "ok"
+
+        # time.sleep(1)
+        # br.browser.find_element_by_id('bind-'+self.jsoninfo["member"]["case2"]["userName"]).click()
+        # time.sleep(1)
+        # br.browser.find_element_by_name('realName').clear()
+        # br.browser.find_element_by_name('realName').send_keys(self.jsoninfo["member"]["case2"]["newUserName"])
+        # br.browser.find_element_by_name('submit').click()
+
+        time.sleep(2)
+        userElement = br.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[3]/div/div/div[1]/div[2]/div[2]/div[3]/table/tbody/tr/td[1]/div/p')
+        userName = userElement.text
+        self.assertEqual(userName, self.jsoninfo["member"]["case2"]["newUserName"], "修改不成功")
 
     def case3(self):
-        print("213")
+        u"""成员编辑-修改成员姓名"""
+        print "ok"

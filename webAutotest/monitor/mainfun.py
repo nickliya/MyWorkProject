@@ -10,13 +10,20 @@ import string
 import pytesseract
 from PIL import Image
 import base64
+import json
 
 
 class Mainfun:
     def __init__(self):
-        chromepath = 'C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe'
-        self.browser = webdriver.Chrome(chromepath)
-        self.browser.get('http://192.168.6.232:8081')
+        jsonfile = open("jsondata/main.json", "r")
+        self.initdata = json.load(jsonfile)
+
+        option = webdriver.ChromeOptions()
+        # option.add_argument(self.initdata["datapath"]) #去掉data;,
+        chromepath = self.initdata["chromepath"]
+        self.browser = webdriver.Chrome(chromepath, chrome_options=option)
+
+        self.browser.get(self.initdata["monitorUrl"])
         self.browser.maximize_window()
         self.browser.implicitly_wait(7)
 
