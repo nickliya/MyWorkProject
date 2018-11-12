@@ -6,13 +6,22 @@
            "password": "渝AKB048"
        },
        "case2": {
-           "userName": "15025466669",
-           "newUserName": "15025466669",
-           "password": "渝AKB048"
+           "userName":"213",
+           "newRealName": "15025466669"
        },
        "case3": {
-           "userName": "47786TDTX5MR97321",
-           "password": "渝AKB048"
+           "userName":"21",
+           "newPassword": "渝AKB048"
+       }
+   },
+    "role": {
+       "case5": {
+           "roleName": "NV0VTLKY97FT89293",
+           "remark": "47786TDTX5MR97321"
+       },
+       "case6": {
+           "roleName": "NV0VTLKY97FT89293",
+           "remark": "47786TDTX5MR97321"
        }
    }
 }
