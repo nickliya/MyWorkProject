@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
-import json
-from mainfun import *
+from .mainfun import *
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
-import sys
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 br = Mainfun()
 pubfun = SupportFun()
@@ -455,7 +450,7 @@ class Qxgl(unittest.TestCase):
         time.sleep(2)
         userElement = br.browser.find_element_by_xpath('//*[@id="app"]/div[2]/div[2]/div[3]/div/div/div[1]/div[2]/div[2]/div[3]/table/tbody/tr/td[1]/div/p')
         userName = userElement.text
-        self.assertEqual(userName, self.jsoninfo["member"]["case2"]["newRealName"], u"修改不匹配\r期望:"+self.jsoninfo["member"]["case2"]["newRealName"]+u"\r实际:"+userName)
+        self.assertEqual(userName, self.jsoninfo["member"]["case2"]["newRealName"], "修改不匹配\r期望:"+self.jsoninfo["member"]["case2"]["newRealName"]+"\r实际:"+userName)
 
     def case3(self):
         u"""成员编辑-修改成员密码"""

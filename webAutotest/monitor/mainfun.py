@@ -85,23 +85,23 @@ class SupportFun:
 
     @staticmethod
     def get_plate_num():
-        plate_num = u'渝' + ''.join(random.choice(string.uppercase) for i in range(1)) + ''.join(
+        plate_num = u'渝' + ''.join(random.choice(string.ascii_uppercase) for i in range(1)) + ''.join(
             random.choice(string.digits) for i in range(6))
         return plate_num
 
     @staticmethod
     def get_frame_num():
-        frame_num = ''.join(random.choice(string.letters) for i in range(16))
+        frame_num = ''.join(random.choice(string.ascii_letters) for i in range(16))
         return frame_num
 
     @staticmethod
     def get_cusadmin():
-        cusadmin = ''.join(random.choice(string.letters) for i in range(6))
+        cusadmin = ''.join(random.choice(string.ascii_letters) for i in range(6))
         return cusadmin
 
     @staticmethod
     def get_cuspasswd():
-        cuspasswd = random.choice(string.uppercase) + random.choice(string.lowercase) + ''.join(
+        cuspasswd = random.choice(string.ascii_uppercase) + random.choice(string.ascii_lowercase) + ''.join(
             random.choice("0123456789") for i in range(6))
         return cuspasswd
 

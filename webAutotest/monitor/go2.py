@@ -3,13 +3,13 @@
 
 import HTMLTestRunner
 import unittest
-import myTestSuite as Case
-
+# import myTestSuite as Case
+from monitor.myTestSuite import Qxgl
 testunit = unittest.TestSuite()
 
 # testunit.addTest(Case.Clgl("case1"))
 # testunit.addTest(Case.Xxgl("case5"))
-testunit.addTest(Case.Qxgl("case2"))
+testunit.addTest(Qxgl("case2"))
 
 HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
 fp = open(HtmlFile, "wb")
