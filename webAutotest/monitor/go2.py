@@ -24,8 +24,6 @@ Qxgl: 权限管理
 case1: 成员新增
 case2: 成员编辑-修改成员姓名
 case3: 成员编辑-修改成员密码
-case4: 成员新增
-case5: 成员新增
 
 使用testunit.addTest(Qxgl("case2"))来添加测试用例
 
@@ -39,7 +37,6 @@ testunit = unittest.TestSuite()
 
 
 # 设置用例
-testunit.addTest(Shgl("case3"))
 testunit.addTest(Shgl("case4"))
 
 HtmlFile = 'C:\\Users\\zidonghua\\Desktop\\Result.html'

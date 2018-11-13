@@ -270,73 +270,83 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('confirm').click()
 
         # 断言
-        time.sleep(1)
-        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
-        br.browser.execute_script(newwindow)
-
-        # 切换到新的窗口
-        time.sleep(1)
-        handles = br.browser.window_handles
-        br.browser.switch_to_window(handles[-1])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case3"]["manageUser"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case3"]["passwd"])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = br.getcode(temp_img)
-        br.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        br.browser.find_element_by_id('submit').click()
-
-        time.sleep(5)
         try:
-            username = br.browser.find_element_by_class_name("name").text
-            self.assertNotEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
-        except:
-            pass
+            time.sleep(1)
+            newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+            br.browser.execute_script(newwindow)
+
+            # 切换到新的窗口
+            time.sleep(1)
+            self.handles = br.browser.window_handles
+            br.browser.switch_to_window(self.handles[-1])
+
+            time.sleep(3)
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+            br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case3"]["manageUser"])
+            br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case3"]["passwd"])
+
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+            temp_img = '1.png'
+            code = br.getcode(temp_img)
+            br.browser.find_element_by_id("captcha").send_keys(code)
+            time.sleep(1)
+            br.browser.find_element_by_id('submit').click()
+
+            time.sleep(5)
+            try:
+                username = br.browser.find_element_by_class_name("name").text
+                self.assertNotEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
+            except Exception as msg:
+                self.assertNotEqual(self.jsoninfo["case4"]["manageUser"], "", "登录不成功")
+        except Exception as msg:
+            print(msg)
+            self.assertTrue(False, msg)
 
         br.browser.close()
-        br.browser.switch_to_window(handles[0])
+        br.browser.switch_to_window(self.handles[0])
 
     def case4(self):
         u"""商户解冻"""
         self.goto()
         time.sleep(1)
-        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case4"]["manageUser"])
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case4"]["manageUser"])
         br.browser.find_element_by_id('tableSearch').click()
 
         time.sleep(1)
         br.browser.find_element_by_id('freeze-' + self.jsoninfo["case4"]["manageUser"]).click()
 
         # 断言
-        time.sleep(1)
-        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
-        br.browser.execute_script(newwindow)
-
-        # 切换到新的窗口
-        time.sleep(1)
-        handles = br.browser.window_handles
-        br.browser.switch_to_window(handles[-1])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case4"]["manageUser"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case4"]["passwd"])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = br.getcode(temp_img)
-        br.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        br.browser.find_element_by_id('submit').click()
-
-        time.sleep(5)
-        username = br.browser.find_element_by_class_name("name").text
-        self.assertEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
-
+        try:
+            time.sleep(1)
+            newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+            br.browser.execute_script(newwindow)
+    
+            # 切换到新的窗口
+            time.sleep(1)
+            self.handles = br.browser.window_handles
+            br.browser.switch_to_window(self.handles[-1])
+    
+            time.sleep(3)
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+            br.browser.find_element_by_id('username').send_keys(self.jsoninfo["case4"]["manageUser"])
+            br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case4"]["passwd"])
+    
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+            temp_img = '1.png'
+            code = br.getcode(temp_img)
+            br.browser.find_element_by_id("captcha").send_keys(code)
+            time.sleep(1)
+            br.browser.find_element_by_id('submit').click()
+    
+            time.sleep(5)
+            username = br.browser.find_element_by_class_name("name").text
+            self.assertEqual(self.jsoninfo["case4"]["manageUser"], username, "登录不成功")
+        except Exception as msg:
+            print(msg)
+            self.assertTrue(False, msg)
+            
         br.browser.close()
-        br.browser.switch_to_window(handles[0])
+        br.browser.switch_to_window(self.handles[0])
 
 
 class Xxgl(unittest.TestCase):
@@ -440,30 +450,35 @@ class Qxgl(unittest.TestCase):
         br.browser.find_element_by_id("submit").click()
 
         # 断言
-        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
-        br.browser.execute_script(newwindow)
+        try:
+            newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+            br.browser.execute_script(newwindow)
 
-        # 切换到新的窗口
-        handles = br.browser.window_handles
-        br.browser.switch_to_window(handles[-1])
+            # 切换到新的窗口
+            time.sleep(1)
+            self.handles = br.browser.window_handles
+            br.browser.switch_to_window(self.handles[-1])
 
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case1"]["userName"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case1"]["password"])
+            time.sleep(3)
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+            br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case1"]["userName"])
+            br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case1"]["password"])
 
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = br.getcode(temp_img)
-        br.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        br.browser.find_element_by_id('submit').click()
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+            temp_img = '1.png'
+            code = br.getcode(temp_img)
+            br.browser.find_element_by_id("captcha").send_keys(code)
+            time.sleep(1)
+            br.browser.find_element_by_id('submit').click()
 
-        time.sleep(5)
-        username = br.browser.find_element_by_class_name("name").text
-        self.assertEqual(self.jsoninfo["member"]["case1"]["userName"], username, u"登录不成功")
+            time.sleep(5)
+            username = br.browser.find_element_by_class_name("name").text
+            self.assertEqual(self.jsoninfo["member"]["case1"]["userName"], username, u"登录不成功")
+        except Exception as msg:
+            self.assertTrue(False, msg.__context__)
 
         br.browser.close()
-        br.browser.switch_to_window(handles[0])
+        br.browser.switch_to_window(self.handles[0])
 
     def case2(self):
         u"""成员编辑-修改成员姓名"""
@@ -501,73 +516,36 @@ class Qxgl(unittest.TestCase):
         br.browser.find_element_by_name('submit').click()
 
         # 断言
-        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
-        br.browser.execute_script(newwindow)
+        try:
+            time.sleep(1)
+            newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
+            br.browser.execute_script(newwindow)
 
-        # 切换到新的窗口
-        handles = br.browser.window_handles
-        br.browser.switch_to_window(handles[-1])
+            # 切换到新的窗口
+            self.handles = br.browser.window_handles
+            br.browser.switch_to_window(self.handles[-1])
 
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case3"]["userName"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case3"]["newPassword"])
+            time.sleep(3)
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+            br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case3"]["userName"])
+            br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case3"]["newPassword"])
 
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = br.getcode(temp_img)
-        br.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        br.browser.find_element_by_id('submit').click()
+            WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+            temp_img = '1.png'
+            code = br.getcode(temp_img)
+            br.browser.find_element_by_id("captcha").send_keys(code)
+            time.sleep(1)
+            br.browser.find_element_by_id('submit').click()
 
-        time.sleep(5)
-        username = br.browser.find_element_by_class_name("name").text
-        self.assertEqual(self.jsoninfo["member"]["case3"]["userName"], username, u"登录不成功")
-
+            time.sleep(5)
+            username = br.browser.find_element_by_class_name("name").text
+            self.assertEqual(self.jsoninfo["member"]["case3"]["userName"], username, u"登录不成功")
+        except Exception as msg:
+            self.assertTrue(False, msg)
         br.browser.close()
-        br.browser.switch_to_window(handles[0])
+        br.browser.switch_to_window(self.handles[0])
 
     def case4(self):
-        u"""成员编辑-修改成员密码"""
-        self.goto_cygl()
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "keyword")))
-        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["member"]["case4"]["userName"])
-        br.browser.find_element_by_id('tableSearch').click()
-
-        time.sleep(1)
-        br.browser.find_element_by_id('bind-' + self.jsoninfo["member"]["case2"]["userName"]).click()
-        time.sleep(1)
-        br.browser.find_element_by_name('password').clear()
-        br.browser.find_element_by_name('password').send_keys(self.jsoninfo["member"]["case4"]["newPassword"])
-        br.browser.find_element_by_name('submit').click()
-
-        # 断言
-        newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
-        br.browser.execute_script(newwindow)
-
-        # 切换到新的窗口
-        handles = br.browser.window_handles
-        br.browser.switch_to_window(handles[-1])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-        br.browser.find_element_by_id('username').send_keys(self.jsoninfo["member"]["case4"]["userName"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["member"]["case4"]["newPassword"])
-
-        WebDriverWait(br.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = br.getcode(temp_img)
-        br.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        br.browser.find_element_by_id('submit').click()
-
-        time.sleep(5)
-        username = br.browser.find_element_by_class_name("name").text
-        self.assertEqual(self.jsoninfo["member"]["case4"]["userName"], username, u"登录不成功")
-
-        br.browser.close()
-        br.browser.switch_to_window(handles[0])
-
-    def case5(self):
         u"""角色新增"""
         self.goto_jsgl()
 
