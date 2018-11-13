@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from .mainfun import *
+from mainfun import *
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
 

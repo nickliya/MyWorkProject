@@ -32,11 +32,11 @@ case5: 成员新增
 """
 # /usr/bin/python
 # -*- coding: utf-8 -*-
-
 import HTMLTestRunner
 import unittest
-from monitor.myTestSuite import *
+from myTestSuite import *
 testunit = unittest.TestSuite()
+
 
 # 设置用例
 # testunit.addTest(Case.Clgl("case1"))
