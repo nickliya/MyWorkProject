@@ -3,6 +3,7 @@
 Clgl: 车辆管理
 case1: 编辑车辆
 case2: 删除车辆,没有关联
+case3: 删除车辆,有关联
 
 Sbgl: 设备管理
 case1: 配置新增
@@ -34,13 +35,16 @@ case5: 成员新增
 
 import HTMLTestRunner
 import unittest
-from monitor.myTestSuite import Qxgl
+from monitor.myTestSuite import *
 testunit = unittest.TestSuite()
 
 # 设置用例
 # testunit.addTest(Case.Clgl("case1"))
 # testunit.addTest(Case.Xxgl("case5"))
-testunit.addTest(Qxgl("case2"))
+# testunit.addTest(Clgl("case1"))
+# testunit.addTest(Clgl("case3"))
+testunit.addTest(Shgl("case3"))
+testunit.addTest(Shgl("case4"))
 
 HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
 fp = open(HtmlFile, "wb")

@@ -13,14 +13,16 @@ class Clgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/clgl.json", "r")
+        jsonfile = open("jsondata/clgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     # def setUp(self):
     #     print("kaishi")
     #
-    # def tearDown(self):
-    #     print("jieshu")
+    def tearDown(self):
+        time.sleep(1)
+        br.browser.refresh()
+        time.sleep(2)
 
     @staticmethod
     def goto():
@@ -69,7 +71,25 @@ class Clgl(unittest.TestCase):
         br.browser.find_element_by_id('tableSearch').click()
 
         result = br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["vin"]).is_enabled()
-        self.assertFalse(result, u"删除失败")
+        self.assertFalse(result, "验证失败")
+
+    def case3(self):
+        """删除车辆,有关联"""
+        self.goto()
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case3"]["vin"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('delete-' + self.jsoninfo["case3"]["vin"]).click()
+        br.browser.find_element_by_id('confirm').click()
+
+        time.sleep(1)
+        br.browser.find_element_by_id('keyword').clear()
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case3"]["vin"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        result = br.browser.find_element_by_id('delete-' + self.jsoninfo["case3"]["vin"]).is_enabled()
+        self.assertTrue(result, "验证失败")
 
 
 class Sbgl(unittest.TestCase):
@@ -77,11 +97,13 @@ class Sbgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/pzgl.json", "r")
+        jsonfile = open("jsondata/pzgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
+        time.sleep(1)
         br.browser.refresh()
+        time.sleep(2)
 
     @staticmethod
     def goto_pzgl():
@@ -166,11 +188,16 @@ class Shgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/shgl.json", "r")
+        jsonfile = open("jsondata/shgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
         br.browser.refresh()
+        time.sleep(3)
+
+    @classmethod
+    def tearDownClass(cls):
+        br.browser.quit()
 
     @staticmethod
     def goto():
@@ -243,10 +270,12 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('confirm').click()
 
         # 断言
+        time.sleep(1)
         newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
         br.browser.execute_script(newwindow)
 
         # 切换到新的窗口
+        time.sleep(1)
         handles = br.browser.window_handles
         br.browser.switch_to_window(handles[-1])
 
@@ -282,10 +311,12 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('freeze-' + self.jsoninfo["case4"]["manageUser"]).click()
 
         # 断言
+        time.sleep(1)
         newwindow = 'window.open("' + br.initdata["shopUrl"] + '")'
         br.browser.execute_script(newwindow)
 
         # 切换到新的窗口
+        time.sleep(1)
         handles = br.browser.window_handles
         br.browser.switch_to_window(handles[-1])
 
@@ -313,11 +344,12 @@ class Xxgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/shgl.json", "r")
+        jsonfile = open("jsondata/shgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
         br.browser.refresh()
+        time.sleep(3)
 
     @staticmethod
     def goto():
@@ -371,11 +403,12 @@ class Qxgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/qxgl.json", "r")
+        jsonfile = open("jsondata/qxgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
         br.browser.refresh()
+        time.sleep(3)
 
     @staticmethod
     def goto_cygl():
