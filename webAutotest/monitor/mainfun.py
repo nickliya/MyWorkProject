@@ -45,6 +45,7 @@ class Mainfun:
     def getcode(self, imgurl):
         u"""识别图片"""
         while 1:
+            WebDriverWait(self.browser, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
             imgdatabase64 = self.browser.find_element_by_class_name('authcodeImg').get_attribute("src")[22:]
             imgdata = base64.b64decode(imgdatabase64)
 

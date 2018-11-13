@@ -39,10 +39,6 @@ testunit = unittest.TestSuite()
 
 
 # 设置用例
-# testunit.addTest(Case.Clgl("case1"))
-# testunit.addTest(Case.Xxgl("case5"))
-# testunit.addTest(Clgl("case1"))
-# testunit.addTest(Clgl("case3"))
 testunit.addTest(Shgl("case3"))
 testunit.addTest(Shgl("case4"))
 
