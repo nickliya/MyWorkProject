@@ -29,8 +29,8 @@ class Mainfun:
 
         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
 
-        self.browser.find_element_by_id('username').send_keys('admin')
-        self.browser.find_element_by_id('password').send_keys('123456')
+        self.browser.find_element_by_id('username').send_keys(self.initdata['admin'])
+        self.browser.find_element_by_id('password').send_keys(self.initdata['passwd'])
 
         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
         temp_img = '1.png'
