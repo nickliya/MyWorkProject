@@ -387,35 +387,36 @@ class Xxgl(unittest.TestCase):
         br.browser.find_element_by_id('tableAdd').click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case1"]["orgName"])
-        br.browser.find_element_by_id('manageUser').send_keys(self.jsoninfo["case1"]["manageUser"])
-        br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case1"]["password"])
-        br.browser.find_element_by_id('contactUser').send_keys(self.jsoninfo["case1"]["contactUser"])
-        br.browser.find_element_by_id('contactPhone').send_keys(self.jsoninfo["case1"]["contactPhone"])
-        br.browser.find_element_by_id('contactAddress').send_keys(self.jsoninfo["case1"]["contactAddress"])
+        br.browser.find_element_by_id('title').send_keys(self.jsoninfo["case1"]["title"])
+        br.browser.find_element_by_id('text-elem42123473841230585').send_keys(self.jsoninfo["case1"]["text"])
         br.browser.find_element_by_id('submit').click()
 
         time.sleep(2)
-        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case1"]["manageUser"])
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case1"]["title"])
         br.browser.find_element_by_id('tableSearch').click()
 
         time.sleep(1)
-        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case1"]["manageUser"]).is_enabled()
+        result = br.browser.find_element_by_id('check-' + self.jsoninfo["case1"]["title"]).is_enabled()
         self.assertTrue(result, u"新建失败")
 
     def case2(self):
         u"""公告删除"""
         self.goto()
         time.sleep(1)
-        br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case2"]["orgName"])
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case2"]["title"])
         br.browser.find_element_by_id('tableSearch').click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["orgName"]).click()
+        br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["title"]).click()
         br.browser.find_element_by_id("confirm").click()
 
         time.sleep(1)
-        result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["orgName"]).is_enabled()
+        br.browser.find_element_by_id('keyword').clear()
+        br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case2"]["title"])
+        br.browser.find_element_by_id('tableSearch').click()
+
+        time.sleep(1)
+        result = br.browser.find_element_by_id('check-' + self.jsoninfo["case2"]["title"]).is_enabled()
         self.assertTrue(result, u"编辑失败")
 
 
