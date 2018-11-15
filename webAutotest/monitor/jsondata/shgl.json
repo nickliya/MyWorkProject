@@ -1,6 +1,7 @@
 {
     "case1": {
-        "orgName": "NV0VTLKY97FT89293",
+        "oldLevelCode": "NV0VTLKY97FT89293",
+        "deviceType": "OTU",
         "manageUser": "47786TDTX5MR97321",
         "password":"渝AKB048",
         "contactUser":"渝AKB048",
@@ -8,7 +9,6 @@
         "contactAddress":"渝AKB048"
     },
     "case2":{
-        "orgName": "NV0VTLKY97FT89293",
         "manageUser": "47786TDTX5MR97321",
         "password":"渝AKB048",
         "contactUser":"渝AKB048",

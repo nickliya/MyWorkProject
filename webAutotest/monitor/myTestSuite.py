@@ -24,6 +24,10 @@ class Clgl(unittest.TestCase):
         br.browser.refresh()
         time.sleep(2)
 
+    @classmethod
+    def tearDownClass(cls):
+        br.browser.quit()
+
     @staticmethod
     def goto():
         """进入车辆管理"""
@@ -104,6 +108,10 @@ class Sbgl(unittest.TestCase):
         time.sleep(1)
         br.browser.refresh()
         time.sleep(2)
+
+    @classmethod
+    def tearDownClass(cls):
+        br.browser.quit()
 
     @staticmethod
     def goto_pzgl():
@@ -214,7 +222,8 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('tableAdd').click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case1"]["orgName"])
+        br.browser.find_element_by_id('oldLevelCode').send_keys(self.jsoninfo["case1"]["oldLevelCode"])
+        br.browser.find_element_by_id('deviceType').send_keys(self.jsoninfo["case1"]["deviceType"])
         br.browser.find_element_by_id('manageUser').send_keys(self.jsoninfo["case1"]["manageUser"])
         br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case1"]["password"])
         br.browser.find_element_by_id('contactUser').send_keys(self.jsoninfo["case1"]["contactUser"])
@@ -241,8 +250,6 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["orgName"]).click()
 
         time.sleep(1)
-        br.browser.find_element_by_id('orgName').clear()
-        br.browser.find_element_by_id('orgName').send_keys(self.jsoninfo["case2"]["orgName"])
         br.browser.find_element_by_id('password').clear()
         br.browser.find_element_by_id('password').send_keys(self.jsoninfo["case2"]["password"])
         br.browser.find_element_by_id('contactUser').clear()
@@ -361,6 +368,10 @@ class Xxgl(unittest.TestCase):
         br.browser.refresh()
         time.sleep(3)
 
+    @classmethod
+    def tearDownClass(cls):
+        br.browser.quit()
+
     @staticmethod
     def goto():
         """进入配置管理"""
@@ -419,6 +430,10 @@ class Qxgl(unittest.TestCase):
     def tearDown(self):
         br.browser.refresh()
         time.sleep(3)
+
+    @classmethod
+    def tearDownClass(cls):
+        br.browser.quit()
 
     @staticmethod
     def goto_cygl():
