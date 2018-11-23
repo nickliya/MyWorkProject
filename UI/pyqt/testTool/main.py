@@ -104,6 +104,40 @@ class Bianlifunction:
         return strhextime
 
 
+class CRCUtil:
+    """思锐CRC解密算法"""
+
+    def __init__(self):
+        self.cycleCodes = ['G', 'H', 'I', 'J', '&', '<', '2', '8', 'd', '#', 'N', 'i', 'X', 's', '=', '5', 'R', '0',
+                           '$', 'e', '4', 'Q', '%', '[', 'j', 'p', ']', 'c', '1', '3', '7', '9', 'A', '6', 'n', 'z',
+                           'B', ';', 'h', 'r', ':', 'a', '_', 'O', '{', 'D', 'E', 'm', 'W', 'Y', 'k', '}', 'x', 'Z',
+                           'P', 'u', ',', 'F', 'M', 'g', 'C', 'K', 'f', 't', '+', '>', 'L', 'S', 'T', 'U', 'V', 'q',
+                           '|', 'w', 'l', 'y', 'b', 'o', 'v', '.']
+        self.cycleIndex = []
+        self.OTUMsgEncryptor()
+
+    def OTUMsgEncryptor(self):
+        for i in range(128):
+            self.cycleIndex.append(-1)
+        index = 0
+        for i in range(len(self.cycleCodes)):
+            self.cycleIndex[ord(self.cycleCodes[index])] = index
+            index += 1
+
+    def asiccCrcDecode(self, context, offset):
+        index = 0
+        plaintext = ""
+        for i in range(len(context)):
+            value = ord(context[index])
+            if self.cycleIndex[value] >= 0:
+                nextIndex = (self.cycleIndex[value] - index - offset) % len(self.cycleCodes)
+                nextIndex = (len(self.cycleCodes) + nextIndex) % len(self.cycleCodes)
+                plaintext += self.cycleCodes[nextIndex]
+            index += 1
+        print(plaintext)
+        return plaintext
+
+
 class Sqlfunticon:
     """sql方法"""
 
@@ -251,7 +285,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.10.15')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.11.23')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -306,12 +340,12 @@ class TcpThread(QtCore.QThread):
             # 适配控制协议,如果存在下列编号则自动回复
             if "511" in xinfo or "512" in xinfo or "513" in xinfo or '514' in xinfo or '515' in xinfo or '516' in xinfo \
                     or '517' in xinfo or '518' in xinfo or '519' in xinfo or '51a' in xinfo or '51b' in xinfo \
-                    or '51c' in xinfo:
+                    or '51c' in xinfo or '51e' in xinfo or '51f' in xinfo:
                 self.recv_signal.emit(tcpreceive)
                 protocol_dic = {
                     "511": "上锁", "512": "解锁", "513": "寻车", "514": "静音", "515": "点火",
                     "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51a": "开天窗",
-                    "51b": "通油", "51c": "断油",
+                    "51b": "通油", "51c": "断油", "51e": "通油", "51f": "断油",
                 }
                 r = r'\(\*..\|7\|\d\d\w,\w*?,\w*?\|\)'
                 datainfo = re.findall(r, tcpreceive)
@@ -443,32 +477,52 @@ class WaiteandsendThread(QtCore.QRunnable):
             print(errorinfo)
 
 
-# class GpsUploadThread(QtCore.QRunnable):
-#     def __init__(self, data, tcp):
-#         super().__init__()
-#         self.message = data
-#         self.s = tcp
-#         self.signals = WorkerSignals()
-#         self.yqtool = Bianlifunction()
-#
-#     def run(self):
-#         """线程"""
-#         try:
-#             waitetime = self.message[0].split(",")[1]
-#             for i in self.message:
-#                 datalist = i.split(",")
-#                 sleeptime = float(int(datalist[1]) - int(waitetime)) / 1000
-#                 time.sleep(sleeptime)
-#                 time331 = self.yqtool.BSJhextime().replace(" ", "")
-#                 a = "(1*e4|7|331," + time331 + ",1,E," + str(float(datalist[3]) * 100) + ",N," + str(
-#                     float(datalist[2]) * 100) + ",0,0,9,2200,2222222,22222,222222,222,22,1,7454,0,212,505,1,1,1,0,0|)"
-#                 self.s.send(a.encode())
-#                 self.signals.send_signal.emit(a)
-#                 waitetime = datalist[1]
-#
-#         except Exception as msg:
-#             errorinfo = Exception, ":", msg
-#             print(errorinfo)
+class GpsUploadThread(QtCore.QRunnable):
+    def __init__(self, data, tcp):
+        super().__init__()
+        self.message = data
+        self.s = tcp
+        self.signals = WorkerSignals()
+        self.yqtool = Bianlifunction()
+
+    def hextosjc(self, datetime):
+        """十六进制时间转时间戳"""
+
+        # dt = "2016-05-05 20:28:54"
+        dt = "20" + str(int(datetime[0:2], 16)).zfill(2) + "-" + str(int(datetime[2:4], 16)).zfill(2) + "-" + str(
+            int(datetime[4:6], 16)).zfill(2) + " " + str(int(
+            datetime[6:8], 16)).zfill(2) + ":" + str(int(datetime[8:10], 16)).zfill(2) + ":" + str(
+            int(datetime[10:12], 16)).zfill(2)
+
+        # 转换成时间数组
+        timeArray = time.strptime(dt, "%Y-%m-%d %H:%M:%S")
+        # 转换成时间戳
+        timestamp = time.mktime(timeArray)
+        return timestamp
+
+    def run(self):
+        """线程"""
+        try:
+            # waitetime = self.message[0].split(",")[1]
+            waitetime = self.message[0].split(",")[1]
+            for i in self.message:
+                datalist = i.split(",")
+                # sleeptime = float(int(datalist[1]) - int(waitetime)) / 1000
+                sleeptime = float(self.hextosjc(datalist[1]) - self.hextosjc(waitetime))
+                time.sleep(sleeptime)
+                time331 = self.yqtool.BSJhextime().replace(" ", "")
+                # a = "(1*e4|7|331," + time331 + ",1,E," + str(float(datalist[3]) * 100) + ",N," + str(
+                #     float(datalist[2]) * 100) + ",0,0,9,2200,2222222,22222,222222,222,22,1,7454,0,212,505,1,1,1,0,0|)"
+                i = i[:-1]
+                a = "(1" + i[:10] + time331 + i[22:] + ")"
+                self.s.send(a.encode())
+                self.signals.send_signal.emit(a)
+                # time.sleep(5)
+                waitetime = datalist[1]
+
+        except Exception as msg:
+            errorinfo = Exception, ":", msg
+            print(errorinfo)
 
 
 class OtuMonitor(MainWidget):
@@ -579,7 +633,7 @@ class OtuMonitor(MainWidget):
 
         # self.btnnamelist = ["能力", "设防", "引擎", "门锁", "速度", "温度", "GSM", "星数"]
         self.protocol = {
-            "能力": "(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100,000,000,000|)",
+            "能力": "(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100|)",
             "引擎": "(1*12|7|302,1)",
             "门锁": "(1*33|7|305,2,2222|)",
             "电压": "(1*88|7|316,1,1,4B0,4F0|)",
@@ -755,9 +809,14 @@ class OtuMonitor(MainWidget):
         self.labelqrode = QLabel("")
         self.labelqrode.setObjectName("qrlabel")
 
-        # self.gpsUpload = QPushButton(u"附件GPS上报")
-        # self.gpsUpload.setStatusTip("附件放至D:\Tcptemp")
-        # self.gpsUpload.clicked.connect(self.gpsUploadfun)
+        self.gpsUpload = QPushButton(u"附件GPS上报")
+        self.gpsUpload.setStatusTip("附件放至D:\Tcptemp")
+        self.gpsUpload.clicked.connect(self.gpsUploadfun)
+
+        # 协议解密
+        self.protocolDecodeBtn = QPushButton(u"协议解密")
+        self.protocolDecodeEntry = QLineEdit()
+        self.protocolDecodeBtn.clicked.connect(self.protocolDecode)
 
     def OtuMonitor_grid(self):
         self.maingrid.setColumnStretch(0, 6)
@@ -810,7 +869,7 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 4)
         self.leftgrid.addWidget(self.clearBtn3, 7, 9)
         self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 10)
-        # self.leftgrid.addWidget(self.gpsUpload, 3, 6, 1, 2)
+        self.leftgrid.addWidget(self.gpsUpload, 3, 6, 1, 2)
         # self.leftgrid.addWidget(self.aotubox, 9, 0, 1, 10)
 
         # 中间窗体
@@ -846,12 +905,6 @@ class OtuMonitor(MainWidget):
 
         self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
 
-        # self.middlegrid.addWidget(self.labelmsg, 6, 0)
-        # self.middlegrid.addWidget(self.entrymsg, 6, 1, 1, 5)
-        # self.middlegrid.addWidget(self.btnCreatqrcode, 7, 0, 1, 6, QtCore.Qt.AlignLeft)
-        # self.middlegrid.addWidget(self.btnCreatqrcode2, 7, 0, 1, 6, QtCore.Qt.AlignRight)
-        # self.middlegrid.addWidget(self.labelqrode, 8, 0, 1, 6, QtCore.Qt.AlignCenter)
-
         # 右边窗体
         self.rightwidget = QWidget()
         self.rightgrid = QGridLayout()
@@ -863,6 +916,8 @@ class OtuMonitor(MainWidget):
         self.rightgrid.addWidget(self.btnCreatqrcode, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
         self.rightgrid.addWidget(self.btnCreatqrcode2, 1, 0, 1, 2, QtCore.Qt.AlignRight)
         self.rightgrid.addWidget(self.labelqrode, 2, 0, 1, 2, QtCore.Qt.AlignCenter)
+        self.rightgrid.addWidget(self.protocolDecodeBtn, 3, 0)
+        self.rightgrid.addWidget(self.protocolDecodeEntry, 3, 1)
 
         self.aotuboxGrid.addWidget(self.aotucheckbox1, 0, 0)
         self.aotuboxGrid.addWidget(self.aotucheckbox2, 1, 0)
@@ -1189,19 +1244,29 @@ class OtuMonitor(MainWidget):
         ExcessVoltage = hex(int(self.label331ExcessVoltage_input.text()))[2:]  # 余电
         ExcessOil = hex(int(self.label331ExcessOil_input.text()))[2:]  # 余油
 
-        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1," + AccumulatedMileage + ","+EnduranceMileage+","+ExcessOil+","+BatteryVoltage+",1,1,1,"+ExcessVoltage+",0|)"
+        datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1," + AccumulatedMileage + "," + EnduranceMileage + "," + ExcessOil + "," + BatteryVoltage + ",1,1,1," + ExcessVoltage + ",0|)"
         self.textInput.insertPlainText(datainfo)
 
-    # def gpsUploadfun(self):
-    #     file1 = open("D:\\Tcptemp\\gpslocation", "r")
-    #     data = file1.readlines()
-    #     file1.close()
-    #
-    #     self.tcpth3 = GpsUploadThread(data, self.s)
-    #     self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
-    #     self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
-    #     #
-    #     self.threadpool.start(self.tcpth3)
+    def gpsUploadfun(self):
+        file1 = open("D:\\Tcptemp\\gpslocation", "r")
+        data = file1.readlines()
+        file1.close()
+
+        self.tcpth3 = GpsUploadThread(data, self.s)
+        self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
+        self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
+        #
+        self.threadpool.start(self.tcpth3)
+
+    def protocolDecode(self):
+        """协议解密"""
+        msg = self.protocolDecodeEntry.text()
+        context = msg[5:-1]
+        offset = int(msg[2:4], 16)
+        data = CRCUtil().asiccCrcDecode(context, offset)
+        plaintext = msg[:5] + data + ")"
+        self.protocolDecodeEntry.clear()
+        self.protocolDecodeEntry.setText(plaintext)
 
 
 class BSJMonitor(MainWidget):
