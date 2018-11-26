@@ -285,7 +285,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.11.23')
+        self.setWindowTitle(u'桴之科测试工具 Version:2018.11.26')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -633,7 +633,7 @@ class OtuMonitor(MainWidget):
 
         # self.btnnamelist = ["能力", "设防", "引擎", "门锁", "速度", "温度", "GSM", "星数"]
         self.protocol = {
-            "能力": "(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100|)",
+            "能力": "(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100|)",
             "引擎": "(1*12|7|302,1)",
             "门锁": "(1*33|7|305,2,2222|)",
             "电压": "(1*88|7|316,1,1,4B0,4F0|)",
