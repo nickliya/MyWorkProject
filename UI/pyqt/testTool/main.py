@@ -218,19 +218,15 @@ class MainWidget(QMainWindow):
         self.deleteWigt = []
         self.yqtool = Bianlifunction()
 
-    def showEvent(self, *args, **kwargs):
-        # isexisted = os.path.exists('D:\Tcptemp')
-        # if not isexisted:
-        #     os.makedirs('D:\Tcptemp')
-        # else:
-        #     pass
-        # data = open('D:\Tcptemp\mainData.txt', "a+")
-        # historyinfo = data.read()  # 读取缓存文件data
-        # historyinfolist = historyinfo.split(",")
-        pass
+        # 窗口透明度动画类
+        self.animation = QPropertyAnimation(self, b'windowOpacity')
+        self.animation.setDuration(500)  # 持续时间0.5秒
 
-    def closeEvent(self, *args, **kwargs):
-        pass  # userinfo = self.entryUser.text()  # passwdinfo = self.entryPasswd.text()  # urlinfo = self.entryUrl.text()  # csuserinfo = self.entryCustomerUser.text()  # cspasswdinfo = self.entryCustomerPasswd.text()  # tcpinfo = self.entryTcp.text()  # databaseinfo = self.entryDatabases.text()  # historydata = open('D:\Tcptemp\mainData.txt', "w")  # 生成缓存文件data  # historydata.write(userinfo + "," + passwdinfo + "," + urlinfo + "," + csuserinfo +  #                   "," + cspasswdinfo + "," + tcpinfo + "," + databaseinfo)  # IMEI保存到缓存文件data  # historydata.close()
+    def showEvent(self, *args, **kwargs):
+        self.doShow()
+
+    def closeEvent(self, event):
+        self.doClose()
 
     def center(self):
         """控件居中"""
@@ -272,7 +268,7 @@ class MainWidget(QMainWindow):
         menuAction5 = QAction(QtGui.QIcon('exit.png'), '&Exit', self)
         menuAction5.setShortcut(u'Ctrl+Q')
         menuAction5.setStatusTip('Exit application')
-        menuAction5.triggered.connect(qApp.quit)
+        menuAction5.triggered.connect(self.doClose)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')
@@ -303,6 +299,26 @@ class MainWidget(QMainWindow):
         # self.mainwidget.setObjectName("mainwidget")
         self.setCentralWidget(self.mainwidget)
         self.maingrid.setRowStretch(0, 0)
+
+    def doShow(self):
+        try:
+            # 尝试先取消动画完成后关闭窗口的信号
+            self.animation.finished.disconnect(self.close)
+        except:
+            pass
+        self.animation.stop()
+        # 透明度范围从0逐渐增加到1
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+        self.animation.start()
+
+    def doClose(self):
+        self.animation.stop()
+        self.animation.finished.connect(self.close)  # 动画完成则关闭窗口
+        # 透明度范围从1逐渐减少到0
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
 
 
 class WorkerSignals(QObject):
