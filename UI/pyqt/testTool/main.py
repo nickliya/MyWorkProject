@@ -19,6 +19,7 @@ import sys
 import struct
 import binascii
 import configparser
+import xlrd
 
 cgitb.enable(format='text')  # 解决pyqt5异常只要进入事件循环,程序就崩溃,而没有任何提示
 
@@ -281,7 +282,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2018.11.26')
+        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.14')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -361,7 +362,7 @@ class TcpThread(QtCore.QThread):
                 protocol_dic = {
                     "511": "上锁", "512": "解锁", "513": "寻车", "514": "静音", "515": "点火",
                     "516": "熄火", "517": "关门窗", "518": "开门窗", "519": "关天窗", "51a": "开天窗",
-                    "51b": "通油", "51c": "断油", "51e": "通油", "51f": "断油",
+                    "51b": "通油", "51c": "断油", "51e": "授权", "51f": "夺权",
                 }
                 r = r'\(\*..\|7\|\d\d\w,\w*?,\w*?\|\)'
                 datainfo = re.findall(r, tcpreceive)
@@ -450,7 +451,13 @@ class BSJTcpThread(QtCore.QThread):
                     tcpreceive += tcpreceive1[i:i + 2] + " "
                     i += 2
 
-            if tcpreceive == "":
+            if "52 45 4c 41 59 2c 31 23" in tcpreceive:
+                print("收到断油指令")
+                self.recv_signal.emit(tcpreceive)
+            elif "52 45 4c 41 59 2c 30 23" in tcpreceive:
+                print("收到通油指令")
+                self.recv_signal.emit(tcpreceive)
+            elif tcpreceive == "":
                 stopsingle = 1
                 self.s.shutdown(2)
                 self.s.close()
@@ -539,6 +546,74 @@ class GpsUploadThread(QtCore.QRunnable):
         except Exception as msg:
             errorinfo = Exception, ":", msg
             print(errorinfo)
+
+
+class DataThread(QtCore.QRunnable):
+    """数据上传进程"""
+    def __init__(self, dataUrl, tcp):
+        super().__init__()
+        self.dataUrl = dataUrl
+        self.s = tcp
+        self.signals = WorkerSignals()
+        self.yqtool = Bianlifunction()
+        self.oldtTimeStamp = 0
+
+    def decode30d(self, data):
+        r = r'\|30d,(.*?),E,'
+        msg = re.findall(r, data)
+        msg = data.replace(msg[0], self.yqtool.hextime())
+        return msg
+
+    def decode331(self, data):
+        r = r'\|331,(.*?),\d,E,'
+        msg = re.findall(r, data)
+        time331 = self.yqtool.BSJhextime().replace(" ", "")
+        msg = data.replace(msg[0], time331)
+        return msg
+
+    def run(self):
+        """线程"""
+        try:
+            readbook = xlrd.open_workbook(self.dataUrl)
+            sheet = readbook.sheet_by_index(0)
+            row = 0
+            rowcount = sheet.nrows
+            print('共有' + str(rowcount) + '行数据')
+            for i in range(rowcount):
+                rowinfo = sheet.row_values(row)
+                sendMsg = rowinfo[1]
+                if sendMsg == 'null' or sendMsg == '':
+                    row += 1
+                    continue
+                else:
+                    sendMsg = "(1" + sendMsg + ")"
+                timeStamp = rowinfo[0]
+                timeStamp = int(timeStamp)
+                if len(str(timeStamp)) > 10:
+                    timeStamp = str(timeStamp)[:-3]
+
+                if self.oldtTimeStamp == 0:
+                    waiteTime = 0
+                else:
+                    waiteTime = int(timeStamp) - self.oldtTimeStamp
+
+                time.sleep(waiteTime)
+                if "|30d" in sendMsg:
+                    sendMsg = self.decode30d(sendMsg)
+                elif "|331" in sendMsg:
+                    sendMsg = self.decode331(sendMsg)
+                else:
+                    pass
+
+                self.s.send(sendMsg.encode())
+                self.signals.send_signal.emit(sendMsg)
+                print('发送第' + str(row+1) + '行数据')
+                self.oldtTimeStamp = int(timeStamp)
+                row += 1
+        except Exception as msg:
+            errorinfo = Exception, ":", msg
+            print(errorinfo)
+        print('全部数据发送完成')
 
 
 class OtuMonitor(MainWidget):
@@ -826,7 +901,7 @@ class OtuMonitor(MainWidget):
         self.labelqrode.setObjectName("qrlabel")
 
         self.gpsUpload = QPushButton(u"附件GPS上报")
-        self.gpsUpload.setStatusTip("附件放至D:\Tcptemp")
+        self.gpsUpload.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
         self.gpsUpload.clicked.connect(self.gpsUploadfun)
 
         # 协议解密
@@ -1264,11 +1339,13 @@ class OtuMonitor(MainWidget):
         self.textInput.insertPlainText(datainfo)
 
     def gpsUploadfun(self):
-        file1 = open("D:\\Tcptemp\\gpslocation", "r")
-        data = file1.readlines()
-        file1.close()
+        # file1 = open("D:\\Tcptemp\\gpslocation", "r")
+        # data = file1.readlines()
+        # file1.close()
 
-        self.tcpth3 = GpsUploadThread(data, self.s)
+        dataUrl = 'D:\\Tcptemp\\dataUpLoad.xlsx'
+
+        self.tcpth3 = DataThread(dataUrl, self.s)
         self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
         self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
         #
