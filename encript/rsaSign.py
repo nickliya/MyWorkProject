@@ -29,22 +29,22 @@ def RSA_sign(data):
 
 dic = {
     "keyWord": "861477035280435",
-    "vibrationAcceleration": "20",
-    "collisionAcceleration": "161",
+    "vibrationAcceleration": "125",
+    "collisionAcceleration": "230",
     "collisionDetectionDuration": "3",
-    "collisionDuration": "35",
-    "collisionStopDuration": "500",
-    "flipAngularthreshold": "60",
-    "flipChangeThreshold": "100",
+    "collisionDuration": "60",
+    "collisionStopDuration": "800",
+    "flipAngularthreshold": "70",
+    "flipChangeThreshold": "88",
     "flipParkingDuration": "20",
-    "accelerationThreshold": "30",
-    "decelerationThreshold": "35",
-    "sharpLowSpeed": "40",
-    "sharpLowAngleThreshold": "50",
+    "accelerationThreshold": "40",
+    "decelerationThreshold": "48",
+    "sharpLowSpeed": "60",
+    "sharpLowAngleThreshold": "88",
     "sharpHighThreshold": "90",
-    "sharpHighAngleThreshold": "60",
+    "sharpHighAngleThreshold": "66",
     "product_key": "7a6d2266-4df0-492b-a28a-5e9390f1db47",
-    "msgid": "沪B2133"
+    "msgid": "1"
 }
 keylist = dic.keys()
 keylist.sort()
@@ -53,9 +53,13 @@ for key in keylist:
     value = dic[key]
     signMsg += (key+"="+str(value)+"&")
 
+signMsg = signMsg[:-1]
+c = "accelerationThreshold=40&collisionAcceleration=230&collisionDetectionDuration=3&collisionDuration=60&collisionStopDuration=800&decelerationThreshold=48&flipAngularthreshold=70&flipChangeThreshold=88&flipParkingDuration=20&keyWord=861477035280435&msgid=1&product_key=7a6d2266-4df0-492b-a28a-5e9390f1db47&sharpHighAngleThreshold=90&sharpHighThreshold=90&sharpLowAngleThreshold=88&sharpLowSpeed=60&vibrationAcceleration=125"
 
-a = RSA_sign(signMsg[:-1])
+if signMsg == c:
+    print("ok")
+a = RSA_sign(signMsg)
 print(a)
-b = RSA_sign("accelerationThreshold=30&collisionAcceleration=161&collisionDetectionDuration=3&collisionDuration=35&collisionStopDuration=500&decelerationThreshold=35&flipAngularthreshold=60&flipChangeThreshold=100&flipParkingDuration=20&keyWord=861477035280435&msgid=2a289c2e-a7b8-4ace-86be-2d4d1896ed68&product_key=7a6d2266-4df0-492b-a28a-5e9390f1db47&sharpHighAngleThreshold=60&sharpHighThreshold=90&sharpLowAngleThreshold=50&sharpLowSpeed=40&vibrationAcceleration=20")
-print(a)
+b = RSA_sign("accelerationThreshold=40&collisionAcceleration=230&collisionDetectionDuration=3&collisionDuration=60&collisionStopDuration=800&decelerationThreshold=48&flipAngularthreshold=70&flipChangeThreshold=88&flipParkingDuration=20&keyWord=861477035280435&msgid=1&product_key=7a6d2266-4df0-492b-a28a-5e9390f1db47&sharpHighAngleThreshold=90&sharpHighThreshold=90&sharpLowAngleThreshold=88&sharpLowSpeed=60&vibrationAcceleration=125")
+print(b)
 

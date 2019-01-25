@@ -282,7 +282,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.14')
+        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.21')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -550,13 +550,14 @@ class GpsUploadThread(QtCore.QRunnable):
 
 class DataThread(QtCore.QRunnable):
     """数据上传进程"""
-    def __init__(self, dataUrl, tcp):
+    def __init__(self, dataUrl, tcp, gpsUploadBtn):
         super().__init__()
         self.dataUrl = dataUrl
         self.s = tcp
         self.signals = WorkerSignals()
         self.yqtool = Bianlifunction()
         self.oldtTimeStamp = 0
+        self.gpsUploadBtn = gpsUploadBtn
 
     def decode30d(self, data):
         r = r'\|30d,(.*?),E,'
@@ -565,8 +566,14 @@ class DataThread(QtCore.QRunnable):
         return msg
 
     def decode331(self, data):
-        r = r'\|331,(.*?),\d,E,'
+        r = r'\|331,(.*?),\d,.,'
         msg = re.findall(r, data)
+        if msg[0] == "":
+            print('decode331 failed')
+        elif 'FFFFF' in msg[0]:
+            return data
+        else:
+            pass
         time331 = self.yqtool.BSJhextime().replace(" ", "")
         msg = data.replace(msg[0], time331)
         return msg
@@ -574,6 +581,7 @@ class DataThread(QtCore.QRunnable):
     def run(self):
         """线程"""
         try:
+            self.gpsUploadBtn.setDisabled(True)
             readbook = xlrd.open_workbook(self.dataUrl)
             sheet = readbook.sheet_by_index(0)
             row = 0
@@ -613,7 +621,12 @@ class DataThread(QtCore.QRunnable):
         except Exception as msg:
             errorinfo = Exception, ":", msg
             print(errorinfo)
+            print("遇到错误发送终止")
+            self.gpsUploadBtn.setDisabled(False)
+            return False
+
         print('全部数据发送完成')
+        self.gpsUploadBtn.setDisabled(False)
 
 
 class OtuMonitor(MainWidget):
@@ -900,9 +913,9 @@ class OtuMonitor(MainWidget):
         self.labelqrode = QLabel("")
         self.labelqrode.setObjectName("qrlabel")
 
-        self.gpsUpload = QPushButton(u"附件GPS上报")
-        self.gpsUpload.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
-        self.gpsUpload.clicked.connect(self.gpsUploadfun)
+        self.gpsUploadBtn = QPushButton(u"附件GPS上报")
+        self.gpsUploadBtn.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
+        self.gpsUploadBtn.clicked.connect(self.gpsUploadfun)
 
         # 协议解密
         self.protocolDecodeBtn = QPushButton(u"协议解密")
@@ -960,7 +973,7 @@ class OtuMonitor(MainWidget):
         self.leftgrid.addWidget(self.labelRecive, 7, 0, 1, 4)
         self.leftgrid.addWidget(self.clearBtn3, 7, 9)
         self.leftgrid.addWidget(self.textRecv, 8, 0, 1, 10)
-        self.leftgrid.addWidget(self.gpsUpload, 3, 6, 1, 2)
+        self.leftgrid.addWidget(self.gpsUploadBtn, 3, 6, 1, 2)
         # self.leftgrid.addWidget(self.aotubox, 9, 0, 1, 10)
 
         # 中间窗体
@@ -1345,7 +1358,7 @@ class OtuMonitor(MainWidget):
 
         dataUrl = 'D:\\Tcptemp\\dataUpLoad.xlsx'
 
-        self.tcpth3 = DataThread(dataUrl, self.s)
+        self.tcpth3 = DataThread(dataUrl, self.s, self.gpsUploadBtn)
         self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
         self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
         #

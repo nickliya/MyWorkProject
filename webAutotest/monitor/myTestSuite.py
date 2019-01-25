@@ -52,7 +52,7 @@ class Clgl(unittest.TestCase):
         br.browser.find_element_by_id('plateNum').send_keys(self.jsoninfo["case1"]["newplateNum"])
         br.browser.find_element_by_id("submit").click()
 
-        time.sleep(2)
+        time.sleep(3)
         br.browser.find_element_by_id('keyword').clear()
         br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case1"]["newVin"])
         br.browser.find_element_by_id('tableSearch').click()
@@ -67,9 +67,9 @@ class Clgl(unittest.TestCase):
 
         time.sleep(1)
         br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["vin"]).click()
-        br.browser.find_element_by_id('confirm').click()
+        br.browser.find_element_by_id('submit').click()
 
-        time.sleep(1)
+        time.sleep(3)
         br.browser.find_element_by_id('keyword').clear()
         br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case2"]["vin"])
         br.browser.find_element_by_id('tableSearch').click()
@@ -85,9 +85,9 @@ class Clgl(unittest.TestCase):
 
         time.sleep(1)
         br.browser.find_element_by_id('delete-' + self.jsoninfo["case3"]["vin"]).click()
-        br.browser.find_element_by_id('confirm').click()
+        br.browser.find_element_by_id('submit').click()
 
-        time.sleep(1)
+        time.sleep(3)
         br.browser.find_element_by_id('keyword').clear()
         br.browser.find_element_by_id('keyword').send_keys(self.jsoninfo["case3"]["vin"])
         br.browser.find_element_by_id('tableSearch').click()
@@ -117,7 +117,7 @@ class Sbgl(unittest.TestCase):
     def goto_pzgl():
         """进入配置管理"""
         time.sleep(2)
-        br.browser.find_element_by_id('/car').click()
+        br.browser.find_element_by_id('/equipment').click()
         time.sleep(1)
         br.browser.find_element_by_id('model').click()
 
@@ -125,7 +125,7 @@ class Sbgl(unittest.TestCase):
     def goto_sblb():
         """进入设备列表"""
         time.sleep(2)
-        br.browser.find_element_by_id('/car').click()
+        br.browser.find_element_by_id('/equipment').click()
         time.sleep(1)
         br.browser.find_element_by_id('device').click()
 
@@ -142,7 +142,7 @@ class Sbgl(unittest.TestCase):
         br.browser.find_element_by_id('cfgParam').send_keys(self.jsoninfo["case1"]["cfgParam"])
         br.browser.find_element_by_id('submit').click()
 
-        time.sleep(2)
+        time.sleep(3)
         br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case1"]["productCode"])
         br.browser.find_element_by_id('tableSearch').click()
 
@@ -161,13 +161,17 @@ class Sbgl(unittest.TestCase):
         br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["productCode"]).click()
 
         time.sleep(1)
+        br.browser.find_element_by_id('cfgName').clear()
         br.browser.find_element_by_id('cfgName').send_keys(self.jsoninfo["case2"]["cfgName"])
+        br.browser.find_element_by_id('productCode').clear()
         br.browser.find_element_by_id('productCode').send_keys(self.jsoninfo["case2"]["productCode"])
+        br.browser.find_element_by_id('remark').clear()
         br.browser.find_element_by_id('remark').send_keys(self.jsoninfo["case2"]["remark"])
+        br.browser.find_element_by_id('cfgParam').clear()
         br.browser.find_element_by_id('cfgParam').send_keys(self.jsoninfo["case2"]["cfgParam"])
         br.browser.find_element_by_id('submit').click()
 
-        time.sleep(1)
+        time.sleep(3)
         result = br.browser.find_element_by_id('edit-' + self.jsoninfo["case2"]["productCode"]).is_enabled()
         self.assertTrue(result, u"编辑失败")
 
@@ -180,9 +184,9 @@ class Sbgl(unittest.TestCase):
 
         time.sleep(1)
         br.browser.find_element_by_id('delete-' + self.jsoninfo["case3"]["productCode"]).click()
-        br.browser.find_element_by_id('confirm').click()
+        br.browser.find_element_by_id('submit').click()
 
-        time.sleep(1)
+        time.sleep(3)
         br.browser.find_element_by_id('keyWord').clear()
         br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case3"]["productCode"])
         br.browser.find_element_by_id('tableSearch').click()
@@ -231,7 +235,7 @@ class Shgl(unittest.TestCase):
         br.browser.find_element_by_id('contactAddress').send_keys(self.jsoninfo["case1"]["contactAddress"])
         br.browser.find_element_by_id('submit').click()
 
-        time.sleep(2)
+        time.sleep(3)
         br.browser.find_element_by_id('keyWord').send_keys(self.jsoninfo["case1"]["manageUser"])
         br.browser.find_element_by_id('tableSearch').click()
 
@@ -274,7 +278,7 @@ class Shgl(unittest.TestCase):
 
         time.sleep(1)
         br.browser.find_element_by_id('freeze-' + self.jsoninfo["case3"]["manageUser"]).click()
-        br.browser.find_element_by_id('confirm').click()
+        br.browser.find_element_by_id('submit').click()
 
         # 断言
         try:
@@ -361,7 +365,7 @@ class Xxgl(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        jsonfile = open("jsondata/shgl.json", "r", encoding="utf-8")
+        jsonfile = open("jsondata/Xxgl.json", "r", encoding="utf-8")
         cls.jsoninfo = json.load(jsonfile)
 
     def tearDown(self):
@@ -386,9 +390,9 @@ class Xxgl(unittest.TestCase):
         time.sleep(1)
         br.browser.find_element_by_id('tableAdd').click()
 
-        time.sleep(1)
+        time.sleep(2)
         br.browser.find_element_by_id('title').send_keys(self.jsoninfo["case1"]["title"])
-        br.browser.find_element_by_id('text-elem42123473841230585').send_keys(self.jsoninfo["case1"]["text"])
+        br.browser.find_element_by_id('editor').send_keys(self.jsoninfo["case1"]["text"])
         br.browser.find_element_by_id('submit').click()
 
         time.sleep(2)
@@ -408,7 +412,7 @@ class Xxgl(unittest.TestCase):
 
         time.sleep(1)
         br.browser.find_element_by_id('delete-' + self.jsoninfo["case2"]["title"]).click()
-        br.browser.find_element_by_id("confirm").click()
+        br.browser.find_element_by_id("submit").click()
 
         time.sleep(1)
         br.browser.find_element_by_id('keyword').clear()
@@ -573,7 +577,7 @@ class Qxgl(unittest.TestCase):
         br.browser.find_element_by_name('remark').send_keys(self.jsoninfo["member"]["case5"]["remark"])
         br.browser.find_element_by_name('submit').click()
 
-        time.sleep(1)
+        time.sleep(3)
         br.browser.find_element_by_name('roleName').send_keys(self.jsoninfo["member"]["case5"]["roleName"])
         br.browser.find_element_by_name('tableSearch').click()
 

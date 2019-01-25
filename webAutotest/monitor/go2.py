@@ -37,9 +37,10 @@ testunit = unittest.TestSuite()
 
 
 # 设置用例
-testunit.addTest(Shgl("case4"))
+testunit.addTest(Xxgl("case1"))
+testunit.addTest(Xxgl("case2"))
 
-HtmlFile = 'C:\\Users\\zidonghua\\Desktop\\Result.html'
+HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
 fp = open(HtmlFile, "wb")
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'4S门户自动化测试', description=u'用例测试情况')
 runner.run(testunit)

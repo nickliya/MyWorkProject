@@ -56,7 +56,7 @@ class Mainfun:
             image = Image.open(imgurl)
             vcode = pytesseract.image_to_string(image)
             print(vcode)
-            if len(vcode) == 4 and "0" not in vcode and "O" not in vcode and "|" not in vcode and "]" not in vcode and "2" not in vcode and "I" not in vcode and " " not in vcode:
+            if len(vcode) == 4 and "0" not in vcode and ":" not in vcode and "O" not in vcode and "|" not in vcode and "]" not in vcode and "2" not in vcode and "I" not in vcode and " " not in vcode:
                 print("recognize ok")
                 break
             else:

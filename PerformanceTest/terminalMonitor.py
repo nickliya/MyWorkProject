@@ -77,6 +77,7 @@ def runSocket(executor, imei, waitime):
     global stopsingle
     stopsingle = 0
 
+    returnmsg = 0
     # 控制循环
     while 1:
         tcpreceive = s.recv(1024).decode()
@@ -94,7 +95,11 @@ def runSocket(executor, imei, waitime):
             str_data = str(datainfo[0])
             # print(threading.current_thread().name, 'recv:' + protocol_dic[str_data[7:10]] + str_data)
             recvloger.debug('recv:' + protocol_dic[str_data[7:10]] + str_data)
-            a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + '1,1|)'
+            # a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + '1,1|)'
+
+            a = str_data[0] + '1' + str_data[1:7] + '4' + str_data[8:11] + hex(returnmsg)[2:] + ',1|)'
+            returnmsg += 1
+
             if waitime != 0:
                 executor.submit(sendmsgfun, s, waitime, a, imei)
             else:
@@ -123,33 +128,35 @@ if __name__ == '__main__':
     print '这是主线程：', threading.current_thread().name
     thread_list = []
 
-    file1 = open("C:\\Users\\fuzhi\\Desktop\\aotuTerminal.txt", "r")
-    data = file1.readlines()
-    for i in range(1000):
-        datainfo = data[i]
-        datalist = datainfo.split(",")
-        imei = datalist[1]
-        t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 0)
-        # if i < 200:
-        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1000)
-        # elif i < 400:
-        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1500)
-        # elif i < 600:
-        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2000)
-        # elif i < 800:
-        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2500)
-        # elif i < 1000:
-        #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 9999)
-        # else:
-        #     print "ok"
-        #     pass
+    # file1 = open("C:\\Users\\fuzhi\\Desktop\\aotuTerminal.txt", "r")
+    # data = file1.readlines()
+    # for i in range(1000):
+    #     datainfo = data[i]
+    #     datalist = datainfo.split(",")
+    #     imei = datalist[1]
+    #     t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 0)
+    #     if i < 200:
+    #         t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1000)
+    #     elif i < 400:
+    #         t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 1500)
+    #     elif i < 600:
+    #         t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2000)
+    #     elif i < 800:
+    #         t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 2500)
+    #     elif i < 1000:
+    #         t = threadPoolMain.submit(runSocket, threadPoolWait, imei, 9999)
+    #     else:
+    #         print "ok"
+    #         pass
 
-    # t = threadPoolMain.submit(runSocket, threadPoolWait, "868729039450676", 2000)
+    t = threadPoolMain.submit(runSocket, threadPoolWait, "868729039450676", 0)
 
     time.sleep(3)
-    inputstr = raw_input()
-    if inputstr == "1":
-        for s in socketlist:
-            s.shutdown(2)
-            s.close()
+    inputstr = None
+    while inputstr != "quit":
+        inputstr = raw_input()
+
+    for s in socketlist:
+        s.shutdown(2)
+        s.close()
     print("已结束所有线程")

@@ -16,7 +16,7 @@ testunit.addTest(Case.Rygl("case6"))
 testunit.addTest(Case.Dagl("case1"))
 # test= unittest.TestLoader().loadTestsFromTestCase(dotest)
 # testunit.addTest(unittest.makeSuite(case.Sirui))
-HtmlFile = 'C:\Users\YangQ\Desktop\Result.html'
+HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
 fp = open(HtmlFile, "wb")
 runner = HTMLTestRunner.HTMLTestRunner(stream=fp, title=u'4S门户自动化测试', description=u'用例测试情况')
 runner.run(testunit)

@@ -31,4 +31,4 @@ def getvin():
         return str(TrueVIN)
 
 
-print getvin()
+print(getvin())
