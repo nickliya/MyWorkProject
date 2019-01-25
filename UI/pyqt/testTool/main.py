@@ -282,7 +282,7 @@ class MainWidget(QMainWindow):
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.21')
+        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.25')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -614,6 +614,72 @@ class DataThread(QtCore.QRunnable):
                     pass
 
                 self.s.send(sendMsg.encode())
+                self.signals.send_signal.emit(sendMsg)
+                print('发送第' + str(row+1) + '行数据')
+                self.oldtTimeStamp = int(timeStamp)
+                row += 1
+        except Exception as msg:
+            errorinfo = Exception, ":", msg
+            print(errorinfo)
+            print("遇到错误发送终止")
+            self.gpsUploadBtn.setDisabled(False)
+            return False
+
+        print('全部数据发送完成')
+        self.gpsUploadBtn.setDisabled(False)
+
+
+class DataThreadBSJ(QtCore.QRunnable):
+    """数据上传进程"""
+    def __init__(self, dataUrl, tcp, gpsUploadBtn):
+        super().__init__()
+        self.dataUrl = dataUrl
+        self.s = tcp
+        self.signals = WorkerSignals()
+        self.yqtool = Bianlifunction()
+        self.oldtTimeStamp = 0
+        self.gpsUploadBtn = gpsUploadBtn
+
+    def dataSwitch(self, data):
+        str1 = ''
+        str2 = b''
+        while data:
+            str1 = data[0:2]
+            s = int(str1, 16)
+            str2 += struct.pack('B', s)
+            data = data[3:]
+        return str2
+
+    def run(self):
+        """线程"""
+        try:
+            self.gpsUploadBtn.setDisabled(True)
+            readbook = xlrd.open_workbook(self.dataUrl)
+            sheet = readbook.sheet_by_index(0)
+            row = 0
+            rowcount = sheet.nrows
+            print('共有' + str(rowcount) + '行数据')
+            for i in range(rowcount):
+                rowinfo = sheet.row_values(row)
+                sendMsg = rowinfo[1]
+                if sendMsg == 'null' or sendMsg == '':
+                    row += 1
+                    continue
+
+                timeStamp = rowinfo[0]
+                timeStamp = int(timeStamp)
+                if len(str(timeStamp)) > 10:
+                    timeStamp = str(timeStamp)[:-3]
+
+                if self.oldtTimeStamp == 0:
+                    waiteTime = 0
+                else:
+                    waiteTime = int(timeStamp) - self.oldtTimeStamp
+
+                time.sleep(waiteTime)
+
+                sendMsg = self.dataSwitch(sendMsg)
+                self.s.send(sendMsg)
                 self.signals.send_signal.emit(sendMsg)
                 print('发送第' + str(row+1) + '行数据')
                 self.oldtTimeStamp = int(timeStamp)
@@ -1516,6 +1582,10 @@ class BSJMonitor(MainWidget):
         self.heartcheck = QCheckBox("心跳挂机(保持连接请打钩√）")
         self.heartcheck.setVisible(False)
 
+        self.gpsUploadBtn = QPushButton(u"附件GPS上报")
+        self.gpsUploadBtn.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
+        self.gpsUploadBtn.clicked.connect(self.gpsUploadfunBSJ)
+
         self.textInput = QTextEdit()
         self.textInput.setAlignment(QtCore.Qt.AlignLeft)
         self.textSend = QTextBrowser()
@@ -1612,6 +1682,7 @@ class BSJMonitor(MainWidget):
 
         self.leftgrid.addWidget(self.labelInput, 5, 0, 1, 2)
         self.leftgrid.addWidget(self.heartcheck, 5, 3, QtCore.Qt.AlignCenter)
+        self.leftgrid.addWidget(self.gpsUploadBtn, 5, 3, QtCore.Qt.AlignRight)
         self.leftgrid.addWidget(self.clearBtn, 5, 4)
         self.leftgrid.addWidget(self.sendBtn, 5, 5)
         self.leftgrid.addWidget(self.textInput, 6, 0, 1, 6)
@@ -1899,6 +1970,15 @@ class BSJMonitor(MainWidget):
         img.save('D:\Tcptemp\qrcode.png')
 
         self.labelqrode.setPixmap(QtGui.QPixmap("D:\Tcptemp\qrcode.png"))
+
+    def gpsUploadfunBSJ(self):
+        dataUrl = 'D:\\Tcptemp\\dataUpLoad.xlsx'
+
+        self.tcpth3 = DataThreadBSJ(dataUrl, self.s, self.gpsUploadBtn)
+        self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
+        self.tcpth3.signals.send_signal.connect(self.fillsendmsg)
+        #
+        self.threadpool.start(self.tcpth3)
 
 
 class StartLoop(OtuMonitor, BSJMonitor):
