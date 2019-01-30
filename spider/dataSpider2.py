@@ -58,22 +58,35 @@ def verify(imei, starttime, endtime, sheet):
             r = r'\|\d\|331,.*?\|'
             result = re.findall(r, info['CONTENT'])
 
-            # 如果没有匹配到则退出
+            # 如果没有匹配到则退出进入下一个循环
             if "" in result or result == []:
                 continue
-            data331List.append(result)
+            if ",,,,,,," in result[0] or "FFFFFF" in result[0]:
+                continue
+            time = info['TIME']
+            data331List.append([time, result])
+            break
 
         else:
             pass
-    startmileinfo = data331List[-1]
-    infolist = startmileinfo[0].split(",")
-    startmiles = infolist[17]
 
-    endmileinfo = data331List[0]
-    infolist = endmileinfo[0].split(",")
-    endmile = infolist[17]
+    # # 开始
+    # startmileinfo = data331List[-1]
+    # infolist = startmileinfo[0].split(",")
+    # startmiles = infolist[17]
+    #
+    # # 结束
+    # endmileinfo = data331List[0]
+    # infolist = endmileinfo[0].split(",")
+    # endmile = infolist[17]
+    if data331List:
+        info = data331List[0]
+        time = info[0]
+        timestamp = info[1][0].split(",")[1]
+        print(time, timestamp)
+    else:
+        print("该时间段没有找到331数据")
 
-    print(startmiles, endmile)
     # print(data331List)
 
 
@@ -97,13 +110,15 @@ if r1.status_code == 200:
 else:
     exit()
 
-readbook = xlrd.open_workbook(r'C:\Users\fuzhi\Desktop\订单公里数(1).xlsx')
-sheet = readbook.sheet_by_index(6)
-row = 456
-for i in range(119):
+readbook = xlrd.open_workbook(r'C:\Users\fuzhi\Desktop\imei.xlsx')
+sheet = readbook.sheet_by_index(0)
+row = 583
+for i in range(1):
     rowinfo = sheet.row_values(row)
-    imei = rowinfo[3]
-    starttime = rowinfo[1]
-    endtime = rowinfo[2]
+    imei = rowinfo[0]
+    # starttime = rowinfo[1]
+    starttime = "2019-01-26 18:00:00"
+    # endtime = rowinfo[2]
+    endtime = "2019-01-29 17:00:00"
     verify(imei, starttime, endtime, sheet)
     row += 1

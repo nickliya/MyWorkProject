@@ -288,6 +288,9 @@ class MainWidget(QMainWindow):
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
         # self.setWindowOpacity(0.9)
 
+        # 公共空间
+        self.onBtn = QPushButton(u"连接")
+
     def iniGrid(self):
         # 主窗体
         self.mainwidget = QGraphicsView()
@@ -678,8 +681,7 @@ class DataThreadBSJ(QtCore.QRunnable):
 
                 time.sleep(waiteTime)
 
-                sendMsg = self.dataSwitch(sendMsg)
-                self.s.send(sendMsg)
+                self.s.send(self.dataSwitch(sendMsg))
                 self.signals.send_signal.emit(sendMsg)
                 print('发送第' + str(row+1) + '行数据')
                 self.oldtTimeStamp = int(timeStamp)
@@ -772,7 +774,7 @@ class OtuMonitor(MainWidget):
         #     self.entryIP.insert(historyinfolist[1])
 
         self.defalBtn = QPushButton(u"默认")
-        self.onBtn = QPushButton(u"连接")
+        # self.onBtn = QPushButton(u"连接")
         self.bindBtn = QPushButton(u"绑定")
         self.bindBtn.setDisabled(True)
         self.sendBtn = QPushButton(u"发送")
@@ -1457,8 +1459,8 @@ class BSJMonitor(MainWidget):
             global stopsingle
             stopsingle = 1
             self.scene.offlineCol.start()
-        except AttributeError:
-            pass
+        except AttributeError as msg:
+            print(msg)
         self.deleteWigt = [self.leftwidget, self.middlewiget]
 
     def BSJMonitor_UI(self):
@@ -1475,7 +1477,7 @@ class BSJMonitor(MainWidget):
         self.loginbox.setLayout(self.loginboxGrid)
         self.labelOtuIMEI = QLabel(u"主机IMEI", self)
         self.entryOtuIMEI = QLineEdit()
-        self.onBtn = QPushButton(u"连接")
+        # self.onBtn = QPushButton(u"连接")
         self.logindataCreatebtn = QPushButton(u"生成")
 
         # gpsbox
