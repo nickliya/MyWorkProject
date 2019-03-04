@@ -10,13 +10,31 @@ class Bianlifunction:
     """个人便利方法集合"""
 
     @staticmethod
-    def timeNow():
+    def time_sfm():
+        """
+        范围本地时间时分秒
+        :return:
+        """
         now_stamp = time.time()
         local_time = datetime.datetime.fromtimestamp(now_stamp)
         return local_time.strftime("%H:%M:%S.%f")
 
     @staticmethod
+    def time_nyrsfm():
+        """
+        返回本地时间年月日时分秒
+        :return:
+        """
+        now_stamp = time.time()
+        local_time = datetime.datetime.fromtimestamp(now_stamp)
+        return local_time.strftime("%Y%m%d%H%M%S")[2:]
+
+    @staticmethod
     def BSJhextime():
+        """
+        范围本地时间十六进制
+        :return: 示例'13 03 04 06 20 12 '
+        """
         now_stamp = time.time()
         local_time = datetime.datetime.fromtimestamp(now_stamp)
 
@@ -41,6 +59,10 @@ class Bianlifunction:
 
     @staticmethod
     def hextime():
+        """
+        范围本地时间十六进制前三分钟
+        :return: 示例'13,3,4,6,1b,12'
+        """
         now_stamp = time.time()
         local_time = datetime.datetime.fromtimestamp(now_stamp)
 
@@ -76,6 +98,8 @@ class Bianlifunction:
         Sec = '%x' % int(second)
         strhextime = str(Y) + ',' + str(m) + ',' + str(d) + ',' + str(H) + ',' + str(M) + ',' + str(Sec)
         return strhextime
+
+
 
 
 class CRCUtil:

@@ -25,11 +25,13 @@ class OtuMonitor(QWidget):
         self.threadpool.setMaxThreadCount(500)
 
     def OtuMonitor_UI(self):
-        # styleqss = open("otu.qss", "r", encoding='UTF-8')
-        # styleinfo = styleqss.read()
-        styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
+        styleqss = open("qss/otuStyle.qss", "r", encoding='UTF-8')
+        styleinfo = styleqss.read()
+        styleqss.close()
+
+        # styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
+        # styleinfo = 'QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
         self.setStyleSheet(styleinfo)
-        # styleqss.close()
 
         # self.gview = QGraphicsView()
         # self.scene2 = TcpBackgroudScene(self.gview)  # 创建场景
@@ -112,7 +114,6 @@ class OtuMonitor(QWidget):
 
         """中间窗口"""
 
-        # self.btnnamelist = ["能力", "设防", "引擎", "门锁", "速度", "温度", "GSM", "星数"]
         self.protocol = {
             "能力": "(1*67|7|10c,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100|)",
             "引擎": "(1*12|7|302,1)",
@@ -138,6 +139,8 @@ class OtuMonitor(QWidget):
             "设防333": "(1*c1|7|333,1|)",
 
         }
+
+        self.middleTabWgt = QTabWidget()
 
         self.Btn1 = QPushButton(u"能力")
         self.Btn1.setStatusTip("100为开，(10c，关锁，开锁，寻车，静音，点火，熄火，关门窗，开门窗，关天窗，开天窗，通油，停车断油，强制断油，最后三个字段未知)")
@@ -207,7 +210,7 @@ class OtuMonitor(QWidget):
         self.aotucheckbox23 = QCheckBox("设防/撤防")
         self.aotucheckbox24 = QCheckBox("告警")
         self.aotualarmdataCreatebtn = QPushButton(u"生成")
-        self.aotualarmdataCreatebtn.clicked.connect(self.aotudatacreate)
+        self.aotualarmdataCreatebtn.clicked.connect(self.aotu331datacreate)
         self.label331ExcessOil = QLabel("余油")
         self.label331ExcessVoltage = QLabel("余电")
         self.label331EnduranceMileage = QLabel("续航里程")
@@ -226,9 +229,43 @@ class OtuMonitor(QWidget):
         self.label331AccumulatedMileage_input.setText("23456")
         self.label331BatteryVoltage_input.setText("1125")
 
-        self.btnlist = [self.Btn4, self.Btn5, self.Btn6, self.Btn7, self.Btn8,
-                        self.Btn9, self.Btn10, self.Btn11, self.Btn12, self.Btn13, self.Btn14, self.Btn15, self.Btn16,
-                        self.Btn17, self.Btn18, self.Btn19, self.Btn20, self.Btn21, self.Btn22]
+        # 432定制box
+        self.aotubox2 = QGroupBox("432驾驶行为事件协议定制,参数用'.'隔开")
+        self.aotubox2Grid = QGridLayout()
+        self.aotubox2.setLayout(self.aotubox2Grid)
+
+        self.aotubox432dataCreatebtn = QPushButton(u"生成")
+        self.aotubox432dataCreatebtn.clicked.connect(self.aotu432datacreate)
+
+        self.rdiobtn = QRadioButton(u"震动")
+        self.rdiobtn2 = QRadioButton(u"碰撞")
+        self.rdiobtn3 = QRadioButton(u"翻转")
+        self.rdiobtn4 = QRadioButton(u"急加速")
+        self.rdiobtn5 = QRadioButton(u"急减速")
+        self.rdiobtn6 = QRadioButton(u"急转弯")
+
+        self.rdiobtn_input = QLineEdit()
+        self.rdiobtn_input.setPlaceholderText("震动值 0.1/m2")
+        self.rdiobtn2_input = QLineEdit()
+        self.rdiobtn2_input.setPlaceholderText("碰撞值 0.1/m2")
+        self.rdiobtn3_input = QLineEdit()
+        self.rdiobtn3_input.setPlaceholderText("X变化(度).Y.Z.翻转角速度(度/s).X方向.Y.Z")
+        self.rdiobtn4_input = QLineEdit()
+        self.rdiobtn4_input.setPlaceholderText("加速度(0.1/m2).速度变化量(km/h)")
+        self.rdiobtn5_input = QLineEdit()
+        self.rdiobtn5_input.setPlaceholderText("加速度(0.1/m2).速度变化量(km/h)")
+        self.rdiobtn6_input = QLineEdit()
+        self.rdiobtn6_input.setPlaceholderText("转弯角度(码).(度).X方向角速度(度/s).Y.Z")
+
+        self.rdiobtn_input.setText("1")
+        self.rdiobtn2_input.setText("1")
+        self.rdiobtn3_input.setText("b4.5a.2d0.1.b4.5a.2d0")
+        self.rdiobtn4_input.setText("1.1")
+        self.rdiobtn5_input.setText("1.1")
+        self.rdiobtn6_input.setText("b4.5a.2d0.b4.5a")
+        # self.btnlist = [self.Btn4, self.Btn5, self.Btn6, self.Btn7, self.Btn8,
+        #                 self.Btn9, self.Btn10, self.Btn11, self.Btn12, self.Btn13, self.Btn14, self.Btn15, self.Btn16,
+        #                 self.Btn17, self.Btn18, self.Btn19, self.Btn20, self.Btn21, self.Btn22]
 
         self.onBtn.clicked.connect(self.go_online)
         self.defalBtn.clicked.connect(self.siruisetDefalut)
@@ -388,21 +425,10 @@ class OtuMonitor(QWidget):
         self.middlegrid.addWidget(self.Btn23, 4, 4)
         self.middlegrid.addWidget(self.Btn24, 4, 5)
 
-        self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
-
-        # 右边窗体
-        self.rightwidget = QWidget()
-        self.rightgrid = QGridLayout()
-        self.rightwidget.setLayout(self.rightgrid)
-        self.otuGrid.addWidget(self.rightwidget, 0, 2)
-
-        self.rightgrid.addWidget(self.labelmsg, 0, 0)
-        self.rightgrid.addWidget(self.entrymsg, 0, 1)
-        self.rightgrid.addWidget(self.btnCreatqrcode, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
-        self.rightgrid.addWidget(self.btnCreatqrcode2, 1, 0, 1, 2, QtCore.Qt.AlignRight)
-        self.rightgrid.addWidget(self.labelqrode, 2, 0, 1, 2, QtCore.Qt.AlignCenter)
-        self.rightgrid.addWidget(self.protocolDecodeBtn, 3, 0)
-        self.rightgrid.addWidget(self.protocolDecodeEntry, 3, 1)
+        # self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
+        self.middlegrid.addWidget(self.middleTabWgt, 5, 0, 1, 6)
+        self.middleTabWgt.addTab(self.aotubox, "123")
+        self.middleTabWgt.addTab(self.aotubox2, "432")
 
         self.aotuboxGrid.addWidget(self.aotucheckbox1, 0, 0)
         self.aotuboxGrid.addWidget(self.aotucheckbox2, 1, 0)
@@ -439,6 +465,34 @@ class OtuMonitor(QWidget):
         self.aotuboxGrid.addWidget(self.label331EnduranceMileage_input, 6, 3)
         self.aotuboxGrid.addWidget(self.label331BatteryVoltage, 7, 0)
         self.aotuboxGrid.addWidget(self.label331BatteryVoltage_input, 7, 1)
+
+        self.aotubox2Grid.addWidget(self.aotubox432dataCreatebtn, 0, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn, 1, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn_input, 1, 1)
+        self.aotubox2Grid.addWidget(self.rdiobtn2, 2, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn2_input, 2, 1)
+        self.aotubox2Grid.addWidget(self.rdiobtn3, 3, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn3_input, 3, 1)
+        self.aotubox2Grid.addWidget(self.rdiobtn4, 4, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn4_input, 4, 1)
+        self.aotubox2Grid.addWidget(self.rdiobtn5, 5, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn5_input, 5, 1)
+        self.aotubox2Grid.addWidget(self.rdiobtn6, 6, 0)
+        self.aotubox2Grid.addWidget(self.rdiobtn6_input, 6, 1)
+
+        # 右边窗体
+        self.rightwidget = QWidget()
+        self.rightgrid = QGridLayout()
+        self.rightwidget.setLayout(self.rightgrid)
+        self.otuGrid.addWidget(self.rightwidget, 0, 2)
+
+        self.rightgrid.addWidget(self.labelmsg, 0, 0)
+        self.rightgrid.addWidget(self.entrymsg, 0, 1)
+        self.rightgrid.addWidget(self.btnCreatqrcode, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
+        self.rightgrid.addWidget(self.btnCreatqrcode2, 1, 0, 1, 2, QtCore.Qt.AlignRight)
+        self.rightgrid.addWidget(self.labelqrode, 2, 0, 1, 2, QtCore.Qt.AlignCenter)
+        self.rightgrid.addWidget(self.protocolDecodeBtn, 3, 0)
+        self.rightgrid.addWidget(self.protocolDecodeEntry, 3, 1)
 
     def siruisetDefalut(self):
         """默认按钮"""
@@ -665,7 +719,11 @@ class OtuMonitor(QWidget):
 
         self.labelqrode.setPixmap(QtGui.QPixmap("D:\Tcptemp\qrcode.png"))
 
-    def aotudatacreate(self):
+    def aotu331datacreate(self):
+        """
+        331协议生成
+        :return:
+        """
         def checkindex(checkbox):
             if checkbox.isChecked():
                 return "1"
@@ -713,6 +771,35 @@ class OtuMonitor(QWidget):
 
         datainfo = "(1*e4|7|331," + time331 + ",1,E,10629.7228,N,2937.1144,0,0,9," + onStatus + "200," + doorStatus + "," + doorLockStatus + "," + doorWindowStatus + "," + lightStatus + "," + shefangStatus + ",1," + AccumulatedMileage + "," + EnduranceMileage + "," + ExcessOil + "," + BatteryVoltage + ",1,1,1," + ExcessVoltage + ",0|)"
         self.textInput.insertPlainText(datainfo)
+
+    def aotu432datacreate(self):
+        """
+        432协议生成
+        :return:
+        """
+        time = self.yqtool.time_nyrsfm()
+        if self.rdiobtn.isChecked():
+            text = self.rdiobtn_input.text()
+            msg = "(1*48|7|432,1," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        elif self.rdiobtn2.isChecked():
+            text = self.rdiobtn2_input.text()
+            msg = "(1*48|7|432,2," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        elif self.rdiobtn3.isChecked():
+            text = self.rdiobtn3_input.text()
+            msg = "(1*48|7|432,3," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        elif self.rdiobtn4.isChecked():
+            text = self.rdiobtn4_input.text()
+            msg = "(1*48|7|432,4," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        elif self.rdiobtn5.isChecked():
+            text = self.rdiobtn5_input.text()
+            msg = "(1*48|7|432,5," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        elif self.rdiobtn6.isChecked():
+            text = self.rdiobtn6_input.text()
+            msg = "(1*48|7|432,6," + text + "," + time + ",e,10629.7228,n,2937.1144,1,8,0,|)"
+        else:
+            msg = None
+
+        self.textInput.insertPlainText(msg)
 
     def gpsUploadfun(self):
         # file1 = open("D:\\Tcptemp\\gpslocation", "r")
