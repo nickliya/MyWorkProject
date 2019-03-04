@@ -9,12 +9,6 @@ import sys
 
 cgitb.enable(format='text')  # 解决pyqt5异常只要进入事件循环,程序就崩溃,而没有任何提示
 
-isexisted = os.path.exists('D:\Tcptemp')
-if not isexisted:
-    os.makedirs('D:\Tcptemp')
-else:
-    pass
-
 stopsingle = None
 waitmsg = None
 
@@ -157,4 +151,12 @@ def main():
 
 
 if __name__ == '__main__':
+    """检查是否有缓存文件 START"""
+    isexisted = os.path.exists('./Tcptemp')
+    if not isexisted:
+        os.makedirs('./Tcptemp')
+    else:
+        pass
+    """检查是否有缓存文件 END"""
+
     main()

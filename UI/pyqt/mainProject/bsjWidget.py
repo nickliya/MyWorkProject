@@ -17,16 +17,19 @@ class BSJMonitor(QWidget):
     def __init__(self):
         super(BSJMonitor, self).__init__()
         self.sqlserver = Sqlfunticon()
+        self.yqtool = Bianlifunction()
         self.num = 0
         self.BSJMonitor_UI()
         self.BSJMonitor_grid()
+        self.threadpool = QThreadPool.globalInstance()
+        self.threadpool.setMaxThreadCount(500)
 
     def BSJMonitor_UI(self):
-        # styleqss = open("otu.qss", "r", encoding='UTF-8')
-        # styleinfo = styleqss.read()
-        styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
+        styleqss = open("./qss/bsjStyle.qss", "r", encoding='UTF-8')
+        styleinfo = styleqss.read()
+        # styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
         self.setStyleSheet(styleinfo)
-        # styleqss.close()
+        styleqss.close()
 
         """左侧窗口"""
         # 登录box
@@ -119,7 +122,7 @@ class BSJMonitor(QWidget):
 
         try:
             conf = configparser.ConfigParser()
-            conf.read('D:\\Tcptemp\\bsjdata.ini')  # 文件路径
+            conf.read('./Tcptemp/bsjdata.ini')  # 文件路径
             port = conf.get("setting", "port")  # 获取指定section 的option值
             bsjip = conf.get("setting", "ip")  # 获取section1 的sex值
             imei = conf.get("setting", "imei")
@@ -141,7 +144,7 @@ class BSJMonitor(QWidget):
         self.heartcheck.setVisible(False)
 
         self.gpsUploadBtn = QPushButton(u"附件GPS上报")
-        self.gpsUploadBtn.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
+        self.gpsUploadBtn.setStatusTip("附件放至./Tcptemp/dataUpLoad.xlsx")
         self.gpsUploadBtn.clicked.connect(self.gpsUploadfunBSJ)
 
         self.textInput = QTextEdit()
@@ -327,13 +330,13 @@ class BSJMonitor(QWidget):
         self.textInput.insertPlainText(data)
 
         conf = configparser.ConfigParser()
-        conf.read('D:\\Tcptemp\\bsjdata.ini')
+        conf.read('./Tcptemp/bsjdata.ini')
         try:
             conf.set("setting", "imei", imei)
         except configparser.NoSectionError:
             conf.add_section("setting")
             conf.set("setting", "imei", imei)
-        with open('D:\\Tcptemp\\bsjdata.ini', 'w') as configfile:
+        with open('./Tcptemp/bsjdata.ini', 'w') as configfile:
             conf.write(configfile)
             configfile.close()
 
@@ -404,7 +407,7 @@ class BSJMonitor(QWidget):
         msg = self.textInput.toPlainText()
         self.s.send(self.dataSwitch(msg))
         self.textSend.setTextColor(QColor("#FF3030"))
-        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.append(self.yqtool.time_sfm() + " ")
         self.textSend.setTextColor(QColor("#FFFFFF"))
         self.textSend.insertPlainText(msg)
         self.textInput.clear()
@@ -412,14 +415,14 @@ class BSJMonitor(QWidget):
     def fillsendmsg(self, message):
         """填充发送历史"""
         self.textSend.setTextColor(QColor("#FF3030"))
-        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.append(self.yqtool.time_sfm() + " ")
         self.textSend.setTextColor(QColor("#FFFFFF"))
         self.textSend.insertPlainText(message)
 
     def fillrecvmsg(self, message):
         """填充接收历史"""
         self.textRecv.setTextColor(QColor("#FF3030"))
-        self.textRecv.append(self.yqtool.timeNow() + " ")
+        self.textRecv.append(self.yqtool.time_sfm() + " ")
         self.textRecv.setTextColor(QColor("#FFFFFF"))
         self.textRecv.insertPlainText(message)
 
@@ -444,7 +447,7 @@ class BSJMonitor(QWidget):
 
             # 缓存
             conf = configparser.ConfigParser()
-            conf.read('D:\\Tcptemp\\bsjdata.ini')
+            conf.read('./Tcptemp/bsjdata.ini')
             try:
                 conf.set("setting", "ip", tcpadress)
                 conf.set("setting", "port", tcpport)
@@ -452,7 +455,7 @@ class BSJMonitor(QWidget):
                 conf.add_section("setting")
                 conf.set("setting", "ip", tcpadress)
                 conf.set("setting", "port", tcpport)
-            with open('D:\\Tcptemp\\bsjdata.ini', 'w') as configfile:
+            with open('./Tcptemp/bsjdata.ini', 'w') as configfile:
                 conf.write(configfile)
                 configfile.close()
 
@@ -529,12 +532,12 @@ class BSJMonitor(QWidget):
         qr.add_data(imgdata)
         qr.make(fit=True)
         img = qr.make_image()
-        img.save('D:\Tcptemp\qrcode.png')
+        img.save('./Tcptemp/qrcode.png')
 
-        self.labelqrode.setPixmap(QtGui.QPixmap("D:\Tcptemp\qrcode.png"))
+        self.labelqrode.setPixmap(QtGui.QPixmap("./Tcptemp/qrcode.png"))
 
     def gpsUploadfunBSJ(self):
-        dataUrl = 'D:\\Tcptemp\\dataUpLoad.xlsx'
+        dataUrl = './Tcptemp/dataUpLoad.xlsx'
 
         self.tcpth3 = DataThreadBSJ(dataUrl, self.s, self.gpsUploadBtn)
         self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)

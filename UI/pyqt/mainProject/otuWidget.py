@@ -65,7 +65,7 @@ class OtuMonitor(QWidget):
         self.entrywaiguadev = QLineEdit()
         self.entrywaiguadev.setPlaceholderText("产品型号")
 
-        data = open('D:\\Tcptemp\\data.txt', "a+")
+        data = open('./Tcptemp/data.txt', "a+")
         data.seek(0)  # 移动指针到头部
         historyinfo = data.read()  # 读取缓存文件data
         historyinfolist = historyinfo.split(",")
@@ -328,7 +328,7 @@ class OtuMonitor(QWidget):
         self.labelqrode.setObjectName("qrlabel")
 
         self.gpsUploadBtn = QPushButton(u"附件GPS上报")
-        self.gpsUploadBtn.setStatusTip("附件放至D:\Tcptemp\dataUpLoad.xlsx")
+        self.gpsUploadBtn.setStatusTip("附件放至./Tcptemp/dataUpLoad.xlsx")
         self.gpsUploadBtn.clicked.connect(self.gpsUploadfun)
 
         # 协议解密
@@ -516,7 +516,7 @@ class OtuMonitor(QWidget):
         msg = self.textInput.toPlainText()
         self.s.send(msg.encode())
         self.textSend.setTextColor(QColor("#FF3030"))
-        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.append(self.yqtool.time_sfm() + " ")
         self.textSend.setTextColor(QColor("#FFFFFF"))
         self.textSend.insertPlainText(msg)
         self.textInput.clear()
@@ -538,7 +538,7 @@ class OtuMonitor(QWidget):
         msg = '(1*f5|7|315,8_btu.CC2640.0_0113.release.0_BT_M_B1b.0.00_mac' + str(mac) + '_300,|)'
         self.s.send(msg.encode())
         self.textSend.setTextColor(QColor("#FF3030"))
-        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.append(self.yqtool.time_sfm() + " ")
         self.textSend.setTextColor(QColor("#FFFFFF"))
         self.textSend.insertPlainText(msg)
 
@@ -551,14 +551,14 @@ class OtuMonitor(QWidget):
     def fillsendmsg(self, message):
         """填充发送历史"""
         self.textSend.setTextColor(QColor("#FF3030"))
-        self.textSend.append(self.yqtool.timeNow() + " ")
+        self.textSend.append(self.yqtool.time_sfm() + " ")
         self.textSend.setTextColor(QColor("#FFFFFF"))
         self.textSend.insertPlainText(message)
 
     def fillrecvmsg(self, message):
         """填充接收历史"""
         self.textRecv.setTextColor(QColor("#FF3030"))
-        self.textRecv.append(self.yqtool.timeNow() + " ")
+        self.textRecv.append(self.yqtool.time_sfm() + " ")
         self.textRecv.setTextColor(QColor("#FFFFFF"))
         self.textRecv.insertPlainText(message)
 
@@ -633,7 +633,7 @@ class OtuMonitor(QWidget):
 
             # self.scene.onlineCol.start()  # 上线动画
 
-            historydata = open('D:\Tcptemp\data.txt', "w")  # 生成缓存文件data
+            historydata = open('./Tcptemp/data.txt', "w")  # 生成缓存文件data
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
             historydata.close()
 
@@ -715,9 +715,9 @@ class OtuMonitor(QWidget):
         qr.add_data(imgdata)
         qr.make(fit=True)
         img = qr.make_image()
-        img.save('D:\Tcptemp\qrcode.png')
+        img.save('./Tcptemp/qrcode.png')
 
-        self.labelqrode.setPixmap(QtGui.QPixmap("D:\Tcptemp\qrcode.png"))
+        self.labelqrode.setPixmap(QtGui.QPixmap("./Tcptemp/qrcode.png"))
 
     def aotu331datacreate(self):
         """
@@ -806,7 +806,7 @@ class OtuMonitor(QWidget):
         # data = file1.readlines()
         # file1.close()
 
-        dataUrl = 'D:\\Tcptemp\\dataUpLoad.xlsx'
+        dataUrl = './Tcptemp/dataUpLoad.xlsx'
 
         self.tcpth3 = DataThread(dataUrl, self.s, self.gpsUploadBtn)
         self.tcpth3.signals.recv_signal.connect(self.fillrecvmsg)
