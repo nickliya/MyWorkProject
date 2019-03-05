@@ -1,8 +1,8 @@
 # coding=utf-8
 # create by 401219180 2018/02/10
 
-from threadManager import *
-from Animation import *
+from Resource.threadManager import *
+from Resource.Animation import *
 
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
@@ -15,6 +15,10 @@ import socket
 
 class OtuMonitor(QWidget):
     def __init__(self, mainwidget):
+        """
+        otu界面
+        :param mainwidget: 接收总的图形视图
+        """
         super(OtuMonitor, self).__init__(mainwidget)
         self.mainwidget = mainwidget
         self.sqlserver = Sqlfunticon()
@@ -424,7 +428,7 @@ class OtuMonitor(QWidget):
 
         # self.middlegrid.addWidget(self.aotubox, 5, 0, 1, 6)
         self.middlegrid.addWidget(self.middleTabWgt, 5, 0, 1, 6)
-        self.middleTabWgt.addTab(self.aotubox, "123")
+        self.middleTabWgt.addTab(self.aotubox, "331")
         self.middleTabWgt.addTab(self.aotubox2, "432")
 
         self.aotuboxGrid.addWidget(self.aotucheckbox1, 0, 0)

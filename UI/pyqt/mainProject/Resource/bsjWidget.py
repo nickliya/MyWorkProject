@@ -1,7 +1,7 @@
 # coding=utf-8
 # create by 401219180 2018/02/10
-from threadManager import *
-from Animation import *
+from Resource.threadManager import *
+from Resource.Animation import *
 
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
@@ -15,6 +15,10 @@ import configparser
 
 class BSJMonitor(QWidget):
     def __init__(self, mainwidget):
+        """
+        博世杰界面
+        :param mainwidget:接收总的图形视图
+        """
         super(BSJMonitor, self).__init__(mainwidget)
         self.mainwidget = mainwidget
         self.sqlserver = Sqlfunticon()

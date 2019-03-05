@@ -1,7 +1,7 @@
 # coding=utf-8
 # create by 401219180 2018/02/10
 
-from pubfun import *
+from Resource.pubfun import *
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import *

@@ -100,8 +100,6 @@ class Bianlifunction:
         return strhextime
 
 
-
-
 class CRCUtil:
     """思锐CRC解密算法"""
 
