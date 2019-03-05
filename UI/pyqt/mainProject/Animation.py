@@ -6,24 +6,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
 
-class TcpBackgroudView(QGraphicsView):
-    """自定义界面2d
-    当前未采用"""
-
-    def __init__(self):
-        super().__init__()
-        self._set_color(QColor(105, 105, 105))
-        self.iniAnimation()
-
-    def _set_color(self, col):
-        self.palette = QPalette()
-        self.palette.setColor(self.backgroundRole(), col)
-        # self.palette.setBrush(self.backgroundRole(), col)
-        self.setPalette(self.palette)
-
-    color = pyqtProperty(QColor, fset=_set_color)
-
-
 class TcpBackgroudScene(QGraphicsScene):
     """自定义场景"""
 
@@ -59,3 +41,12 @@ class TcpBackgroudScene(QGraphicsScene):
             self.offlineCol.start()
 
     color = pyqtProperty(QColor, fset=_set_color)
+
+
+class MyView(QGraphicsView):
+    """自定义2d界面"""
+
+    def __init__(self):
+        super().__init__()
+        self.scene = TcpBackgroudScene(self)  # 创建场景
+        self.setScene(self.scene)  # 添加场景()

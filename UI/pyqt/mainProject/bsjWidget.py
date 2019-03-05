@@ -14,8 +14,9 @@ import configparser
 
 
 class BSJMonitor(QWidget):
-    def __init__(self):
-        super(BSJMonitor, self).__init__()
+    def __init__(self, mainwidget):
+        super(BSJMonitor, self).__init__(mainwidget)
+        self.mainwidget = mainwidget
         self.sqlserver = Sqlfunticon()
         self.yqtool = Bianlifunction()
         self.num = 0
@@ -443,7 +444,7 @@ class BSJMonitor(QWidget):
                 self.textRecv.append(appendinfo)
                 return False
 
-            # self.scene.onlineCol.start()  # 上线动画
+            self.mainwidget.scene.onlineCol.start()  # 上线动画
 
             # 缓存
             conf = configparser.ConfigParser()
@@ -462,7 +463,7 @@ class BSJMonitor(QWidget):
             self.tcpth = BSJTcpThread(self.s, self.onBtn, self.heartcheck, self.sendBtn)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
-            # self.tcpth.animate_signal.connect(self.scene.threadAnimate)
+            self.tcpth.animate_signal.connect(self.mainwidget.scene.threadAnimate)
             self.tcpth.start()
 
             self.onBtn.setText("断开")
@@ -470,7 +471,7 @@ class BSJMonitor(QWidget):
             self.sendBtn.setDisabled(False)
 
         elif self.onBtn.text() == "断开":
-            # self.scene.offlineCol.start()
+            self.mainwidget.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
             self.s.shutdown(2)

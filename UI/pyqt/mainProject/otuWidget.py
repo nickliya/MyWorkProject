@@ -14,8 +14,9 @@ import socket
 
 
 class OtuMonitor(QWidget):
-    def __init__(self):
-        super(OtuMonitor, self).__init__()
+    def __init__(self, mainwidget):
+        super(OtuMonitor, self).__init__(mainwidget)
+        self.mainwidget = mainwidget
         self.sqlserver = Sqlfunticon()
         self.yqtool = Bianlifunction()
         self.OtuMonitor_UI()
@@ -32,10 +33,6 @@ class OtuMonitor(QWidget):
         # styleinfo = 'QLabel{font:75 10pt "Microsoft YaHei";color:floralwhite;}QPushButton{font:75 10pt "Microsoft YaHei";background-color:#FFFFFF;border:1px solid #8f8f91;border-radius:9px;min-width:50px;min-height:24px}QPushButton::hover{background-color:#FF6A6A;}QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
         # styleinfo = 'QRadioButton{font:75 10pt "Microsoft YaHei";color:floralwhite;}QRadioButton::indicator{width:10px;height:10px;border-radius:5px;}QRadioButton::indicator:checked{background-color:#FFA07A;border:1px solid black;}QRadioButton::indicator:unchecked{background-color:white;border:1px solid black;}QCheckBox{font:75 10pt "Microsoft YaHei";color:floralwhite;background-color:rgba(255,255,255,0);}QTextEdit{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}QTextBrowser{color:floralwhite;font:75 10pt "Microsoft YaHei";background-color:rgba(255,25,25,0);border-color:#FFEBCD;border-width:1px;border-style:solid;}'
         self.setStyleSheet(styleinfo)
-
-        # self.gview = QGraphicsView()
-        # self.scene2 = TcpBackgroudScene(self.gview)  # 创建场景
-        # self.gview.setScene(self.scene2)  # 添加场景
 
         """左侧窗口"""
         self.labelPort = QLabel("端口", self)
@@ -631,7 +628,7 @@ class OtuMonitor(QWidget):
                 self.textRecv.append(appendinfo)
                 return False
 
-            # self.scene.onlineCol.start()  # 上线动画
+            self.mainwidget.scene.onlineCol.start()  # 上线动画
 
             historydata = open('./Tcptemp/data.txt', "w")  # 生成缓存文件data
             historydata.write(otu_IMEI + "," + tcpadress + "," + tcpport + "," + hardver)  # IMEI保存到缓存文件data
@@ -641,7 +638,7 @@ class OtuMonitor(QWidget):
                                    self.entrywait)
             self.tcpth.recv_signal.connect(self.fillrecvmsg)
             self.tcpth.send_signal.connect(self.fillsendmsg)
-            # self.tcpth.animate_signal.connect(self.scene.threadAnimate)
+            self.tcpth.animate_signal.connect(self.mainwidget.scene.threadAnimate)
             self.tcpth.wait_signal.connect(self.waitandsend)
             self.tcpth.start()
 
@@ -652,7 +649,7 @@ class OtuMonitor(QWidget):
             self.wg315Btn.setDisabled(False)
 
         elif self.onBtn.text() == "断开":
-            # self.scene.offlineCol.start()
+            self.mainwidget.scene.offlineCol.start()
             global stopsingle
             stopsingle = 1
             self.s.shutdown(2)

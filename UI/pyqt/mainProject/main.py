@@ -16,13 +16,13 @@ waitmsg = None
 class MainWidget(QMainWindow):
     def __init__(self):
         super(MainWidget, self).__init__()
-        self.w1 = OtuMonitor()
-        self.w2 = BSJMonitor()
+        self.mainwidget = MyView()  # 创建图形视图界面
+        self.w1 = OtuMonitor(self.mainwidget)
+        self.w2 = BSJMonitor(self.mainwidget)
         self.initUI()
         self.iniGrid()
         self.initmenu()
         self.inittoolBar()
-        self.deleteWigt = []
 
         # 窗口透明度动画类
         self.animation = QPropertyAnimation(self, b'windowOpacity')
@@ -99,9 +99,11 @@ class MainWidget(QMainWindow):
 
     def iniGrid(self):
         # 主窗体
-        self.mainwidget = QGraphicsView()
-        self.scene = TcpBackgroudScene(self.mainwidget)  # 创建场景
-        self.mainwidget.setScene(self.scene)  # 添加场景
+        # self.mainwidget = QGraphicsView()
+        # self.scene = TcpBackgroudScene(self.mainwidget)  # 创建场景
+        # self.mainwidget.setScene(self.scene)  # 添加场景
+
+        # self.mainwidget = MyView()
 
         self.mainwidget.setFont(QtGui.QFont("75 10pt Microsoft YaHei"))
         self.maingrid = QGridLayout()
@@ -109,6 +111,7 @@ class MainWidget(QMainWindow):
         self.setCentralWidget(self.mainwidget)
         self.maingrid.setRowStretch(0, 0)
         self.maingrid.addWidget(self.stackedWidget, 0, 0)
+        self.mainwidget.scene.onlineCol.start()
 
         # self.mainwidget = QWidget()
 
