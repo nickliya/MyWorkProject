@@ -52,7 +52,7 @@ QTextBrowser {
 	border-style: solid;
 }
 
-QTabWidget::pane{
+QTabWidget::pane {
     background: rgba(255,0,0,0);
     border:solid rgba(255,0,0,0);
 }

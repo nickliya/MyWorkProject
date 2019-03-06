@@ -3,6 +3,8 @@
 
 from Resource.otuWidget import *
 from Resource.bsjWidget import *
+from Resource.menuView import *
+
 import os
 import cgitb
 import sys
@@ -17,8 +19,9 @@ class MainWidget(QMainWindow):
     def __init__(self):
         super(MainWidget, self).__init__()
         self.mainwidget = MyView()  # 创建图形视图界面
-        self.w1 = OtuMonitor(self.mainwidget)
-        self.w2 = BSJMonitor(self.mainwidget)
+        self.otuView = OtuMonitor(self.mainwidget)
+        self.bsjView = BSJMonitor(self.mainwidget)
+        self.menuView = AboutView()
         self.initUI()
         self.iniGrid()
         self.initmenu()
@@ -57,24 +60,24 @@ class MainWidget(QMainWindow):
     def initmenu(self):
         menuAction = QAction(QtGui.QIcon(u'思锐.png'), u'思锐', self)
         menuAction.setStatusTip('Exit application')
-        # menuAction.triggered.connect(qApp.quit)
 
         menuAction2 = QAction(QtGui.QIcon(u'咪智汇.png'), u'咪智汇', self)
         menuAction2.setStatusTip('Exit application')
-        # menuAction2.triggered.connect(qApp.quit)
 
         menuAction3 = QAction(QtGui.QIcon(u'皮皮车.png'), u'皮皮车', self)
         menuAction3.setStatusTip('Exit application')
-        # menuAction3.triggered.connect(qApp.quit)
 
         menuAction4 = QAction(QtGui.QIcon(u'共享车快进.png'), u'共享车快进', self)
         menuAction4.setStatusTip('Exit application')
-        # menuAction4.triggered.connect(qApp.quit)
 
         menuAction5 = QAction(QtGui.QIcon('exit.png'), '&Exit', self)
         menuAction5.setShortcut(u'Ctrl+Q')
         menuAction5.setStatusTip('Exit application')
         menuAction5.triggered.connect(self.doClose)
+
+        aMenuAction = QAction(QtGui.QIcon('exit.png'), '关于otumonitor', self)
+        aMenuAction.triggered.connect(self.menuView.exec)
+        aMenuAction.setShortcut(u'F1')
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')
@@ -84,10 +87,13 @@ class MainWidget(QMainWindow):
         fileMenu.addAction(menuAction4)
         fileMenu.addAction(menuAction5)
 
+        AboutMenu = menubar.addMenu('about')
+        AboutMenu.addAction(aMenuAction)
+
     def initUI(self):
         self.resize(1300, 680)
         self.center()
-        self.setWindowTitle(u'桴之科测试工具 Version:2019.01.25')
+        self.setWindowTitle(u'桴之科测试工具 Version:2.0.1')
         self.setWindowIcon(QtGui.QIcon('web.png'))
         self.statusBar()
         self.setWindowIcon(QtGui.QIcon('ui/icon.ico'))
@@ -110,8 +116,8 @@ class MainWidget(QMainWindow):
         self.maingrid.setRowStretch(0, 0)
         self.maingrid.addWidget(self.stackedWidget, 0, 0)
 
-        self.stackedWidget.addWidget(self.w1)
-        self.stackedWidget.addWidget(self.w2)
+        self.stackedWidget.addWidget(self.otuView)
+        self.stackedWidget.addWidget(self.bsjView)
 
     def doShow(self):
         try:
