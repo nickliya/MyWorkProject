@@ -10,6 +10,8 @@
 @Desc:
 """
 from Resource.mainWidget import *
+import os
+import sys
 
 
 def main():

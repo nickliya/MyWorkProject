@@ -45,6 +45,7 @@ class AboutView(QDialog):
         self.contactLabel2 = QLabel("401219180@qq.com")
         self.updateLogbox = QGroupBox("更新日志")
         self.okbtn = QPushButton("ok")
+        self.okbtn.setMaximumWidth(100)
         self.okbtn.clicked.connect(self.close)
         self.logBrowser = QTextBrowser()
 
@@ -65,7 +66,7 @@ class AboutView(QDialog):
         self.grid.addWidget(self.contactLabel, 2, 0)
         self.grid.addWidget(self.contactLabel2, 2, 1)
         self.grid.addWidget(self.updateLogbox, 3, 0, 1, 2)
-        self.grid.addWidget(self.okbtn, 4, 0, 1, 2)
+        self.grid.addWidget(self.okbtn, 4, 0, 1, 2, Qt.AlignCenter)
 
         self.updateLogboxGrid = QGridLayout()
         self.updateLogbox.setLayout(self.updateLogboxGrid)

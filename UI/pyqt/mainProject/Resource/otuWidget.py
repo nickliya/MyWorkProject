@@ -72,18 +72,16 @@ class OtuMonitor(QWidget):
         historyinfolist = historyinfo.split(",")
         data.close()
 
-        try:
-            self.entryOtuIMEI.insert(historyinfolist[0])
-            self.entryPort.insert(historyinfolist[2])
-            self.entryIP.insert(historyinfolist[1])
-            self.entryHardver.insert(historyinfolist[3])
-        except IndexError as msg:
-            print(msg)
-
-        # if len(historyinfolist) == 3:
-        #     self.entryPort.insert(historyinfolist[2])
-        # if len(historyinfolist) == 2 or len(historyinfolist) == 3:
-        #     self.entryIP.insert(historyinfolist[1])
+        if historyinfo == '':
+            pass
+        else:
+            try:
+                self.entryOtuIMEI.insert(historyinfolist[0])
+                self.entryPort.insert(historyinfolist[2])
+                self.entryIP.insert(historyinfolist[1])
+                self.entryHardver.insert(historyinfolist[3])
+            except IndexError as msg:
+                print(msg)
 
         self.defalBtn = QPushButton(u"默认")
         self.onBtn = QPushButton(u"连接")

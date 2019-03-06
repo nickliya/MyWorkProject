@@ -5,9 +5,7 @@ from Resource.otuWidget import *
 from Resource.bsjWidget import *
 from Resource.menuView import *
 
-import os
 import cgitb
-import sys
 
 cgitb.enable(format='text')  # 解决pyqt5异常只要进入事件循环,程序就崩溃,而没有任何提示
 
@@ -100,8 +98,6 @@ class MainWidget(QMainWindow):
         # self.setWindowOpacity(0.9)
 
         self.stackedWidget = QStackedWidget(self)
-        # 公共空间
-        # self.onBtn = QPushButton(u"连接")
 
     def iniGrid(self):
         # 主窗体
