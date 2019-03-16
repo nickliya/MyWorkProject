@@ -670,6 +670,9 @@ class OtuMonitor(QWidget):
         self.fillsendmsg("()")
 
     def sendHeart(self):
+        """
+        心跳
+        """
         if self.heartcheck.isChecked():
             self.s.send('()'.encode())
             self.fillsendmsg("()")
@@ -801,10 +804,9 @@ class OtuMonitor(QWidget):
         self.textInput.insertPlainText(msg)
 
     def gpsUploadfun(self):
-        # file1 = open("D:\\Tcptemp\\gpslocation", "r")
-        # data = file1.readlines()
-        # file1.close()
-
+        """
+        数据上报，模拟车辆行程
+        """
         dataUrl = './Tcptemp/dataUpLoad.xlsx'
 
         self.tcpth3 = DataThread(dataUrl, self.s, self.gpsUploadBtn)

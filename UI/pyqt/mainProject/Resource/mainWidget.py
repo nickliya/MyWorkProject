@@ -14,6 +14,9 @@ waitmsg = None
 
 
 class MainWidget(QMainWindow):
+    """
+    主窗口界面
+    """
     def __init__(self):
         super(MainWidget, self).__init__()
         self.mainwidget = MyView()  # 创建图形视图界面
@@ -43,6 +46,9 @@ class MainWidget(QMainWindow):
         self.move(qr.topLeft())
 
     def inittoolBar(self):
+        """
+        工具栏
+        """
         toolbarAction = QAction(u'思锐OTU', self)
         toolbarAction.setStatusTip(u'老思锐平台项目')
         toolbarAction.triggered.connect(lambda: self.stackedWidget.setCurrentIndex(0))
@@ -56,6 +62,10 @@ class MainWidget(QMainWindow):
         toolbar.addAction(toolbarAction2)
 
     def initmenu(self):
+        """
+        菜单栏
+        :return:
+        """
         menuAction = QAction(QtGui.QIcon(u'思锐.png'), u'思锐', self)
         menuAction.setStatusTip('Exit application')
 
@@ -100,11 +110,6 @@ class MainWidget(QMainWindow):
         self.stackedWidget = QStackedWidget(self)
 
     def iniGrid(self):
-        # 主窗体
-        # self.mainwidget = QGraphicsView()
-        # self.scene = TcpBackgroudScene(self.mainwidget)  # 创建场景
-        # self.mainwidget.setScene(self.scene)  # 添加场景
-
         self.mainwidget.setFont(QtGui.QFont("75 10pt Microsoft YaHei"))
         self.maingrid = QGridLayout()
         self.mainwidget.setLayout(self.maingrid)

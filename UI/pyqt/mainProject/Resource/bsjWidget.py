@@ -294,6 +294,10 @@ class BSJMonitor(QWidget):
         self.entryIP.setText("192.168.6.52")
 
     def getExtendedField(self):
+        """
+        扩展字段信息提取
+        :return: 扩展字段内容
+        """
         mileage = ('%x' % (int(self.entryMileage.text()))).zfill(8)
         mileage = mileage[0:2] + " " + mileage[2:4] + " " + mileage[4:6] + " " + mileage[-2:]
         acceleration = ('%x' % (int(self.entryAcceleration.text()))).zfill(8)
@@ -305,6 +309,10 @@ class BSJMonitor(QWidget):
         return extendedField
 
     def getgpsinfo(self):
+        """
+        GPS包信息提取
+        :return: GPS包内容
+        """
         satelliteCount = ('%x' % int(self.entrysatelliteCount.text())).zfill(1)
         lat = self.entryLat.text()
         hexlat = ('%x' % (int(float(lat) * 60 * 30000))).zfill(8)
@@ -321,6 +329,10 @@ class BSJMonitor(QWidget):
         return gpsinfo
 
     def logindatacreate(self):
+        """
+        创建登录协议消息
+        :return:
+        """
         imei = self.entryOtuIMEI.text()
         imei2 = imei.zfill(16)
         xindex = -16
@@ -346,6 +358,10 @@ class BSJMonitor(QWidget):
             configfile.close()
 
     def gpsdatacreate(self):
+        """
+        创建GPS包消息
+        :return:
+        """
         gpsinfo = self.getgpsinfo()
         extendedField = self.getExtendedField()
 
@@ -353,6 +369,10 @@ class BSJMonitor(QWidget):
         self.textInput.insertPlainText(data)
 
     def alarmdatacreate(self):
+        """
+        创建告警包消息
+        :return:
+        """
         def checkindex(checkbox):
             if checkbox.isChecked():
                 return "0"
@@ -379,6 +399,10 @@ class BSJMonitor(QWidget):
         self.textInput.insertPlainText(data)
 
     def heartbeatdatacreate(self):
+        """
+        创建心跳包消息
+        :return:
+        """
         voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
         voltage = voltage[0:2] + " " + voltage[-2:]
         datahex = ("%x" % (int(self.entryGSM.text()))).zfill(2)
@@ -398,6 +422,11 @@ class BSJMonitor(QWidget):
             pass
 
     def dataSwitch(self, data):
+        """
+        字符串转字节
+        :param data: 字符串string
+        :return:
+        """
         str1 = ''
         str2 = b''
         while data:
@@ -487,6 +516,10 @@ class BSJMonitor(QWidget):
         self.fillsendmsg("78 78 12 13 eb 0b 04 04 04 f6 02 05 17 03 06 ff fb 00 6a 02 da 0d 0a")
 
     def sendHeartBSJ(self):
+        """
+        心跳
+        :return:
+        """
         if self.heartcheck.isChecked():
             voltage = ('%x' % (int(self.entryvoltage.text()))).zfill(4)
             voltage = voltage[0:2] + " " + voltage[-2:]
@@ -542,6 +575,10 @@ class BSJMonitor(QWidget):
         self.labelqrode.setPixmap(QtGui.QPixmap("./Tcptemp/qrcode.png"))
 
     def gpsUploadfunBSJ(self):
+        """
+        数据上报，模拟车辆行程
+        :return:
+        """
         dataUrl = './Tcptemp/dataUpLoad.xlsx'
 
         self.tcpth3 = DataThreadBSJ(dataUrl, self.s, self.gpsUploadBtn)
