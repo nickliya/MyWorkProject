@@ -32,13 +32,18 @@ case3: 成员编辑-修改成员密码
 # -*- coding: utf-8 -*-
 import HTMLTestRunner
 import unittest
-from myTestSuite import *
+import myTestSuite
+import myTestSuite2
+
+# 先打开浏览器
+# chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\selenum\AutomationProfile"
+
 testunit = unittest.TestSuite()
 
 
 # 设置用例
-testunit.addTest(Xxgl("case1"))
-testunit.addTest(Xxgl("case2"))
+testunit.addTest(myTestSuite.Xxgl("case1"))
+testunit.addTest(myTestSuite.Xxgl("case2"))
 
 HtmlFile = 'C:\\Users\\fuzhi\\Desktop\\Result.html'
 fp = open(HtmlFile, "wb")

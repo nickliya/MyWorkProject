@@ -1,0 +1,3 @@
+QDialog {
+    border:1px solid #404040;
+}

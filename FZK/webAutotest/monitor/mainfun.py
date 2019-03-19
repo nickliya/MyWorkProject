@@ -11,36 +11,42 @@ import pytesseract
 from PIL import Image
 import base64
 import json
+from selenium.webdriver.chrome.options import Options
 
 
 class Mainfun:
     def __init__(self):
-        jsonfile = open("jsondata/main.json", "r")
-        self.initdata = json.load(jsonfile)
+        # jsonfile = open("jsondata/main.json", "r")
+        # self.initdata = json.load(jsonfile)
+        #
+        # option = webdriver.ChromeOptions()
+        # chromepath = self.initdata["chromepath"]
+        # self.browser = webdriver.Chrome(chromepath, chrome_options=option)
+        #
+        # self.browser.get(self.initdata["monitorUrl"])
+        # self.browser.maximize_window()
+        # self.browser.implicitly_wait(7)
+        #
+        # WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
+        #
+        # self.browser.find_element_by_id('username').send_keys(self.initdata['admin'])
+        # self.browser.find_element_by_id('password').send_keys(self.initdata['passwd'])
+        #
+        # WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
+        # temp_img = '1.png'
+        # code = self.getcode(temp_img)
+        # self.browser.find_element_by_id("captcha").send_keys(code)
+        # time.sleep(1)
+        # self.browser.find_element_by_id('submit').click()
+        # print("已点击登录")
 
-        option = webdriver.ChromeOptions()
-        # option.add_argument(self.initdata["datapath"]) #去掉data;,
-        chromepath = self.initdata["chromepath"]
-        self.browser = webdriver.Chrome(chromepath, chrome_options=option)
+        # time.sleep(1)
 
-        self.browser.get(self.initdata["monitorUrl"])
-        self.browser.maximize_window()
-        self.browser.implicitly_wait(7)
-
-        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "username")))
-
-        self.browser.find_element_by_id('username').send_keys(self.initdata['admin'])
-        self.browser.find_element_by_id('password').send_keys(self.initdata['passwd'])
-
-        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "authcodeImg")))
-        temp_img = '1.png'
-        code = self.getcode(temp_img)
-        self.browser.find_element_by_id("captcha").send_keys(code)
-        time.sleep(1)
-        self.browser.find_element_by_id('submit').click()
-        print("已点击登录")
-
-        time.sleep(1)
+        # 寻找打开的窗口进行登录
+        chrome_options = Options()
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+        chrome_driver = "C:\Program Files (x86)\Google\Chrome\Application\chromedriver.exe"
+        self.browser = webdriver.Chrome(chrome_driver, chrome_options=chrome_options)
 
     def getcode(self, imgurl):
         u"""识别图片"""

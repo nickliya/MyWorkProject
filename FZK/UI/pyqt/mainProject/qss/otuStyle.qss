@@ -1,0 +1,76 @@
+QLabel {
+	font: 75 10pt "Microsoft YaHei";
+	color: floralwhite;
+}
+QPushButton {
+	font: 75 10pt "Microsoft YaHei";
+	background-color: #FFFFFF;
+	border: 1px solid #8f8f91;
+	border-radius:9px;
+	min-width:50px;
+	min-height:24px
+}
+QPushButton::hover {
+	background-color:#FF6A6A;
+}
+QRadioButton {
+	font: 75 10pt "Microsoft YaHei";
+	color: floralwhite;
+}
+QRadioButton::indicator {
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+}
+QRadioButton::indicator:checked {
+	background-color: #FFA07A;
+	border: 1px solid black;
+}
+QRadioButton::indicator:unchecked {
+	background-color: white;
+	border: 1px solid black;
+}
+QCheckBox {
+	font: 75 10pt "Microsoft YaHei";
+	color: floralwhite;
+	background-color: rgba(255, 255, 255, 0);
+}
+QTextEdit {
+	color: floralwhite;
+	font: 75 10pt "Microsoft YaHei";
+	background-color: rgba(255, 25, 25, 0);
+	border-color: #FFEBCD;
+	border-width: 1px;
+	border-style: solid;
+}
+QTextBrowser {
+	color: floralwhite;
+	font: 75 10pt "Microsoft YaHei";
+	background-color: rgba(255, 25, 25, 0);
+	border-color: #FFEBCD;
+	border-width: 1px;
+	border-style: solid;
+}
+
+QTabWidget::pane {
+    background: rgba(255,0,0,0);
+    border:solid rgba(255,0,0,0);
+}
+
+QTabBar::tab {
+    min-width:10ex;
+    padding:6px;
+    font:600 10pt;
+    color:rgba(230,216,180);
+    border-top: 1px solid #C4C4C3;
+    border-right: 1px solid #C4C4C3;
+    border-left: 1px solid #C4C4C3;
+}
+
+QTabBar::tab:selected {
+    border-bottom-color: #C2C7CB; /* same as pane color */
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px; /* make non-selected tabs look smaller */
+}
