@@ -1,51 +1,24 @@
-# -*- coding: utf-8 -*-
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import sys
+#!/usr/bin/env sage
+# coding=utf-8
 
+from pubkey import P, n, e
+from secret import flag
+from os import urandom
 
-class Stacked(QDialog):
-    def __init__(self, parent=None):
-        super(Stacked, self).__init__(parent)
-        self.setWindowTitle(self.tr("StackedWidget"))
+R.<a> = GF(2^2049)
 
-        leftlist = QListWidget(self)
-        leftlist.insertItem(0, 'window1')
-        leftlist.insertItem(1, 'window2')
-        leftlist.insertItem(2, 'window3')
-
-        label1 = QLabel('windowTest1\n11111111 ')
-        label2 = QLabel('windowTest2\n22222222 ')
-        # label3 = QLabel('windowTest3\n33333333 ')
-
-        self.stack = QStackedWidget(self)
-        self.stack.addWidget(label1)
-        self.stack.addWidget(label2)
-        # self.stack.addWidget(label3)
-
-        mainLayout = QHBoxLayout(self)
-        mainLayout.addWidget(leftlist)
-        mainLayout.addWidget(self.stack, 0, Qt.AlignHCenter)
-        mainLayout.setStretchFactor(leftlist, 1)
-        mainLayout.setStretchFactor(self.stack, 3)  # 设定了list与self.stack比例为1:3。
-        leftlist.currentRowChanged.connect(lambda:self.stack.setCurrentIndex(1))
-
-
-class Laber1(Stacked):
-    def __init__(self):
-        super(Laber1, self).__init__()
-        label3 = QLabel('windowTest3\n33333333 ')
-        self.stack.addWidget(label3)
-
-
-class Mainloop(Laber1):
-    def __init__(self):
-        super(Mainloop, self).__init__()
-
+def encrypt(m):
+    global n
+    assert len(m) <= 256
+    m_int = Integer(m.encode('hex'), 16)
+    m_poly = P(R.fetch_int(m_int))
+    c_poly = pow(m_poly, e, n)
+    c_int = R(c_poly).integer_representation()
+    c = format(c_int, '0256x').decode('hex')
+    return c
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    main = Mainloop()
-    main.show()
-    app.exec_()
+    ptext = flag + os.urandom(256-len(flag))
+    ctext = encrypt(ptext)
+    with open('flag.enc', 'wb') as f:
+        f.write(ctext)

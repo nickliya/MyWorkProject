@@ -3,8 +3,8 @@
 # coding=utf-8
 # create by 15025463191 2017/10/30
 # -*- coding: utf-8 -*
-
 from random import seed, randint
+
 
 def strtoAscii(strindex):
     """字符串转16进制"""
