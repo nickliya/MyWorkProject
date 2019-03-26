@@ -58,7 +58,7 @@ class Shgl(unittest.TestCase):
         br.browser.implicitly_wait(3)
 
         # 显性等待
-        WebDriverWait(br.browser, 30).until(EC.element_to_be_selected(By.ID('eleFecen')))
+        WebDriverWait(br.browser, 30).until(EC.element_to_be_selected(By.ID, 'eleFecen'))
 
 
 class Sbgl(unittest.TestCase):
